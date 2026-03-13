@@ -1,496 +1,353 @@
-'use client';
+'use client'
 
-import { FormEvent } from 'react';
-import {
-  Box,
-  Container,
-  Typography,
-  Chip,
-  Paper,
-  TextField,
-  Button,
-  Stack,
-  Link as MuiLink,
-} from '@mui/material';
-import EmailIcon from '@mui/icons-material/Email';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import LanguageIcon from '@mui/icons-material/Language';
+import { FormEvent, useState } from 'react'
+import { Box, Container, Typography, TextField, Button, Stack, Alert } from '@mui/material'
+import EmailIcon from '@mui/icons-material/Email'
+import LocationOnIcon from '@mui/icons-material/LocationOn'
+import LanguageIcon from '@mui/icons-material/Language'
+import { SiGithub, SiMedium } from 'react-icons/si'
+import LinkedInIcon from '@mui/icons-material/LinkedIn'
+import ScrollReveal from '@/components/ScrollReveal'
+
+// ── Data ────────────────────────────────────────────────────────────────────
 
 const contactItems = [
   {
     label: 'Email',
     value: 'horusyeungg@gmail.com',
     href: 'mailto:horusyeungg@gmail.com',
-    icon: <EmailIcon />,
+    icon: <EmailIcon sx={{ fontSize: 20 }} />,
     external: false,
   },
   {
     label: 'LinkedIn',
     value: 'linkedin.com/in/horusyeung',
     href: 'https://linkedin.com/in/horusyeung',
-    icon: <LinkedInIcon />,
+    icon: <LinkedInIcon sx={{ fontSize: 20 }} />,
     external: true,
   },
   {
     label: 'GitHub',
     value: 'github.com/horusyeung',
     href: 'https://github.com/horusyeung',
-    icon: <GitHubIcon />,
+    icon: <SiGithub size={18} />,
+    external: true,
+  },
+  {
+    label: 'Medium',
+    value: 'medium.com/@horusyeung',
+    href: 'https://medium.com/@horusyeung',
+    icon: <SiMedium size={18} />,
     external: true,
   },
   {
     label: 'Location',
     value: 'Vancouver, BC, Canada',
     href: null,
-    icon: <LocationOnIcon />,
+    icon: <LocationOnIcon sx={{ fontSize: 20 }} />,
     external: false,
   },
   {
     label: 'Website',
     value: 'horusyeung.com',
     href: 'https://horusyeung.com',
-    icon: <LanguageIcon />,
+    icon: <LanguageIcon sx={{ fontSize: 20 }} />,
     external: true,
   },
-];
+]
 
-const glassmorphicCard = (mode: 'light' | 'dark') =>
-  mode === 'dark'
-    ? {
-        background: 'linear-gradient(180deg, rgba(30,41,59,0.5) 0%, rgba(15,23,42,0.7) 100%)',
-        border: '1px solid rgba(51,65,85,0.3)',
-        backdropFilter: 'blur(12px)',
-      }
-    : {
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(248,250,252,0.8) 100%)',
-        border: '1px solid rgba(0,0,0,0.08)',
-        backdropFilter: 'blur(12px)',
-      };
-
-const glassmorphicCardSmall = (mode: 'light' | 'dark') =>
-  mode === 'dark'
-    ? {
-        background: 'linear-gradient(180deg, rgba(30,41,59,0.4) 0%, rgba(15,23,42,0.5) 100%)',
-        border: '1px solid rgba(51,65,85,0.25)',
-        backdropFilter: 'blur(8px)',
-      }
-    : {
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(248,250,252,0.7) 100%)',
-        border: '1px solid rgba(0,0,0,0.06)',
-        backdropFilter: 'blur(8px)',
-      };
+// ── Component ───────────────────────────────────────────────────────────────
 
 export default function ContactPage() {
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  };
+  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setStatus('sending')
+
+    const formData = new FormData(e.currentTarget)
+    const name = formData.get('name') as string
+    const email = formData.get('email') as string
+    const message = formData.get('message') as string
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, message }),
+      })
+
+      if (!res.ok) throw new Error()
+      setStatus('success')
+      e.currentTarget.reset()
+    } catch {
+      setStatus('error')
+    }
+  }
 
   return (
     <Box>
       {/* ===== HERO SECTION ===== */}
       <Box
+        data-testid='contact-hero'
+        component='section'
         sx={{
-          position: 'relative',
-          overflow: 'hidden',
-          py: { xs: 10, md: 14 },
+          bgcolor: 'background.default',
+          pt: { xs: '80px', md: '120px' },
+          pb: { xs: '40px', md: '60px' },
         }}
       >
-        {/* Ambient orbs */}
-        <Box
-          sx={{
-            position: 'absolute',
-            width: 400,
-            height: 400,
-            borderRadius: '50%',
-            filter: 'blur(100px)',
-            pointerEvents: 'none',
-            opacity: 0.25,
-            left: '40%',
-            top: '20%',
-            bgcolor: 'rgba(168,220,171,0.3)',
-          }}
-        />
-        <Box
-          sx={{
-            position: 'absolute',
-            width: 300,
-            height: 300,
-            borderRadius: '50%',
-            filter: 'blur(100px)',
-            pointerEvents: 'none',
-            opacity: 0.2,
-            right: '10%',
-            bottom: '10%',
-            bgcolor: 'rgba(99,102,241,0.25)',
-          }}
-        />
-
-        <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-          <Chip
-            label="Get in Touch"
-            sx={{
-              mb: 3,
-              px: 2,
-              fontWeight: 600,
-              fontSize: '0.75rem',
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-              bgcolor: (theme) =>
-                theme.palette.mode === 'dark' ? 'rgba(168,220,171,0.08)' : 'rgba(168,220,171,0.15)',
-              color: '#A8DCAB',
-              border: '1px solid rgba(168,220,171,0.25)',
-            }}
-          />
-
-          <Typography
-            variant="h2"
-            sx={{
-              mt: 2,
-              fontWeight: 800,
-              fontSize: { xs: '2.25rem', sm: '3rem' },
-              letterSpacing: '-0.02em',
-              background: 'linear-gradient(135deg, #A8DCAB 0%, #6366F1 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            Contact
-          </Typography>
-
-          <Typography
-            sx={{
-              mt: 2,
-              maxWidth: 560,
-              mx: 'auto',
-              color: (theme) =>
-                theme.palette.mode === 'dark' ? 'rgba(148,163,184,0.8)' : 'text.secondary',
-              fontSize: '1.05rem',
-              lineHeight: 1.7,
-            }}
-          >
-            Have a project idea, want to discuss architecture, or just want to say hello? I&apos;d
-            love to hear from you.
-          </Typography>
+        <Container maxWidth={false} sx={{ maxWidth: 680, textAlign: 'center' }}>
+          <ScrollReveal>
+            <Typography
+              variant='h1'
+              sx={{
+                fontSize: { xs: '48px', md: '80px' },
+                fontWeight: 700,
+                letterSpacing: '-0.015em',
+                lineHeight: 1.05,
+                color: 'text.primary',
+              }}
+            >
+              Get in Touch
+            </Typography>
+            <Typography
+              sx={{
+                mt: 2,
+                mx: 'auto',
+                maxWidth: 560,
+                fontSize: '21px',
+                fontWeight: 400,
+                lineHeight: 1.47,
+                color: 'text.secondary',
+              }}
+            >
+              Have a project idea, want to discuss architecture, or just want to say hello? I&apos;d
+              love to hear from you.
+            </Typography>
+          </ScrollReveal>
         </Container>
       </Box>
 
-      {/* ===== CONTENT ===== */}
-      <Box sx={{ pb: { xs: 8, md: 12 }, pt: { xs: 2, md: 4 } }}>
-        <Container maxWidth="lg">
+      {/* ===== CONTACT CONTENT ===== */}
+      <Box
+        component='section'
+        sx={{
+          bgcolor: 'background.default',
+          pb: { xs: '80px', md: '120px' },
+        }}
+      >
+        <Container maxWidth='lg' sx={{ maxWidth: 980 }}>
           <Box
             sx={{
               display: 'grid',
               gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' },
-              gap: { xs: 5, lg: 6 },
+              gap: 6,
             }}
           >
             {/* ===== LEFT: Contact Information ===== */}
-            <Box>
-              <Typography
-                variant="h5"
-                sx={{
-                  mb: 2,
-                  fontWeight: 700,
-                  color: (theme) =>
-                    theme.palette.mode === 'dark' ? '#F1F5F9' : 'text.primary',
-                }}
-              >
-                Contact Information
-              </Typography>
-
-              <Typography
-                sx={{
-                  mb: 4,
-                  lineHeight: 1.7,
-                  color: (theme) =>
-                    theme.palette.mode === 'dark' ? 'rgba(148,163,184,0.8)' : 'text.secondary',
-                  fontSize: '0.95rem',
-                }}
-              >
-                Based in Vancouver, BC. Currently leading frontend engineering at Juno Markets. Open
-                to remote opportunities and collaboration.
-              </Typography>
-
-              <Stack spacing={2}>
-                {contactItems.map((item) => {
-                  const card = (
-                    <Paper
-                      elevation={0}
-                      sx={(theme) => ({
-                        ...glassmorphicCardSmall(theme.palette.mode),
-                        borderRadius: '12px',
-                        px: 2.5,
-                        py: 2,
+            <ScrollReveal>
+              <Stack data-testid='contact-info' spacing='32px'>
+                {contactItems.map((item) => (
+                  <Box key={item.label}>
+                    {/* Icon */}
+                    <Box
+                      sx={{
+                        color: 'text.secondary',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 2,
-                        transition: 'all 0.3s ease',
-                        cursor: item.href ? 'pointer' : 'default',
-                        '&:hover': item.href
-                          ? {
-                              transform: 'translateY(-2px)',
-                              boxShadow: '0 8px 24px -8px rgba(168,220,171,0.12)',
-                              borderColor: 'rgba(168,220,171,0.3)',
-                            }
-                          : {},
-                      })}
+                        fontSize: '20px',
+                      }}
                     >
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          width: 40,
-                          height: 40,
-                          borderRadius: '10px',
-                          flexShrink: 0,
-                          bgcolor: (theme) =>
-                            theme.palette.mode === 'dark'
-                              ? 'rgba(168,220,171,0.1)'
-                              : 'rgba(168,220,171,0.15)',
-                          color: '#A8DCAB',
-                          '& .MuiSvgIcon-root': {
-                            fontSize: 20,
-                          },
-                        }}
-                      >
-                        {item.icon}
-                      </Box>
-                      <Box>
-                        <Typography
-                          sx={{
-                            fontSize: '0.7rem',
-                            fontWeight: 600,
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.12em',
-                            color: (theme) =>
-                              theme.palette.mode === 'dark' ? '#CBD5E1' : 'text.secondary',
-                          }}
-                        >
-                          {item.label}
-                        </Typography>
-                        <Typography
-                          sx={{
-                            fontSize: '0.875rem',
-                            fontWeight: 500,
-                            color: (theme) =>
-                              theme.palette.mode === 'dark' ? '#F1F5F9' : 'text.primary',
-                          }}
-                        >
-                          {item.value}
-                        </Typography>
-                      </Box>
-                    </Paper>
-                  );
+                      {item.icon}
+                    </Box>
 
-                  if (item.href) {
-                    return (
-                      <MuiLink
-                        key={item.label}
+                    {/* Label */}
+                    <Typography
+                      sx={{
+                        mt: 1,
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.08em',
+                        color: 'text.secondary',
+                      }}
+                    >
+                      {item.label}
+                    </Typography>
+
+                    {/* Value */}
+                    {item.href ? (
+                      <Box
+                        component='a'
                         href={item.href}
                         target={item.external ? '_blank' : undefined}
                         rel={item.external ? 'noopener noreferrer' : undefined}
-                        underline="none"
-                        sx={{ display: 'block' }}
+                        sx={{
+                          display: 'inline-block',
+                          fontSize: '17px',
+                          fontWeight: 400,
+                          color: 'primary.main',
+                          textDecoration: 'none',
+                          borderRadius: '4px',
+                          '&:hover': {
+                            textDecoration: 'underline',
+                          },
+                          '&:focus-visible': {
+                            outline: '2px solid',
+                            outlineColor: 'primary.main',
+                            outlineOffset: 2,
+                          },
+                        }}
                       >
-                        {card}
-                      </MuiLink>
-                    );
-                  }
-
-                  return <Box key={item.label}>{card}</Box>;
-                })}
+                        {item.value}
+                      </Box>
+                    ) : (
+                      <Typography
+                        sx={{
+                          fontSize: '17px',
+                          fontWeight: 400,
+                          color: 'text.primary',
+                        }}
+                      >
+                        {item.value}
+                      </Typography>
+                    )}
+                  </Box>
+                ))}
               </Stack>
-            </Box>
+            </ScrollReveal>
 
             {/* ===== RIGHT: Contact Form ===== */}
-            <Box>
-              <Typography
-                variant="h5"
+            <ScrollReveal delay={0.15}>
+              <Box
                 sx={{
-                  mb: 3,
-                  fontWeight: 700,
-                  color: (theme) =>
-                    theme.palette.mode === 'dark' ? '#F1F5F9' : 'text.primary',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: '16px',
+                  p: { xs: 3, md: 5 },
+                  bgcolor: 'background.paper',
                 }}
               >
-                Send a Message
-              </Typography>
+                <Typography
+                  variant='h4'
+                  sx={{
+                    fontSize: { xs: '24px', md: '28px' },
+                    fontWeight: 600,
+                    color: 'text.primary',
+                    mb: 3,
+                  }}
+                >
+                  Send a Message
+                </Typography>
 
-              <Paper
-                elevation={0}
-                sx={(theme) => ({
-                  ...glassmorphicCard(theme.palette.mode),
-                  borderRadius: '16px',
-                  p: { xs: 3, sm: 4 },
-                })}
-              >
-                <Box component="form" onSubmit={handleSubmit} noValidate>
+                <Box data-testid='contact-form' component='form' onSubmit={handleSubmit} noValidate>
                   <Stack spacing={3}>
                     <TextField
-                      label="Name"
+                      name='name'
+                      label='Name'
+                      required
                       fullWidth
-                      variant="outlined"
+                      variant='outlined'
                       sx={{
                         '& .MuiOutlinedInput-root': {
-                          borderRadius: '10px',
-                          bgcolor: (theme) =>
-                            theme.palette.mode === 'dark'
-                              ? 'rgba(15,23,42,0.4)'
-                              : 'rgba(255,255,255,0.5)',
-                          '& fieldset': {
-                            borderColor: (theme) =>
-                              theme.palette.mode === 'dark'
-                                ? 'rgba(51,65,85,0.4)'
-                                : 'rgba(0,0,0,0.12)',
-                          },
-                          '&:hover fieldset': {
-                            borderColor: 'rgba(168,220,171,0.5)',
-                          },
                           '&.Mui-focused fieldset': {
-                            borderColor: '#A8DCAB',
+                            borderColor: 'primary.main',
                           },
                         },
-                        '& .MuiInputLabel-root': {
-                          color: (theme) =>
-                            theme.palette.mode === 'dark' ? '#CBD5E1' : 'text.secondary',
-                          '&.Mui-focused': {
-                            color: '#A8DCAB',
-                          },
-                        },
-                        '& .MuiOutlinedInput-input': {
-                          color: (theme) =>
-                            theme.palette.mode === 'dark' ? '#F1F5F9' : 'text.primary',
+                        '& .MuiInputLabel-root.Mui-focused': {
+                          color: 'primary.main',
                         },
                       }}
                     />
 
                     <TextField
-                      label="Email"
-                      type="email"
+                      name='email'
+                      label='Email'
+                      type='email'
+                      required
                       fullWidth
-                      variant="outlined"
+                      variant='outlined'
                       sx={{
                         '& .MuiOutlinedInput-root': {
-                          borderRadius: '10px',
-                          bgcolor: (theme) =>
-                            theme.palette.mode === 'dark'
-                              ? 'rgba(15,23,42,0.4)'
-                              : 'rgba(255,255,255,0.5)',
-                          '& fieldset': {
-                            borderColor: (theme) =>
-                              theme.palette.mode === 'dark'
-                                ? 'rgba(51,65,85,0.4)'
-                                : 'rgba(0,0,0,0.12)',
-                          },
-                          '&:hover fieldset': {
-                            borderColor: 'rgba(168,220,171,0.5)',
-                          },
                           '&.Mui-focused fieldset': {
-                            borderColor: '#A8DCAB',
+                            borderColor: 'primary.main',
                           },
                         },
-                        '& .MuiInputLabel-root': {
-                          color: (theme) =>
-                            theme.palette.mode === 'dark' ? '#CBD5E1' : 'text.secondary',
-                          '&.Mui-focused': {
-                            color: '#A8DCAB',
-                          },
-                        },
-                        '& .MuiOutlinedInput-input': {
-                          color: (theme) =>
-                            theme.palette.mode === 'dark' ? '#F1F5F9' : 'text.primary',
+                        '& .MuiInputLabel-root.Mui-focused': {
+                          color: 'primary.main',
                         },
                       }}
                     />
 
                     <TextField
-                      label="Message"
+                      name='message'
+                      label='Message'
+                      required
                       fullWidth
                       multiline
-                      rows={5}
-                      variant="outlined"
+                      minRows={4}
+                      maxRows={8}
+                      variant='outlined'
                       sx={{
                         '& .MuiOutlinedInput-root': {
-                          borderRadius: '10px',
-                          bgcolor: (theme) =>
-                            theme.palette.mode === 'dark'
-                              ? 'rgba(15,23,42,0.4)'
-                              : 'rgba(255,255,255,0.5)',
-                          '& fieldset': {
-                            borderColor: (theme) =>
-                              theme.palette.mode === 'dark'
-                                ? 'rgba(51,65,85,0.4)'
-                                : 'rgba(0,0,0,0.12)',
-                          },
-                          '&:hover fieldset': {
-                            borderColor: 'rgba(168,220,171,0.5)',
-                          },
                           '&.Mui-focused fieldset': {
-                            borderColor: '#A8DCAB',
+                            borderColor: 'primary.main',
                           },
                         },
-                        '& .MuiInputLabel-root': {
-                          color: (theme) =>
-                            theme.palette.mode === 'dark' ? '#CBD5E1' : 'text.secondary',
-                          '&.Mui-focused': {
-                            color: '#A8DCAB',
-                          },
-                        },
-                        '& .MuiOutlinedInput-input': {
-                          color: (theme) =>
-                            theme.palette.mode === 'dark' ? '#F1F5F9' : 'text.primary',
+                        '& .MuiInputLabel-root.Mui-focused': {
+                          color: 'primary.main',
                         },
                       }}
                     />
 
                     <Button
-                      type="submit"
-                      variant="contained"
+                      data-testid='submit-button'
+                      type='submit'
+                      variant='contained'
                       fullWidth
+                      disableElevation
+                      disabled={status === 'sending'}
                       sx={{
                         py: 1.5,
-                        borderRadius: '10px',
+                        borderRadius: '980px',
                         fontWeight: 600,
-                        fontSize: '0.9rem',
+                        fontSize: '17px',
                         textTransform: 'none',
-                        bgcolor: '#A8DCAB',
-                        color: '#0F172A',
-                        boxShadow: '0 4px 14px -4px rgba(168,220,171,0.4)',
+                        bgcolor: 'primary.main',
+                        color: 'primary.contrastText',
+                        transition: 'background-color 0.2s ease, transform 0.2s ease',
                         '&:hover': {
-                          bgcolor: '#93D097',
-                          boxShadow: '0 8px 24px -6px rgba(168,220,171,0.5)',
-                          transform: 'translateY(-1px)',
+                          bgcolor: 'primary.dark',
+                          transform: 'scale(1.02)',
                         },
-                        transition: 'all 0.3s ease',
+                        '&:focus-visible': {
+                          outline: '2px solid',
+                          outlineColor: 'primary.main',
+                          outlineOffset: 2,
+                        },
                       }}
                     >
-                      Send Message
+                      {status === 'sending' ? 'Sending...' : 'Send Message'}
                     </Button>
 
-                    <Typography
-                      sx={{
-                        textAlign: 'center',
-                        fontSize: '0.75rem',
-                        color: (theme) =>
-                          theme.palette.mode === 'dark'
-                            ? 'rgba(148,163,184,0.6)'
-                            : 'text.disabled',
-                        fontStyle: 'italic',
-                      }}
-                    >
-                      This form is for demonstration only. Please reach out via email or LinkedIn.
-                    </Typography>
+                    {status === 'success' && (
+                      <Alert severity='success' sx={{ borderRadius: '12px' }}>
+                        Message sent successfully! I&apos;ll get back to you soon.
+                      </Alert>
+                    )}
+                    {status === 'error' && (
+                      <Alert severity='error' sx={{ borderRadius: '12px' }}>
+                        Failed to send message. Please try again or email me directly.
+                      </Alert>
+                    )}
                   </Stack>
                 </Box>
-              </Paper>
-            </Box>
+              </Box>
+            </ScrollReveal>
           </Box>
         </Container>
       </Box>
     </Box>
-  );
+  )
 }

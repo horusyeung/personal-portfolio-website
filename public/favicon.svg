@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="6" fill="#000000"/>
+  <text font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="21" letter-spacing="-1.5">
+    <tspan x="2" y="23.5" fill="#FFFFFF">HY</tspan><tspan fill="#2997FF">.</tspan>
+  </text>
+</svg>

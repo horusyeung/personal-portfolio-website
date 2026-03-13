@@ -1,149 +1,154 @@
-'use client';
+'use client'
 
-import Link from 'next/link';
-import { Box, Container, Typography, Stack, IconButton } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import EmailIcon from '@mui/icons-material/Email';
+import Link from 'next/link'
+import { Box, Typography, Divider } from '@mui/material'
 
-const quickLinks = [
-  { href: '/', label: 'Home' },
+const exploreLinks = [
   { href: '/experience', label: 'Experience' },
-  { href: '/projects', label: 'Projects' },
+  { href: '/open-source', label: 'Open Source' },
   { href: '/contact', label: 'Contact' },
-];
+]
 
-const socialLinks = [
+const connectLinks = [
+  { href: 'mailto:horusyeungg@gmail.com', label: 'Email', external: false },
   {
-    label: 'GitHub',
-    href: 'https://github.com/horusyeung',
-    icon: <GitHubIcon />,
-  },
-  {
-    label: 'LinkedIn',
     href: 'https://linkedin.com/in/horusyeung',
-    icon: <LinkedInIcon />,
+    label: 'LinkedIn',
+    external: true,
   },
   {
-    label: 'Email',
-    href: 'mailto:horusyeungg@gmail.com',
-    icon: <EmailIcon />,
+    href: 'https://github.com/horusyeung',
+    label: 'GitHub',
+    external: true,
   },
-];
+  {
+    href: 'https://medium.com/@horusyeung',
+    label: 'Medium',
+    external: true,
+  },
+]
+
+const columnHeaderSx = {
+  fontSize: 12,
+  fontWeight: 600,
+  textTransform: 'uppercase' as const,
+  letterSpacing: '0.08em',
+  color: 'text.secondary',
+  mb: '12px',
+}
+
+const linkSx = {
+  fontSize: 12,
+  fontWeight: 400,
+  color: 'text.secondary',
+  textDecoration: 'none',
+  lineHeight: 2,
+  display: 'block',
+  transition: 'color 0.2s',
+  borderRadius: '4px',
+  '&:hover': { color: 'text.primary' },
+  '&:focus-visible': {
+    outline: '2px solid',
+    outlineColor: 'primary.main',
+    outlineOffset: 2,
+  },
+}
 
 export default function Footer() {
-  const theme = useTheme();
-
   return (
     <Box
-      component="footer"
+      data-testid='footer'
+      component='footer'
       sx={{
+        backgroundColor: 'background.paper',
         borderTop: '1px solid',
         borderColor: 'divider',
-        backgroundColor: (t) =>
-          t.palette.mode === 'dark'
-            ? 'rgba(15, 23, 42, 0.6)'
-            : 'rgba(245, 245, 245, 0.8)',
-        py: { xs: 6, md: 8 },
+        pt: '34px',
+        pb: '20px',
       }}
     >
-      <Container maxWidth="lg">
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          justifyContent="space-between"
-          alignItems={{ xs: 'center', md: 'flex-start' }}
-          spacing={4}
+      <Box
+        sx={{
+          maxWidth: 980,
+          mx: 'auto',
+          px: { xs: 2, sm: 3 },
+        }}
+      >
+        {/* 3-column section */}
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' },
+            gap: { xs: 3, sm: 4 },
+          }}
         >
-          {/* Brand section */}
-          <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
-            <Typography
-              component={Link}
-              href="/"
-              variant="h6"
-              sx={{
-                fontWeight: 700,
-                textDecoration: 'none',
-                color: 'text.primary',
-                display: 'inline-block',
-              }}
-            >
-              Horus Yeung
-              <Box component="span" sx={{ color: '#A8DCAB' }}>
-                .
-              </Box>
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ mt: 1, color: 'text.secondary' }}
-            >
-              Senior Software Architect & Frontend Team Lead
-            </Typography>
+          {/* Column 1: Explore */}
+          <Box data-testid='footer-explore'>
+            <Typography sx={columnHeaderSx}>Explore</Typography>
+            {exploreLinks.map((link) => (
+              <Typography key={link.href} component={Link} href={link.href} sx={linkSx}>
+                {link.label}
+              </Typography>
+            ))}
           </Box>
 
-          {/* Quick links */}
-          <Stack
-            direction="row"
-            spacing={3}
-            sx={{ flexWrap: 'wrap', justifyContent: 'center' }}
-          >
-            {quickLinks.map((link) => (
+          {/* Column 2: Connect */}
+          <Box data-testid='footer-connect'>
+            <Typography sx={columnHeaderSx}>Connect</Typography>
+            {connectLinks.map((link) => (
               <Typography
-                key={link.href}
-                component={Link}
+                key={link.label}
+                component='a'
                 href={link.href}
-                variant="body2"
-                sx={{
-                  textDecoration: 'none',
-                  color: 'text.secondary',
-                  transition: 'color 0.2s',
-                  '&:hover': { color: '#A8DCAB' },
-                }}
+                {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                sx={linkSx}
               >
                 {link.label}
               </Typography>
             ))}
-          </Stack>
+          </Box>
 
-          {/* Social icons */}
-          <Stack direction="row" spacing={1} alignItems="center">
-            {socialLinks.map((link) => (
-              <IconButton
-                key={link.label}
-                component="a"
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={link.label}
-                size="small"
-                sx={{
-                  color: 'text.secondary',
-                  transition: 'color 0.2s',
-                  '&:hover': { color: '#A8DCAB' },
-                }}
-              >
-                {link.icon}
-              </IconButton>
-            ))}
-          </Stack>
-        </Stack>
+          {/* Column 3: About */}
+          <Box data-testid='footer-about'>
+            <Typography sx={columnHeaderSx}>About</Typography>
+            <Typography
+              sx={{
+                fontSize: 12,
+                fontWeight: 400,
+                color: 'text.secondary',
+                lineHeight: 1.8,
+              }}
+            >
+              Senior Software Architect and Frontend Team Lead with 6+ years building
+              high-performance fintech and trading platforms.
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: 12,
+                fontWeight: 400,
+                color: 'text.secondary',
+                mt: 1,
+              }}
+            >
+              Vancouver, BC
+            </Typography>
+          </Box>
+        </Box>
 
-        {/* Bottom copyright line */}
-        <Box
+        {/* Divider */}
+        <Divider sx={{ my: 3 }} />
+
+        {/* Copyright */}
+        <Typography
           sx={{
-            mt: { xs: 5, md: 6 },
-            pt: 3,
-            borderTop: '1px solid',
-            borderColor: 'divider',
+            fontSize: 12,
+            color: 'text.secondary',
             textAlign: 'center',
           }}
         >
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            &copy; {new Date().getFullYear()} Horus Yeung. Built with Next.js &
-            MUI.
-          </Typography>
-        </Box>
-      </Container>
+          &copy; 2026 Horus Yeung. Built with Next.js &amp; MUI.
+        </Typography>
+      </Box>
     </Box>
-  );
+  )
 }
