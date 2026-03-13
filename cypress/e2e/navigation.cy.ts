@@ -2,6 +2,7 @@ describe('Navigation', () => {
   it('navbar is visible on all pages', () => {
     cy.visit('/')
     cy.contains('HY').should('be.visible')
+    cy.contains('Home').should('be.visible')
     cy.contains('Experience').should('be.visible')
     cy.contains('Open Source').should('be.visible')
     cy.contains('Contact').should('be.visible')
@@ -22,6 +23,12 @@ describe('Navigation', () => {
     cy.url().should('eq', Cypress.config().baseUrl + '/')
   })
 
+  it('Home link navigates to home page', () => {
+    cy.visit('/experience')
+    cy.get('nav a, header a').contains('Home').click()
+    cy.url().should('eq', Cypress.config().baseUrl + '/')
+  })
+
   it('navbar links navigate correctly', () => {
     cy.visit('/')
     cy.get('nav a, header a').contains('Experience').click()
@@ -32,11 +39,6 @@ describe('Navigation', () => {
 
     cy.get('nav a, header a').contains('Contact').click()
     cy.url().should('include', '/contact')
-  })
-
-  it('has a theme toggle button', () => {
-    cy.visit('/')
-    cy.get('button[aria-label]').should('exist')
   })
 
   it('footer is visible on all pages', () => {

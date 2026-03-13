@@ -4,7 +4,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import { createAppTheme } from '@/lib/theme'
 import ScrollReveal from '@/components/ScrollReveal'
 
-const theme = createAppTheme('dark')
+const theme = createAppTheme()
 
 // Mock IntersectionObserver as a proper class
 class MockIntersectionObserver {

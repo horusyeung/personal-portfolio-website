@@ -1,15 +1,9 @@
-describe('Theme Toggle', () => {
+describe('Theme', () => {
   beforeEach(() => {
     cy.visit('/')
   })
 
-  it('has a theme toggle button', () => {
-    cy.get('button[aria-label*="Switch to"]').should('exist')
-  })
-
-  it('cycles through theme modes', () => {
-    cy.get('button[aria-label*="Switch to"]').click()
-    cy.get('button[aria-label*="Switch to"]').click()
-    cy.get('button[aria-label*="Switch to"]').click()
+  it('uses light theme', () => {
+    cy.get('body').should('have.css', 'background-color', 'rgb(255, 255, 255)')
   })
 })

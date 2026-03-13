@@ -2,59 +2,19 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { AppBar, Toolbar, Typography, Box, IconButton, Tooltip } from '@mui/material'
-import Brightness7Icon from '@mui/icons-material/Brightness7'
-import Brightness4Icon from '@mui/icons-material/Brightness4'
-import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness'
-import { useThemeMode } from '@/lib/ThemeModeProvider'
+import { AppBar, Toolbar, Typography, Box } from '@mui/material'
 
 const navLinks = [
+  { href: '/', label: 'Home' },
   { href: '/experience', label: 'Experience' },
   { href: '/open-source', label: 'Open Source' },
   { href: '/contact', label: 'Contact' },
 ]
 
-const modeOrder = ['light', 'dark', 'system'] as const
-type ThemeMode = (typeof modeOrder)[number]
-
-function getNextMode(current: ThemeMode): ThemeMode {
-  const idx = modeOrder.indexOf(current)
-  return modeOrder[(idx + 1) % modeOrder.length]
-}
-
-function getModeIcon(mode: ThemeMode) {
-  switch (mode) {
-    case 'light':
-      return <Brightness7Icon sx={{ fontSize: 18 }} />
-    case 'dark':
-      return <Brightness4Icon sx={{ fontSize: 18 }} />
-    case 'system':
-      return <SettingsBrightnessIcon sx={{ fontSize: 18 }} />
-  }
-}
-
-function getModeTooltip(mode: ThemeMode): string {
-  switch (mode) {
-    case 'light':
-      return 'Light mode'
-    case 'dark':
-      return 'Dark mode'
-    case 'system':
-      return 'System mode'
-  }
-}
-
 export default function Navbar() {
   const pathname = usePathname()
-  const { mode, setMode } = useThemeMode()
 
-  const currentMode = (mode ?? 'system') as ThemeMode
-
-  const handleToggleMode = () => {
-    setMode(getNextMode(currentMode))
-  }
-
-  const isActive = (href: string) => pathname === href
+  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname === href)
 
   return (
     <>
@@ -63,8 +23,7 @@ export default function Navbar() {
         position='fixed'
         elevation={0}
         sx={{
-          background: (t) =>
-            t.palette.mode === 'dark' ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+          background: 'rgba(255, 255, 255, 0.8)',
           backdropFilter: 'blur(20px) saturate(180%)',
           WebkitBackdropFilter: 'blur(20px) saturate(180%)',
           borderBottom: '1px solid',
@@ -110,7 +69,7 @@ export default function Navbar() {
 
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* Nav links + theme toggle */}
+          {/* Nav links */}
           <Box
             sx={{
               display: 'flex',
@@ -144,27 +103,6 @@ export default function Navbar() {
                 {link.label}
               </Typography>
             ))}
-
-            <Tooltip title={getModeTooltip(currentMode)} arrow>
-              <IconButton
-                data-testid='theme-toggle'
-                onClick={handleToggleMode}
-                size='small'
-                aria-label={`Switch to ${getModeTooltip(getNextMode(currentMode))}`}
-                sx={{
-                  color: 'text.secondary',
-                  p: 0.5,
-                  '&:hover': { color: 'primary.main' },
-                  '&:focus-visible': {
-                    outline: '2px solid',
-                    outlineColor: 'primary.main',
-                    outlineOffset: 2,
-                  },
-                }}
-              >
-                {getModeIcon(currentMode)}
-              </IconButton>
-            </Tooltip>
           </Box>
         </Toolbar>
       </AppBar>

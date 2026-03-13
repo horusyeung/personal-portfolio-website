@@ -41,7 +41,7 @@ beforeEach(() => {
   })
 })
 
-const theme = createAppTheme('dark')
+const theme = createAppTheme()
 
 function renderWithTheme(ui: React.ReactElement) {
   return render(ui, {

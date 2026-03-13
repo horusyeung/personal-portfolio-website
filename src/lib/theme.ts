@@ -5,27 +5,25 @@ import { createTheme, type Theme } from '@mui/material/styles'
 const fontStack =
   '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Helvetica", "Arial", sans-serif'
 
-export function createAppTheme(mode: 'light' | 'dark'): Theme {
-  const isDark = mode === 'dark'
-
+export function createAppTheme(): Theme {
   return createTheme({
     palette: {
-      mode,
+      mode: 'light',
       primary: {
-        main: isDark ? '#2997ff' : '#0071e3',
-        light: isDark ? '#6cb8ff' : '#2997ff',
-        dark: isDark ? '#0077ed' : '#005bba',
+        main: '#0071e3',
+        light: '#2997ff',
+        dark: '#005bba',
         contrastText: '#ffffff',
       },
       background: {
-        default: isDark ? '#000000' : '#ffffff',
-        paper: isDark ? '#1d1d1f' : '#f5f5f7',
+        default: '#ffffff',
+        paper: '#f5f5f7',
       },
       text: {
-        primary: isDark ? '#f5f5f7' : '#1d1d1f',
-        secondary: isDark ? '#a1a1a6' : '#86868b',
+        primary: '#1d1d1f',
+        secondary: '#86868b',
       },
-      divider: isDark ? '#424245' : '#d2d2d7',
+      divider: '#d2d2d7',
     },
     typography: {
       fontFamily: fontStack,
@@ -97,11 +95,11 @@ export function createAppTheme(mode: 'light' | 'dark'): Theme {
             background: 'transparent',
           },
           '::-webkit-scrollbar-thumb': {
-            background: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)',
+            background: 'rgba(0, 0, 0, 0.15)',
             borderRadius: 4,
           },
           '::-webkit-scrollbar-thumb:hover': {
-            background: isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
+            background: 'rgba(0, 0, 0, 0.3)',
           },
         },
       },
@@ -138,7 +136,7 @@ export function createAppTheme(mode: 'light' | 'dark'): Theme {
             '& .MuiOutlinedInput-root': {
               borderRadius: 12,
               '&.Mui-focused fieldset': {
-                borderColor: isDark ? '#2997ff' : '#0071e3',
+                borderColor: '#0071e3',
               },
             },
           },

@@ -20,7 +20,7 @@ const githubProjects = [
   {
     name: 'personal-portfolio-website',
     description:
-      'This portfolio site — built with Next.js 16, React 19, and MUI 7. Clean design with scroll animations, dark/light mode, and full test coverage.',
+      'This portfolio site — built with Next.js 16, React 19, and MUI 7. Clean design with scroll animations, SEO optimized, and full test coverage.',
     tags: ['Next.js', 'React.js', 'MUI'],
     url: 'https://github.com/horusyeung/personal-portfolio-website',
     status: 'Live',
