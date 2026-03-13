@@ -137,7 +137,7 @@ export default function ContactPage() {
           pb: { xs: '80px', md: '120px' },
         }}
       >
-        <Container maxWidth='lg' sx={{ maxWidth: 980 }}>
+        <Container maxWidth={false} sx={{ maxWidth: 980 }}>
           <Box
             sx={{
               display: 'grid',
