@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import { ThemeModeProvider } from '@/lib/ThemeModeProvider'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -55,6 +57,8 @@ export default function RootLayout({
             <main style={{ flex: 1 }}>{children}</main>
             <Footer />
           </ThemeModeProvider>
+          <Analytics />
+          <SpeedInsights />
         </AppRouterCacheProvider>
       </body>
     </html>
