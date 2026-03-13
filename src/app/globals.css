@@ -1,0 +1,23 @@
+/* MUI CssBaseline handles all resets and base styles.
+   This file only contains non-MUI global overrides. */
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
+/* Selection highlight with primary sage green */
+::selection {
+  background: rgba(168, 220, 171, 0.3);
+  color: inherit;
+}
