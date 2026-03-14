@@ -52,7 +52,9 @@ function renderWithTheme(ui: React.ReactElement) {
 describe('ExperiencePage', () => {
   it('renders "Experience" heading', () => {
     renderWithTheme(<ExperiencePage />)
-    expect(screen.getByText('Experience')).toBeInTheDocument()
+    const hero = screen.getByTestId('experience-hero')
+    expect(hero).toBeInTheDocument()
+    expect(hero.textContent).toContain('Experience')
   })
 
   it('renders all 6 experience entries', () => {

@@ -1,7 +1,13 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
+import { useRef } from 'react'
 import { Box } from '@mui/material'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
+import { prefersReducedMotion } from '@/lib/animations'
+
+gsap.registerPlugin(ScrollTrigger)
 
 interface ScrollRevealProps {
   children: React.ReactNode
@@ -16,45 +22,35 @@ export default function ScrollReveal({
   delay = 0,
   distance = 30,
   duration = 0.6,
-  threshold = 0.1,
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
 
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
+  useGSAP(
+    () => {
+      if (prefersReducedMotion() || !ref.current) return
 
-    // Check if user prefers reduced motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (prefersReducedMotion) {
-      setIsVisible(true)
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-          observer.unobserve(entry.target)
-        }
-      },
-      { threshold },
-    )
-
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [threshold])
+      gsap.fromTo(
+        ref.current,
+        { opacity: 0, y: distance },
+        {
+          opacity: 1,
+          y: 0,
+          duration,
+          delay,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: ref.current,
+            start: 'top 85%',
+            once: true,
+          },
+        },
+      )
+    },
+    { scope: ref },
+  )
 
   return (
-    <Box
-      ref={ref}
-      sx={{
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0)' : `translateY(${distance}px)`,
-        transition: `opacity ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}s, transform ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}s`,
-      }}
-    >
+    <Box ref={ref} sx={{ opacity: 0 }}>
       {children}
     </Box>
   )

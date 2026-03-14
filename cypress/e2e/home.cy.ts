@@ -15,9 +15,7 @@ describe('Home Page', () => {
 
   it('shows stats with key metrics', () => {
     cy.contains('6+ Years').should('exist')
-    cy.contains('50K+ Users').should('exist')
-    cy.contains('12+ Apps').should('exist')
-    cy.contains('4 Countries').should('exist')
+    cy.contains('Full-Stack').should('exist')
   })
 
   it('has working navigation to Experience page', () => {

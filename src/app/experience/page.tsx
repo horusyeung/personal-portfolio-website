@@ -1,7 +1,14 @@
 'use client'
 
+import { useRef } from 'react'
 import { Box, Container, Typography } from '@mui/material'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
+import { splitTextIntoChars, prefersReducedMotion } from '@/lib/animations'
 import ScrollReveal from '@/components/ScrollReveal'
+
+gsap.registerPlugin(ScrollTrigger)
 
 // ── Data ────────────────────────────────────────────────────────────────────
 
@@ -84,11 +91,92 @@ const certifications = [
   { name: 'Agile with Atlassian Jira', issuer: 'Atlassian', date: 'August 2022' },
 ]
 
+const SUBTITLE_TEXT =
+  'From quality assurance to software architecture — a trajectory of continuous growth and technical leadership.'
+
 // ── Component ───────────────────────────────────────────────────────────────
 
 export default function ExperiencePage() {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const titleRef = useRef<HTMLHeadingElement>(null)
+  const subtitleRef = useRef<HTMLDivElement>(null)
+
+  useGSAP(
+    () => {
+      if (prefersReducedMotion()) return
+
+      // ── #11: Page title — split-text scale 1.5→1.0 with fade ──
+      const titleEl = titleRef.current
+      if (titleEl) {
+        const chars = splitTextIntoChars(titleEl)
+        gsap.from(chars, {
+          scale: 1.5,
+          opacity: 0,
+          duration: 0.6,
+          ease: 'power3.out',
+          stagger: 0.03,
+        })
+      }
+
+      // ── #12: Subtitle — typewriter with blinking cursor ──
+      const subtitleEl = subtitleRef.current
+      if (subtitleEl) {
+        // Clear and set up typewriter
+        subtitleEl.innerHTML = ''
+        const textSpan = document.createElement('span')
+        const cursorSpan = document.createElement('span')
+        cursorSpan.textContent = '|'
+        cursorSpan.style.display = 'inline'
+        cursorSpan.style.fontWeight = '300'
+        cursorSpan.style.marginLeft = '2px'
+        subtitleEl.appendChild(textSpan)
+        subtitleEl.appendChild(cursorSpan)
+
+        // Blink cursor during typing
+        const blinkTl = gsap.timeline({ repeat: -1 })
+        blinkTl.to(cursorSpan, { opacity: 0, duration: 0.4 })
+        blinkTl.to(cursorSpan, { opacity: 1, duration: 0.4 })
+
+        // Typewriter effect — after title animation completes
+        const titleDuration = 0.6 + 0.03 * ('Experience'.length - 1)
+        const chars = SUBTITLE_TEXT.split('')
+        const obj = { index: 0 }
+        gsap.to(obj, {
+          index: chars.length,
+          duration: 1.5,
+          ease: 'none',
+          delay: titleDuration + 0.2,
+          onUpdate: () => {
+            textSpan.textContent = SUBTITLE_TEXT.slice(0, Math.round(obj.index))
+          },
+          onComplete: () => {
+            // Blink cursor 2 more times then hide
+            blinkTl.kill()
+            gsap.set(cursorSpan, { opacity: 1 })
+            const endBlink = gsap.timeline()
+            endBlink.to(cursorSpan, { opacity: 0, duration: 0.4, delay: 0.3 })
+            endBlink.to(cursorSpan, { opacity: 1, duration: 0.4 })
+            endBlink.to(cursorSpan, { opacity: 0, duration: 0.4 })
+            endBlink.to(cursorSpan, { opacity: 1, duration: 0.4 })
+            endBlink.to(cursorSpan, {
+              opacity: 0,
+              duration: 0.3,
+              onComplete: () => {
+                cursorSpan.style.display = 'none'
+              },
+            })
+          },
+        })
+
+        // Start subtitle invisible
+        gsap.set(subtitleEl, { opacity: 1 })
+      }
+    },
+    { scope: containerRef },
+  )
+
   return (
-    <Box>
+    <Box ref={containerRef}>
       {/* ===== HERO SECTION ===== */}
       <Box
         data-testid='experience-hero'
@@ -100,34 +188,34 @@ export default function ExperiencePage() {
         }}
       >
         <Container maxWidth={false} sx={{ maxWidth: 680, textAlign: 'center' }}>
-          <ScrollReveal>
-            <Typography
-              variant='h1'
-              sx={{
-                fontSize: { xs: '48px', md: '80px' },
-                fontWeight: 700,
-                letterSpacing: '-0.015em',
-                lineHeight: 1.05,
-                color: 'text.primary',
-              }}
-            >
-              Experience
-            </Typography>
-            <Typography
-              sx={{
-                mt: 2,
-                mx: 'auto',
-                maxWidth: 560,
-                fontSize: '21px',
-                fontWeight: 400,
-                lineHeight: 1.47,
-                color: 'text.secondary',
-              }}
-            >
-              From quality assurance to software architecture — a trajectory of continuous growth
-              and technical leadership.
-            </Typography>
-          </ScrollReveal>
+          <Typography
+            ref={titleRef}
+            variant='h1'
+            sx={{
+              fontSize: { xs: '48px', md: '80px' },
+              fontWeight: 700,
+              letterSpacing: '-0.015em',
+              lineHeight: 1.05,
+              color: 'text.primary',
+            }}
+          >
+            Experience
+          </Typography>
+          <Box
+            ref={subtitleRef}
+            sx={{
+              mt: 2,
+              mx: 'auto',
+              maxWidth: 560,
+              fontSize: '21px',
+              fontWeight: 400,
+              lineHeight: 1.47,
+              color: 'text.secondary',
+              opacity: 0,
+            }}
+          >
+            {SUBTITLE_TEXT}
+          </Box>
         </Container>
       </Box>
 
@@ -140,11 +228,12 @@ export default function ExperiencePage() {
           pb: { xs: '40px', md: '60px' },
         }}
       >
-        <Container maxWidth={false} sx={{ maxWidth: 680 }}>
+        <Container maxWidth={false} sx={{ maxWidth: 680, position: 'relative' }}>
           {experiences.map((exp, index) => (
             <ScrollReveal key={`${exp.company}-${exp.period}`} delay={index * 0.08}>
               <Box
                 sx={{
+                  position: 'relative',
                   py: { xs: '32px', md: '40px' },
                   ...(index !== 0 && {
                     borderTop: '1px solid',
@@ -241,19 +330,20 @@ export default function ExperiencePage() {
         }}
       >
         <Container maxWidth={false} sx={{ maxWidth: 680 }}>
+          <Typography
+            variant='h2'
+            sx={{
+              fontSize: { xs: '40px', md: '56px' },
+              fontWeight: 700,
+              letterSpacing: '-0.015em',
+              lineHeight: 1.07,
+              color: 'text.primary',
+            }}
+          >
+            Education
+          </Typography>
+
           <ScrollReveal>
-            <Typography
-              variant='h2'
-              sx={{
-                fontSize: { xs: '40px', md: '56px' },
-                fontWeight: 700,
-                letterSpacing: '-0.015em',
-                lineHeight: 1.07,
-                color: 'text.primary',
-              }}
-            >
-              Education
-            </Typography>
             <Box sx={{ mt: 4 }}>
               <Typography
                 variant='h4'
@@ -331,19 +421,19 @@ export default function ExperiencePage() {
         }}
       >
         <Container maxWidth={false} sx={{ maxWidth: 680 }}>
+          <Typography
+            variant='h2'
+            sx={{
+              fontSize: { xs: '40px', md: '56px' },
+              fontWeight: 700,
+              letterSpacing: '-0.015em',
+              lineHeight: 1.07,
+              color: 'text.primary',
+            }}
+          >
+            Certifications
+          </Typography>
           <ScrollReveal>
-            <Typography
-              variant='h2'
-              sx={{
-                fontSize: { xs: '40px', md: '56px' },
-                fontWeight: 700,
-                letterSpacing: '-0.015em',
-                lineHeight: 1.07,
-                color: 'text.primary',
-              }}
-            >
-              Certifications
-            </Typography>
             <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {certifications.map((cert) => (
                 <Box key={cert.name}>
