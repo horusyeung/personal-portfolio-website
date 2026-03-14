@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
@@ -6,6 +7,45 @@ import { ThemeModeProvider } from '@/lib/ThemeModeProvider'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import './globals.css'
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': 'https://horusyeung.com/#website',
+      url: 'https://horusyeung.com',
+      name: 'Horus Yeung',
+      description:
+        'Senior Software Architect and Frontend Team Lead with 6+ years building high-performance fintech and trading platforms.',
+      publisher: { '@id': 'https://horusyeung.com/#person' },
+    },
+    {
+      '@type': 'Person',
+      '@id': 'https://horusyeung.com/#person',
+      name: 'Horus Yeung',
+      givenName: 'Horus',
+      familyName: 'Yeung',
+      url: 'https://horusyeung.com',
+      jobTitle: 'Software Architect & Team Lead',
+      worksFor: {
+        '@type': 'Organization',
+        name: 'Juno Markets',
+      },
+      knowsAbout: [
+        'Software Architecture',
+        'React',
+        'Next.js',
+        'TypeScript',
+        'Node.js',
+        'Full Stack Development',
+        'Fintech',
+        'Trading Platforms',
+      ],
+      sameAs: ['https://github.com/horusyeung', 'https://linkedin.com/in/horusyeung'],
+    },
+  ],
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://horusyeung.com'),
@@ -84,51 +124,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en' suppressHydrationWarning>
-      <head>
-        <script
-          type='application/ld+json'
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@graph': [
-                {
-                  '@type': 'WebSite',
-                  '@id': 'https://horusyeung.com/#website',
-                  url: 'https://horusyeung.com',
-                  name: 'Horus Yeung',
-                  description:
-                    'Senior Software Architect and Frontend Team Lead with 6+ years building high-performance fintech and trading platforms.',
-                  publisher: { '@id': 'https://horusyeung.com/#person' },
-                },
-                {
-                  '@type': 'Person',
-                  '@id': 'https://horusyeung.com/#person',
-                  name: 'Horus Yeung',
-                  givenName: 'Horus',
-                  familyName: 'Yeung',
-                  url: 'https://horusyeung.com',
-                  jobTitle: 'Software Architect & Team Lead',
-                  worksFor: {
-                    '@type': 'Organization',
-                    name: 'Juno Markets',
-                  },
-                  knowsAbout: [
-                    'Software Architecture',
-                    'React',
-                    'Next.js',
-                    'TypeScript',
-                    'Node.js',
-                    'Full Stack Development',
-                    'Fintech',
-                    'Trading Platforms',
-                  ],
-                  sameAs: ['https://github.com/horusyeung', 'https://linkedin.com/in/horusyeung'],
-                },
-              ],
-            }),
-          }}
-        />
-      </head>
       <body
         style={{
           display: 'flex',
@@ -137,6 +132,11 @@ export default function RootLayout({
           margin: 0,
         }}
       >
+        <Script
+          id='json-ld'
+          type='application/ld+json'
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           <ThemeModeProvider>
             <Navbar />
