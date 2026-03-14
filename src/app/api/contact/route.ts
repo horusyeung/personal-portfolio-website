@@ -11,7 +11,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Name, email, and message are required.' }, { status: 400 })
     }
 
-    await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: 'Portfolio Contact <onboarding@resend.dev>',
       to: 'horusyeungg@gmail.com',
       subject: `Portfolio Contact from ${name}`,
@@ -19,8 +19,17 @@ export async function POST(request: Request) {
       text: `From: ${name} (${email})\n\n${message}`,
     })
 
-    return NextResponse.json({ success: true })
-  } catch {
+    if (error) {
+      console.error('Resend error:', error)
+      return NextResponse.json(
+        { error: error.message || 'Failed to send message.' },
+        { status: 500 },
+      )
+    }
+
+    return NextResponse.json({ success: true, id: data?.id })
+  } catch (err) {
+    console.error('Contact API error:', err)
     return NextResponse.json(
       { error: 'Failed to send message. Please try again.' },
       { status: 500 },

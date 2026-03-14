@@ -276,7 +276,8 @@ export default function ContactPage() {
     e.preventDefault()
     setStatus('sending')
 
-    const formData = new FormData(e.currentTarget)
+    const form = e.currentTarget
+    const formData = new FormData(form)
     const name = formData.get('name') as string
     const email = formData.get('email') as string
     const message = formData.get('message') as string
@@ -290,7 +291,7 @@ export default function ContactPage() {
 
       if (!res.ok) throw new Error()
       setStatus('success')
-      e.currentTarget.reset()
+      form.reset()
 
       // #34 — Success confetti
       if (btnContainerRef.current && !prefersReducedMotion()) {
