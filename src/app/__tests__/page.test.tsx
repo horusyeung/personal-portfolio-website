@@ -52,7 +52,8 @@ function renderWithTheme(ui: React.ReactElement) {
 describe('HomePage', () => {
   it('renders "Horus Yeung" heading', () => {
     renderWithTheme(<HomePage />)
-    expect(screen.getByText('Horus Yeung')).toBeInTheDocument()
+    expect(screen.getByTestId('hero-name')).toBeInTheDocument()
+    expect(screen.getByTestId('hero-name').textContent).toContain('Horus')
   })
 
   it('renders "Software Architect & Team Lead" overline', () => {
@@ -70,9 +71,9 @@ describe('HomePage', () => {
     expect(screen.getByText('Get in Touch')).toBeInTheDocument()
   })
 
-  it('stats line includes "50K+ Users"', () => {
+  it('stats line includes "6+ Years"', () => {
     renderWithTheme(<HomePage />)
-    const statsText = screen.getByText(/50K\+ Users/)
+    const statsText = screen.getByText(/6\+ Years/)
     expect(statsText).toBeInTheDocument()
   })
 
