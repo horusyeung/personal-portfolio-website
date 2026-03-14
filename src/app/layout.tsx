@@ -17,13 +17,18 @@ export const metadata: Metadata = {
     'Senior Software Architect and Frontend Team Lead with 6+ years building high-performance fintech and trading platforms. Based in Vancouver, BC.',
   keywords: [
     'Horus Yeung',
+    'Horus',
+    'Yeung',
+    'Horus Yeung portfolio',
+    'Horus Yeung developer',
+    'Horus Yeung software architect',
     'Software Architect',
     'Frontend Team Lead',
     'React',
     'Next.js',
     'TypeScript',
     'Full Stack Developer',
-    'Vancouver',
+    'Vancouver developer',
     'Fintech',
     'Trading Platform',
   ],
@@ -54,12 +59,21 @@ export const metadata: Metadata = {
     siteName: 'Horus Yeung',
     locale: 'en_US',
     type: 'website',
+    images: [
+      {
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'Horus Yeung — Software Architect',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Horus Yeung — Software Architect',
     description:
       'Senior Software Architect and Frontend Team Lead building high-performance fintech platforms.',
+    images: ['/opengraph-image'],
   },
 }
 
@@ -70,6 +84,51 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en' suppressHydrationWarning>
+      <head>
+        <script
+          type='application/ld+json'
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@graph': [
+                {
+                  '@type': 'WebSite',
+                  '@id': 'https://horusyeung.com/#website',
+                  url: 'https://horusyeung.com',
+                  name: 'Horus Yeung',
+                  description:
+                    'Senior Software Architect and Frontend Team Lead with 6+ years building high-performance fintech and trading platforms.',
+                  publisher: { '@id': 'https://horusyeung.com/#person' },
+                },
+                {
+                  '@type': 'Person',
+                  '@id': 'https://horusyeung.com/#person',
+                  name: 'Horus Yeung',
+                  givenName: 'Horus',
+                  familyName: 'Yeung',
+                  url: 'https://horusyeung.com',
+                  jobTitle: 'Software Architect & Team Lead',
+                  worksFor: {
+                    '@type': 'Organization',
+                    name: 'Juno Markets',
+                  },
+                  knowsAbout: [
+                    'Software Architecture',
+                    'React',
+                    'Next.js',
+                    'TypeScript',
+                    'Node.js',
+                    'Full Stack Development',
+                    'Fintech',
+                    'Trading Platforms',
+                  ],
+                  sameAs: ['https://github.com/horusyeung', 'https://linkedin.com/in/horusyeung'],
+                },
+              ],
+            }),
+          }}
+        />
+      </head>
       <body
         style={{
           display: 'flex',
