@@ -51,7 +51,9 @@ function renderWithTheme(ui: React.ReactElement) {
 describe('OpenSourcePage', () => {
   it('renders "Open Source" heading', () => {
     renderWithTheme(<OpenSourcePage />)
-    expect(screen.getByText('Open Source')).toBeInTheDocument()
+    const hero = screen.getByTestId('open-source-hero')
+    expect(hero).toBeInTheDocument()
+    expect(hero.textContent).toContain('Open Source')
   })
 
   it('renders all project names', () => {
