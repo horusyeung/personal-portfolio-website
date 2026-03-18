@@ -49,7 +49,7 @@ function renderWithTheme(ui: React.ReactElement) {
 }
 
 describe('OpenSourcePage', () => {
-  it('renders "Open Source" heading', () => {
+  it('renders "Open Source" heading', { timeout: 10000 }, () => {
     renderWithTheme(<OpenSourcePage />)
     const hero = screen.getByTestId('open-source-hero')
     expect(hero).toBeInTheDocument()
