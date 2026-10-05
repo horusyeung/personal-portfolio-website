@@ -142,6 +142,11 @@ The afternoon estimate in v1 was too low once the tests below are included. The 
   - Return collected cleanups from the `useGSAP`/`mm` callbacks instead of from a `forEach` (`:262`).
   - Wrap event-created tweens in `contextSafe`.
 - **Smooth scrolling:** `scroll-behavior: smooth` (`theme.ts:85`) applies only under `no-preference`. Add `data-scroll-behavior="smooth"` on `<html>`.
+- **Horizontal overflow on phones** (found by the Playwright port in PR 2):
+  - The hero subtitle starts at `x: +30px`, so the page is 14 px wider than the screen for about 1.2 s.
+  - Android Chrome then keeps a widened 426 px layout viewport, so the page can be nudged sideways.
+  - Fix: clip horizontal overflow on the hero section (`overflow-x: clip`), or keep the slide inside the container.
+  - Turn on the `test.fixme` in `e2e/responsive.spec.ts`.
 
 **Tests:**
 - Update `ScrollReveal.test.tsx:50`, which currently asserts the content is hidden.
