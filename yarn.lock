@@ -2391,6 +2391,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"botid@npm:^1.5.11":
+  version: 1.5.11
+  resolution: "botid@npm:1.5.11"
+  peerDependencies:
+    next: "*"
+    react: ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    next:
+      optional: true
+    react:
+      optional: true
+  checksum: 10c0/7fe7408480214fc6ae09a6c4ec73bbee72046ae6ce7abd76cf2e37a9573c4f06ee1d026bd600ab8f08b7e44f521cdc0c580463d24627827d1ce8596d484c702a
+  languageName: node
+  linkType: hard
+
 "brace-expansion@npm:^1.1.7":
   version: 1.1.12
   resolution: "brace-expansion@npm:1.1.12"
@@ -5107,6 +5122,7 @@ __metadata:
     "@vercel/analytics": "npm:^2.0.1"
     "@vercel/speed-insights": "npm:^2.0.0"
     "@vitejs/plugin-react": "npm:^6.1.1"
+    botid: "npm:^1.5.11"
     eslint: "npm:^9"
     eslint-config-next: "npm:16.3.8"
     eslint-config-prettier: "npm:^10.1.8"
