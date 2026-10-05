@@ -153,13 +153,20 @@ The afternoon estimate in v1 was too low once the tests below are included. The 
 - New Playwright `e2e/reduced-motion.spec.ts`, using the built-in `reducedMotion: 'reduce'` emulation in every browser project:
   - On all 4 pages, roles, project cards, the Open Source title and the form fields are visible.
   - Reduced motion switched on mid-animation (`page.emulateMedia`) leaves content visible.
-- **JS blocked** (`page.route('**/_next/static/chunks/**', r => r.abort())`): intro content is visible within about 3.5 s.
+- **JS blocked** (`page.route(/\/_next\/static\/chunks\/.*\.js$/, r => r.abort())`, scripts only so the intro CSS still loads): intro content is visible within about 3.5 s.
 - **Slow hydration** (delay those chunks 5 s in `page.route`): content shows at 3 s and isn't hidden again.
 - **Route revisit:** navigate away and back; there are no duplicated splits or listeners, and scrolling still works.
 - **Visual snapshots** (`toHaveScreenshot`): all 4 pages, desktop and mobile, under reduced motion.
   - They become deterministic once this PR's fix is in.
   - They're generated in the official Playwright Docker image so local and CI renders match.
-  - They are the automatic **"no visual change" guard for Step 2**. When an approved visible change lands, update them deliberately with `--update-snapshots`.
+  - They are the automatic **"no visual change" guard for Step 2**. When an approved visible change lands, update them deliberately with `yarn test:visual:update`, which runs `--update-snapshots` in Docker.
+  - CI's E2E job runs in the same image.
+
+**Also in this PR (pulled forward because the same code was being rewritten):**
+- **Experience typewriter:** it types over a transparent full-text copy, so the height is reserved and screen readers get the whole sentence. This fixes the CLS of 0.308 (visible change #8; was Step 2.3).
+- **Char splitter:** the heading gets `aria-label`, the letter spans get `aria-hidden`, and the original text is restored on cleanup (was Step 2.3). The SplitText decision stays in Step 2.3.
+- **`<body>` inline style moved to `globals.css`.** This fixes a long-standing dev-only hydration warning on `<body style>`, which was present before any upgrade.
+- **Commit `AGENTS.md` / `CLAUDE.md`,** which `next dev` (16.3) now generates.
 
 ### PR 4 — Contact form protection and delivery
 
@@ -279,10 +286,7 @@ Hurdles the conversion has to handle:
   - Wrapping and whitespace may also differ.
   - **Adopt SplitText only if** frame-by-frame screenshots match after adjusting the stagger.
   - **Otherwise repair the existing splitter:** `aria-label` on the heading, `aria-hidden` on the letter spans, and the original text restored on cleanup.
-- **Typewriter (/experience):**
-  - Reserve the subtitle's full-text height with an invisible full-text layer, responsive at every width, and type over it.
-  - Expose one static accessible copy.
-  - Confirm the CLS fix with a performance trace; 0.306 is the current measured value.
+- **Typewriter (/experience):** done in PR 3. It reserves height and keeps one accessible copy. Confirm with a post-deploy Lighthouse run.
 - **Magnetic effect:**
   - One shared listener and `gsap.quickTo`.
   - Only on `(hover: hover) and (pointer: fine)`.
@@ -291,7 +295,7 @@ Hurdles the conversion has to handle:
 ### 2.4 SEO (both paths)
 - JSON-LD as a plain `<script type="application/ld+json">` in the server HTML. It is currently `next/script` `afterInteractive`, and the live HTML has zero JSON-LD script elements. Add Medium to `sameAs`.
   - ⚠️ Commit `09f6b03` moved it *to* `next/script` to fix hydration error #418, which the earlier manual `<head>` tag caused.
-  - Render it inside `<body>` from the Server Component layout, as the Next.js JSON-LD guide shows. Escape `<` as `<` and keep the output deterministic.
+  - Render it inside `<body>` from the Server Component layout, as the Next.js JSON-LD guide shows. Escape `<` as `\u003c` and keep the output deterministic.
   - Verify there's no hydration warning in a production build before merging.
 - Per-page `openGraph` built from a shared base, so subpages get `og:image` back; the live HTML has none today.
 - `twitter` reduced to `{ card }` so subpages stop showing the home Twitter title.
