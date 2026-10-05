@@ -48,8 +48,55 @@ test.describe('Contact Page', () => {
     await expect(page.locator('textarea[name="message"]')).toHaveAttribute('required')
   })
 
-  test('form validation prevents empty submission', async ({ page }) => {
+  test('invalid input shows field errors and sends nothing', async ({ page }) => {
+    let requests = 0
+    page.on('request', (request) => {
+      if (request.url().endsWith('/api/contact')) requests++
+    })
+
     await page.getByRole('button', { name: 'Send Message' }).click()
-    await expect(page).toHaveURL(/\/contact$/)
+    await expect(page.getByText('Please enter your name.')).toBeVisible()
+    await expect(page.getByText('Please enter your email address.')).toBeVisible()
+    await expect(page.getByText('Please enter a message.')).toBeVisible()
+    await expect(page.getByLabel(/^Name/)).toBeFocused()
+
+    await page.getByLabel(/^Name/).fill('Ada')
+    await page.getByLabel(/^Email/).fill('not-an-email')
+    await page.getByLabel(/^Message/).fill('Hello')
+    await page.getByRole('button', { name: 'Send Message' }).click()
+    await expect(page.getByText('Please enter a valid email address.')).toBeVisible()
+    await expect(page.getByLabel(/^Email/)).toHaveAttribute('aria-invalid', 'true')
+
+    expect(requests).toBe(0)
+  })
+
+  test('a double-click submits once and shows the confirmation', async ({ page }) => {
+    let requests = 0
+    await page.route('**/api/contact', async (route) => {
+      requests++
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      await route.fulfill({ json: { success: true } })
+    })
+
+    await page.getByLabel(/^Name/).fill('Ada')
+    await page.getByLabel(/^Email/).fill('ada@example.com')
+    await page.getByLabel(/^Message/).fill('Hello')
+    await page.getByRole('button', { name: 'Send Message' }).dblclick()
+
+    await expect(page.getByText(/Message sent successfully/)).toBeVisible()
+    expect(requests).toBe(1)
+  })
+
+  test('shows the error message when sending fails', async ({ page }) => {
+    await page.route('**/api/contact', (route) =>
+      route.fulfill({ status: 502, json: { error: 'Failed to send message.' } }),
+    )
+
+    await page.getByLabel(/^Name/).fill('Ada')
+    await page.getByLabel(/^Email/).fill('ada@example.com')
+    await page.getByLabel(/^Message/).fill('Hello')
+    await page.getByRole('button', { name: 'Send Message' }).click()
+
+    await expect(page.getByText(/Failed to send message/)).toBeVisible()
   })
 })
