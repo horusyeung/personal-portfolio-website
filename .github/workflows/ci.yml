@@ -20,8 +20,6 @@ jobs:
   lint-and-typecheck:
     name: Lint, Format & Type Check
     runs-on: ubuntu-latest
-    env:
-      CYPRESS_INSTALL_BINARY: '0'
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
@@ -32,42 +30,50 @@ jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
-    env:
-      CYPRESS_INSTALL_BINARY: '0'
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
       - run: yarn test
 
-  cypress-tests:
-    name: Cypress E2E
+  e2e-tests:
+    name: Playwright E2E
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
-      # Restored before install so Cypress's postinstall finds the binary
-      - uses: actions/cache@v6
-        with:
-          path: ~/.cache/Cypress
-          key: cypress-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
       - uses: ./.github/actions/setup
+      - name: Resolve Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('./node_modules/@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v6
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      - name: Install browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium webkit
+      - name: Install browser system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium webkit
       - run: yarn build
         env:
           # The build only needs a non-empty key; E2E tests never send real email
           RESEND_API_KEY: re_dummy_ci_build
-      - uses: cypress-io/github-action@v7
+      - run: yarn test:e2e
+      - uses: actions/upload-artifact@v7
+        if: failure()
         with:
-          install: false
-          start: yarn start
-          wait-on: http://localhost:3000
-          browser: chrome
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
 
   deploy:
     name: Deploy to Vercel
-    needs: [lint-and-typecheck, unit-tests, cypress-tests]
+    needs: [lint-and-typecheck, unit-tests, e2e-tests]
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: ubuntu-latest
     env:
-      CYPRESS_INSTALL_BINARY: '0'
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
