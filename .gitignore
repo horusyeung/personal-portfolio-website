@@ -45,3 +45,6 @@ DESIGN_SYSTEM.md
 *.tsbuildinfo
 next-env.d.ts
 .env*.local
+
+# local preview config (Claude Code browser pane)
+.claude/launch.json
