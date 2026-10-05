@@ -39,23 +39,16 @@ jobs:
     name: Playwright E2E
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Same image as `yarn test:visual`, so visual snapshots render identically.
+    # Keep the tag in sync with @playwright/test (package.json scripts use it too).
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
-      - name: Resolve Playwright version
-        id: playwright
-        run: echo "version=$(node -p "require('./node_modules/@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v6
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
-      - name: Install browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium webkit
-      - name: Install browser system dependencies
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium webkit
+      # No-op when the image matches @playwright/test; downloads browsers if they drift
+      - run: npx playwright install chromium webkit
       - run: yarn build
         env:
           # The build only needs a non-empty key; E2E tests never send real email
@@ -65,7 +58,9 @@ jobs:
         if: failure()
         with:
           name: playwright-report
-          path: playwright-report/
+          path: |
+            playwright-report/
+            test-results/
           retention-days: 14
 
   deploy:
