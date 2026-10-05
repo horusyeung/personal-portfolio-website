@@ -47,13 +47,15 @@ describe('ScrollReveal', () => {
     expect(screen.getByText('Test Content')).toBeInTheDocument()
   })
 
-  it('has initial hidden state with opacity 0', () => {
+  it('renders content visible and marks it for the entrance animation', () => {
     renderWithTheme(
       <ScrollReveal>
-        <span>Hidden Content</span>
+        <span>Revealed Content</span>
       </ScrollReveal>,
     )
-    const element = screen.getByText('Hidden Content').parentElement
-    expect(element).toHaveStyle({ opacity: '0' })
+    const element = screen.getByText('Revealed Content').parentElement
+    // Hiding is left to CSS (only when JS will animate it in and motion is allowed)
+    expect(element).not.toHaveStyle({ opacity: '0' })
+    expect(element).toHaveAttribute('data-intro')
   })
 })

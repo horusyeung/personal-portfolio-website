@@ -8,12 +8,9 @@ import LanguageIcon from '@mui/icons-material/Language'
 import { SiGithub, SiMedium } from 'react-icons/si'
 import LinkedInIcon from '@mui/icons-material/LinkedIn'
 import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useGSAP } from '@gsap/react'
 import { prefersReducedMotion } from '@/lib/animations'
+import { useEntranceAnimation } from '@/lib/motion'
 import MagneticElement from '@/components/MagneticElement'
-
-gsap.registerPlugin(ScrollTrigger)
 
 // ── Data ────────────────────────────────────────────────────────────────────
 
@@ -150,87 +147,82 @@ export default function ContactPage() {
 
   // ── GSAP animations ────────────────────────────────────────────────────
 
-  useGSAP(
-    () => {
-      if (prefersReducedMotion()) return
+  useEntranceAnimation(() => {
+    // #28 — Page title: bounce-in from above
+    gsap.fromTo(
+      titleRef.current,
+      { y: -40, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1, ease: 'bounce.out' },
+    )
 
-      // #28 — Page title: bounce-in from above
+    // #29 — Subtitle: fade-in with letter-spacing expand after title
+    gsap.fromTo(
+      subtitleRef.current,
+      { opacity: 0, letterSpacing: '-1px' },
+      { opacity: 1, letterSpacing: '0px', duration: 0.8, ease: 'power2.out', delay: 1 },
+    )
+
+    // #30 — Contact items: slide-right with icon 360° spin (ScrollTrigger)
+    const validItems = contactItemsRef.current.filter(Boolean) as HTMLDivElement[]
+    const validIcons = iconRefs.current.filter(Boolean) as HTMLDivElement[]
+
+    if (validItems.length > 0) {
       gsap.fromTo(
-        titleRef.current,
-        { y: -40, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1, ease: 'bounce.out' },
-      )
-
-      // #29 — Subtitle: fade-in with letter-spacing expand after title
-      gsap.fromTo(
-        subtitleRef.current,
-        { opacity: 0, letterSpacing: '-1px' },
-        { opacity: 1, letterSpacing: '0px', duration: 0.8, ease: 'power2.out', delay: 1 },
-      )
-
-      // #30 — Contact items: slide-right with icon 360° spin (ScrollTrigger)
-      const validItems = contactItemsRef.current.filter(Boolean) as HTMLDivElement[]
-      const validIcons = iconRefs.current.filter(Boolean) as HTMLDivElement[]
-
-      if (validItems.length > 0) {
-        gsap.fromTo(
-          validItems,
-          { x: -30, opacity: 0 },
-          {
-            x: 0,
-            opacity: 1,
-            duration: 0.6,
-            ease: 'power2.out',
-            stagger: 0.1,
-            scrollTrigger: {
-              trigger: validItems[0],
-              start: 'top 85%',
-              toggleActions: 'play none none none',
-            },
-          },
-        )
-
-        gsap.fromTo(
-          validIcons,
-          { rotation: 0 },
-          {
-            rotation: 360,
-            duration: 0.6,
-            ease: 'power2.out',
-            stagger: 0.1,
-            scrollTrigger: {
-              trigger: validItems[0],
-              start: 'top 85%',
-              toggleActions: 'play none none none',
-            },
-          },
-        )
-      }
-
-      // #32 — Form fields: sequential reveal (ScrollTrigger)
-      const validFields = formFieldsRef.current.filter(Boolean) as HTMLDivElement[]
-
-      if (validFields.length > 0) {
-        const fieldTl = gsap.timeline({
+        validItems,
+        { x: -30, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.6,
+          ease: 'power2.out',
+          stagger: 0.1,
           scrollTrigger: {
-            trigger: validFields[0],
+            trigger: validItems[0],
             start: 'top 85%',
             toggleActions: 'play none none none',
           },
-        })
+        },
+      )
 
-        validFields.forEach((field, i) => {
-          fieldTl.fromTo(
-            field,
-            { opacity: 0, y: 10 },
-            { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' },
-            i * 0.15,
-          )
-        })
-      }
-    },
-    { scope: pageRef },
-  )
+      gsap.fromTo(
+        validIcons,
+        { rotation: 0 },
+        {
+          rotation: 360,
+          duration: 0.6,
+          ease: 'power2.out',
+          stagger: 0.1,
+          scrollTrigger: {
+            trigger: validItems[0],
+            start: 'top 85%',
+            toggleActions: 'play none none none',
+          },
+        },
+      )
+    }
+
+    // #32 — Form fields: sequential reveal (ScrollTrigger)
+    const validFields = formFieldsRef.current.filter(Boolean) as HTMLDivElement[]
+
+    if (validFields.length > 0) {
+      const fieldTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: validFields[0],
+          start: 'top 85%',
+          toggleActions: 'play none none none',
+        },
+      })
+
+      validFields.forEach((field, i) => {
+        fieldTl.fromTo(
+          field,
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' },
+          i * 0.15,
+        )
+      })
+    }
+  }, pageRef)
 
   // ── #34 — Ripple effect on button click ───────────────────────────────
 
@@ -318,6 +310,7 @@ export default function ContactPage() {
           {/* #28 — Title: bounce-in */}
           <Typography
             ref={titleRef}
+            data-intro
             variant='h1'
             sx={{
               fontSize: { xs: '48px', md: '80px' },
@@ -325,7 +318,6 @@ export default function ContactPage() {
               letterSpacing: '-0.015em',
               lineHeight: 1.05,
               color: 'text.primary',
-              opacity: 0,
             }}
           >
             Get in Touch
@@ -334,6 +326,7 @@ export default function ContactPage() {
           {/* #29 — Subtitle: fade-in with letter-spacing */}
           <Typography
             ref={subtitleRef}
+            data-intro
             sx={{
               mt: 2,
               mx: 'auto',
@@ -342,7 +335,6 @@ export default function ContactPage() {
               fontWeight: 400,
               lineHeight: 1.47,
               color: 'text.secondary',
-              opacity: 0,
             }}
           >
             Have a project idea, want to discuss architecture, or just want to say hello? I&apos;d
@@ -375,7 +367,7 @@ export default function ContactPage() {
                   ref={(el: HTMLDivElement | null) => {
                     contactItemsRef.current[idx] = el
                   }}
-                  sx={{ opacity: 0 }}
+                  data-intro
                 >
                   {/* #31 — Icon wrapped in MagneticElement for items with href */}
                   {item.href ? (
@@ -500,7 +492,7 @@ export default function ContactPage() {
                     ref={(el: HTMLDivElement | null) => {
                       formFieldsRef.current[0] = el
                     }}
-                    sx={{ opacity: 0 }}
+                    data-intro
                   >
                     <TextField
                       name='name'
@@ -517,7 +509,7 @@ export default function ContactPage() {
                     ref={(el: HTMLDivElement | null) => {
                       formFieldsRef.current[1] = el
                     }}
-                    sx={{ opacity: 0 }}
+                    data-intro
                   >
                     <TextField
                       name='email'
@@ -535,7 +527,7 @@ export default function ContactPage() {
                     ref={(el: HTMLDivElement | null) => {
                       formFieldsRef.current[2] = el
                     }}
-                    sx={{ opacity: 0 }}
+                    data-intro
                   >
                     <TextField
                       name='message'

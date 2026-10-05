@@ -3,12 +3,9 @@
 import { useRef } from 'react'
 import { Box, Container, Typography } from '@mui/material'
 import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useGSAP } from '@gsap/react'
-import { splitTextIntoChars, prefersReducedMotion } from '@/lib/animations'
+import { splitTextIntoChars } from '@/lib/animations'
+import { useEntranceAnimation } from '@/lib/motion'
 import ScrollReveal from '@/components/ScrollReveal'
-
-gsap.registerPlugin(ScrollTrigger)
 
 // ── Data ────────────────────────────────────────────────────────────────────
 
@@ -100,80 +97,86 @@ export default function ExperiencePage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const subtitleRef = useRef<HTMLDivElement>(null)
+  const subtitleTextRef = useRef<HTMLSpanElement>(null)
+  const typedRef = useRef<HTMLSpanElement>(null)
 
-  useGSAP(
-    () => {
-      if (prefersReducedMotion()) return
+  useEntranceAnimation(() => {
+    const cleanups: (() => void)[] = []
+    let titleDuration = 0
 
-      // ── #11: Page title — split-text scale 1.5→1.0 with fade ──
-      const titleEl = titleRef.current
-      if (titleEl) {
-        const chars = splitTextIntoChars(titleEl)
-        gsap.from(chars, {
-          scale: 1.5,
-          opacity: 0,
-          duration: 0.6,
-          ease: 'power3.out',
-          stagger: 0.03,
-        })
-      }
+    // ── #11: Page title — split-text scale 1.5→1.0 with fade ──
+    const titleEl = titleRef.current
+    if (titleEl) {
+      const { chars, revert } = splitTextIntoChars(titleEl)
+      cleanups.push(revert)
+      gsap.set(titleEl, { opacity: 1 })
+      gsap.from(chars, {
+        scale: 1.5,
+        opacity: 0,
+        duration: 0.6,
+        ease: 'power3.out',
+        stagger: 0.03,
+      })
+      titleDuration = 0.6 + 0.03 * (chars.length - 1)
+    }
 
-      // ── #12: Subtitle — typewriter with blinking cursor ──
-      const subtitleEl = subtitleRef.current
-      if (subtitleEl) {
-        // Clear and set up typewriter
-        subtitleEl.innerHTML = ''
-        const textSpan = document.createElement('span')
-        const cursorSpan = document.createElement('span')
-        cursorSpan.textContent = '|'
-        cursorSpan.style.display = 'inline'
-        cursorSpan.style.fontWeight = '300'
-        cursorSpan.style.marginLeft = '2px'
-        subtitleEl.appendChild(textSpan)
-        subtitleEl.appendChild(cursorSpan)
+    // ── #12: Subtitle — typewriter with blinking cursor ──
+    // Types over a transparent copy of the full text, so the height never changes and
+    // screen readers always get the whole sentence.
+    const subtitleEl = subtitleRef.current
+    const fullTextEl = subtitleTextRef.current
+    const typedEl = typedRef.current
+    if (subtitleEl && fullTextEl && typedEl) {
+      const textSpan = document.createElement('span')
+      const cursorSpan = document.createElement('span')
+      cursorSpan.textContent = '|'
+      cursorSpan.style.display = 'inline'
+      cursorSpan.style.fontWeight = '300'
+      cursorSpan.style.marginLeft = '2px'
+      typedEl.append(textSpan, cursorSpan)
+      cleanups.push(() => typedEl.replaceChildren())
 
-        // Blink cursor during typing
-        const blinkTl = gsap.timeline({ repeat: -1 })
-        blinkTl.to(cursorSpan, { opacity: 0, duration: 0.4 })
-        blinkTl.to(cursorSpan, { opacity: 1, duration: 0.4 })
+      gsap.set(subtitleEl, { opacity: 1 })
+      gsap.set(fullTextEl, { color: 'transparent' })
 
-        // Typewriter effect — after title animation completes
-        const titleDuration = 0.6 + 0.03 * ('Experience'.length - 1)
-        const chars = SUBTITLE_TEXT.split('')
-        const obj = { index: 0 }
-        gsap.to(obj, {
-          index: chars.length,
-          duration: 1.5,
-          ease: 'none',
-          delay: titleDuration + 0.2,
-          onUpdate: () => {
-            textSpan.textContent = SUBTITLE_TEXT.slice(0, Math.round(obj.index))
-          },
-          onComplete: () => {
-            // Blink cursor 2 more times then hide
-            blinkTl.kill()
-            gsap.set(cursorSpan, { opacity: 1 })
-            const endBlink = gsap.timeline()
-            endBlink.to(cursorSpan, { opacity: 0, duration: 0.4, delay: 0.3 })
-            endBlink.to(cursorSpan, { opacity: 1, duration: 0.4 })
-            endBlink.to(cursorSpan, { opacity: 0, duration: 0.4 })
-            endBlink.to(cursorSpan, { opacity: 1, duration: 0.4 })
-            endBlink.to(cursorSpan, {
-              opacity: 0,
-              duration: 0.3,
-              onComplete: () => {
-                cursorSpan.style.display = 'none'
-              },
-            })
-          },
-        })
+      // Blink cursor during typing
+      const blinkTl = gsap.timeline({ repeat: -1 })
+      blinkTl.to(cursorSpan, { opacity: 0, duration: 0.4 })
+      blinkTl.to(cursorSpan, { opacity: 1, duration: 0.4 })
 
-        // Start subtitle invisible
-        gsap.set(subtitleEl, { opacity: 1 })
-      }
-    },
-    { scope: containerRef },
-  )
+      // Typewriter effect — after title animation completes
+      const obj = { index: 0 }
+      gsap.to(obj, {
+        index: SUBTITLE_TEXT.length,
+        duration: 1.5,
+        ease: 'none',
+        delay: titleDuration + 0.2,
+        onUpdate: () => {
+          textSpan.textContent = SUBTITLE_TEXT.slice(0, Math.round(obj.index))
+        },
+        onComplete: () => {
+          // Blink cursor 2 more times, then hand back to the static text
+          blinkTl.kill()
+          gsap.set(cursorSpan, { opacity: 1 })
+          const endBlink = gsap.timeline()
+          endBlink.to(cursorSpan, { opacity: 0, duration: 0.4, delay: 0.3 })
+          endBlink.to(cursorSpan, { opacity: 1, duration: 0.4 })
+          endBlink.to(cursorSpan, { opacity: 0, duration: 0.4 })
+          endBlink.to(cursorSpan, { opacity: 1, duration: 0.4 })
+          endBlink.to(cursorSpan, {
+            opacity: 0,
+            duration: 0.3,
+            onComplete: () => {
+              gsap.set(fullTextEl, { clearProps: 'color' })
+              typedEl.replaceChildren()
+            },
+          })
+        },
+      })
+    }
+
+    return () => cleanups.forEach((cleanup) => cleanup())
+  }, containerRef)
 
   return (
     <Box ref={containerRef}>
@@ -190,6 +193,7 @@ export default function ExperiencePage() {
         <Container maxWidth={false} sx={{ maxWidth: 680, textAlign: 'center' }}>
           <Typography
             ref={titleRef}
+            data-intro
             variant='h1'
             sx={{
               fontSize: { xs: '48px', md: '80px' },
@@ -203,7 +207,9 @@ export default function ExperiencePage() {
           </Typography>
           <Box
             ref={subtitleRef}
+            data-intro
             sx={{
+              position: 'relative',
               mt: 2,
               mx: 'auto',
               maxWidth: 560,
@@ -211,10 +217,15 @@ export default function ExperiencePage() {
               fontWeight: 400,
               lineHeight: 1.47,
               color: 'text.secondary',
-              opacity: 0,
             }}
           >
-            {SUBTITLE_TEXT}
+            <span ref={subtitleTextRef}>{SUBTITLE_TEXT}</span>
+            <Box
+              component='span'
+              ref={typedRef}
+              aria-hidden='true'
+              sx={{ position: 'absolute', inset: 0 }}
+            />
           </Box>
         </Container>
       </Box>

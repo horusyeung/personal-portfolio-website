@@ -5,13 +5,10 @@ import { Box, Container, Typography, Button } from '@mui/material'
 import Link from 'next/link'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useGSAP } from '@gsap/react'
 import ScrollReveal from '@/components/ScrollReveal'
 import { skillCategories } from '@/lib/skillIcons'
-import { splitTextIntoChars, prefersReducedMotion } from '@/lib/animations'
-
-gsap.registerPlugin(ScrollTrigger)
+import { splitTextIntoChars } from '@/lib/animations'
+import { useEntranceAnimation } from '@/lib/motion'
 
 export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null)
@@ -21,26 +18,14 @@ export default function HomePage() {
   const ctaRef = useRef<HTMLDivElement>(null)
   const statsRef = useRef<HTMLDivElement>(null)
 
-  useGSAP(() => {
-    if (prefersReducedMotion()) {
-      gsap.set(
-        [
-          nameRef.current,
-          overlineRef.current,
-          subtitleRef.current,
-          ctaRef.current,
-          statsRef.current,
-        ],
-        { opacity: 1, y: 0 },
-      )
-      return
-    }
-
+  useEntranceAnimation(() => {
     const tl = gsap.timeline({ delay: 0.2 })
+    let revertName: (() => void) | undefined
 
     // #1 — Name char-by-char stagger
     if (nameRef.current) {
-      const chars = splitTextIntoChars(nameRef.current)
+      const { chars, revert } = splitTextIntoChars(nameRef.current)
+      revertName = revert
       gsap.set(chars, { opacity: 0, y: 24, rotation: 3 })
       gsap.set(nameRef.current, { opacity: 1 })
       tl.to(chars, {
@@ -62,11 +47,12 @@ export default function HomePage() {
         '-=0.4',
       )
     }
+    // The subtitle stays visible (it is the LCP element) and only slides
     if (subtitleRef.current) {
       tl.fromTo(
         subtitleRef.current,
-        { opacity: 0, x: 30 },
-        { opacity: 1, x: 0, duration: 0.8, ease: 'power3.out' },
+        { x: 30 },
+        { x: 0, duration: 0.8, ease: 'power3.out' },
         '-=0.6',
       )
     }
@@ -106,7 +92,9 @@ export default function HomePage() {
         },
       })
     }
-  })
+
+    return () => revertName?.()
+  }, heroRef)
 
   return (
     <Box>
@@ -122,6 +110,8 @@ export default function HomePage() {
           justifyContent: 'center',
           bgcolor: 'background.default',
           willChange: 'transform, opacity',
+          // The subtitle's slide-in must not widen the page on phones
+          overflowX: 'clip',
         }}
       >
         <Container
@@ -131,6 +121,7 @@ export default function HomePage() {
           {/* Overline */}
           <Typography
             ref={overlineRef}
+            data-intro
             sx={{
               fontSize: '12px',
               fontWeight: 600,
@@ -138,7 +129,6 @@ export default function HomePage() {
               letterSpacing: '0.08em',
               color: 'text.secondary',
               mb: 2,
-              opacity: 0,
             }}
           >
             Software Architect & Team Lead
@@ -148,6 +138,7 @@ export default function HomePage() {
           <Typography
             data-testid='hero-name'
             ref={nameRef}
+            data-intro
             variant='h1'
             sx={{
               fontSize: { xs: '48px', sm: '56px', md: '80px' },
@@ -155,7 +146,6 @@ export default function HomePage() {
               letterSpacing: '-0.015em',
               lineHeight: 1.05,
               color: 'text.primary',
-              opacity: 0,
             }}
           >
             Horus Yeung
@@ -164,6 +154,7 @@ export default function HomePage() {
           {/* Subtitle */}
           <Typography
             ref={subtitleRef}
+            data-intro-offset
             sx={{
               mt: 3,
               mx: 'auto',
@@ -172,7 +163,6 @@ export default function HomePage() {
               fontWeight: 400,
               lineHeight: 1.47,
               color: 'text.secondary',
-              opacity: 0,
             }}
           >
             Senior Software Architect and Team Lead with 6+ years building high-performance fintech
@@ -183,6 +173,7 @@ export default function HomePage() {
           {/* CTAs */}
           <Box
             ref={ctaRef}
+            data-intro
             sx={{
               mt: 5,
               display: 'flex',
@@ -190,7 +181,6 @@ export default function HomePage() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: { xs: 2, sm: 3 },
-              opacity: 0,
             }}
           >
             <Button
@@ -259,7 +249,7 @@ export default function HomePage() {
           </Box>
 
           {/* Stats */}
-          <Box ref={statsRef} sx={{ mt: 5, opacity: 0 }}>
+          <Box ref={statsRef} data-intro sx={{ mt: 5 }}>
             <Typography
               sx={{
                 fontSize: '14px',

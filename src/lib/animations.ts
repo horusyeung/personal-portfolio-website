@@ -5,25 +5,35 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
+type Wrap = <T extends (...args: never[]) => unknown>(fn: T) => T
+const noWrap: Wrap = (fn) => fn
+
 /**
- * Split text into individual character spans for animation.
- * Returns the created span elements.
+ * Split text into individual character spans for animation. Screen readers keep reading the
+ * whole text via aria-label; `revert` restores the original text node.
  */
-export function splitTextIntoChars(element: HTMLElement): HTMLSpanElement[] {
+export function splitTextIntoChars(element: HTMLElement) {
   const text = element.textContent || ''
   element.textContent = ''
+  element.setAttribute('aria-label', text)
   const chars: HTMLSpanElement[] = []
 
   for (const char of text) {
     const span = document.createElement('span')
     span.textContent = char === ' ' ? '\u00A0' : char
+    span.setAttribute('aria-hidden', 'true')
     span.style.display = 'inline-block'
     span.style.willChange = 'transform, opacity'
     element.appendChild(span)
     chars.push(span)
   }
 
-  return chars
+  const revert = () => {
+    element.textContent = text
+    element.removeAttribute('aria-label')
+  }
+
+  return { chars, revert }
 }
 
 /**
@@ -47,14 +57,16 @@ export function animateCountUp(
 }
 
 /**
- * Create a magnetic effect on an element that follows the cursor.
+ * Create a magnetic effect on an element that follows the cursor. Pass `wrap` (GSAP's
+ * contextSafe) so tweens created by the handlers are reverted with their context.
  */
 export function createMagneticEffect(
   element: HTMLElement,
   strength: number = 0.3,
   radius: number = 80,
+  wrap: Wrap = noWrap,
 ) {
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = wrap((e: MouseEvent) => {
     const rect = element.getBoundingClientRect()
     const centerX = rect.left + rect.width / 2
     const centerY = rect.top + rect.height / 2
@@ -77,16 +89,16 @@ export function createMagneticEffect(
         ease: 'elastic.out(1, 0.3)',
       })
     }
-  }
+  })
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = wrap(() => {
     gsap.to(element, {
       x: 0,
       y: 0,
       duration: 0.5,
       ease: 'elastic.out(1, 0.3)',
     })
-  }
+  })
 
   document.addEventListener('mousemove', handleMouseMove)
   element.addEventListener('mouseleave', handleMouseLeave)
@@ -100,8 +112,8 @@ export function createMagneticEffect(
 /**
  * Create a 3D tilt effect that follows the cursor on hover.
  */
-export function createTiltEffect(element: HTMLElement, maxDeg: number = 5) {
-  const handleMouseMove = (e: MouseEvent) => {
+export function createTiltEffect(element: HTMLElement, maxDeg: number = 5, wrap: Wrap = noWrap) {
+  const handleMouseMove = wrap((e: MouseEvent) => {
     const rect = element.getBoundingClientRect()
     const x = (e.clientX - rect.left) / rect.width - 0.5
     const y = (e.clientY - rect.top) / rect.height - 0.5
@@ -113,16 +125,16 @@ export function createTiltEffect(element: HTMLElement, maxDeg: number = 5) {
       ease: 'power2.out',
       transformPerspective: 800,
     })
-  }
+  })
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = wrap(() => {
     gsap.to(element, {
       rotateY: 0,
       rotateX: 0,
       duration: 0.5,
       ease: 'power2.out',
     })
-  }
+  })
 
   element.addEventListener('mousemove', handleMouseMove)
   element.addEventListener('mouseleave', handleMouseLeave)
@@ -134,7 +146,8 @@ export function createTiltEffect(element: HTMLElement, maxDeg: number = 5) {
 }
 
 /**
- * Check if user prefers reduced motion.
+ * Check if user prefers reduced motion at this moment. For one-off effects in event handlers;
+ * hooks use useEntranceAnimation / useMotionEffect, which also react to live changes.
  */
 export function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
