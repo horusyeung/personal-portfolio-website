@@ -15,6 +15,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:visual": "docker run --rm --ipc=host -v \"$PWD\":/work -w /work -e PLAYWRIGHT_BASE_URL=http://host.docker.internal:3000 mcr.microsoft.com/playwright:v1.63.0-noble npx playwright test e2e/visual.spec.ts",
+    "test:visual:update": "yarn test:visual --update-snapshots",
     "format": "prettier --write \"src/**/*.{ts,tsx}\" \"e2e/**/*.ts\" playwright.config.ts",
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\" \"e2e/**/*.ts\" playwright.config.ts",
     "prepare": "husky"

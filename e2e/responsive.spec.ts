@@ -47,9 +47,9 @@ test.describe('Responsive Design on device', () => {
     })
   }
 
-  // Known bug, fixed in PR 3 of docs/upgrade-plan.md: the hero subtitle slides in from x: +30px,
-  // overflowing phones by ~14px for ~1.2s; Android Chrome then keeps a widened layout viewport.
-  test.fixme('home never overflows horizontally while the hero animates', async ({ page }) => {
+  // The hero subtitle slides in from x: +30px; it must never widen the page (Android Chrome
+  // would otherwise keep a widened layout viewport after the animation)
+  test('home never overflows horizontally while the hero animates', async ({ page }) => {
     const { width } = page.viewportSize()!
     await page.goto('/')
     for (let elapsed = 0; elapsed <= 2000; elapsed += 100) {
