@@ -1,38 +1,94 @@
 import { NextResponse } from 'next/server'
+import { checkBotId } from 'botid/server'
 import { Resend } from 'resend'
+import {
+  CONTACT_SEND_ERROR,
+  HONEYPOT_FIELD,
+  normalizeContact,
+  validateContact,
+} from '@/lib/contact'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const MAX_BODY_BYTES = 10_000
+const FROM = 'Portfolio Contact <onboarding@resend.dev>'
+const TO = 'horusyeungg@gmail.com'
+
+async function isBot(): Promise<boolean> {
+  try {
+    // Real checks only on Vercel; local and CI builds have no BotID challenge
+    // (see src/instrumentation-client.ts)
+    const { isBot } = await checkBotId({
+      developmentOptions: { isDevelopment: !process.env.VERCEL },
+    })
+    return isBot
+  } catch (err) {
+    // Fail open: a BotID outage or misconfiguration must not take the contact form down
+    console.error('BotID check failed:', err)
+    return false
+  }
+}
+
+const invalidRequest = () => NextResponse.json({ error: 'Invalid request.' }, { status: 400 })
 
 export async function POST(request: Request) {
+  if (await isBot()) {
+    return NextResponse.json({ error: 'Access denied.' }, { status: 403 })
+  }
+
+  const declaredLength = Number(request.headers.get('content-length') ?? 0)
+  const raw = declaredLength > MAX_BODY_BYTES ? '' : await request.text()
+  if (declaredLength > MAX_BODY_BYTES || Buffer.byteLength(raw) > MAX_BODY_BYTES) {
+    return NextResponse.json({ error: 'Message is too large.' }, { status: 413 })
+  }
+
+  let body: unknown
   try {
-    const { name, email, message } = await request.json()
+    body = JSON.parse(raw)
+  } catch {
+    return invalidRequest()
+  }
+  if (typeof body !== 'object' || body === null || Array.isArray(body)) return invalidRequest()
 
-    if (!name || !email || !message) {
-      return NextResponse.json({ error: 'Name, email, and message are required.' }, { status: 400 })
-    }
+  const { name, email, message, [HONEYPOT_FIELD]: honeypot } = body as Record<string, unknown>
+  if (typeof name !== 'string' || typeof email !== 'string' || typeof message !== 'string') {
+    return invalidRequest()
+  }
 
-    const { data, error } = await resend.emails.send({
-      from: 'Portfolio Contact <onboarding@resend.dev>',
-      to: 'horusyeungg@gmail.com',
-      subject: `Portfolio Contact from ${name}`,
-      replyTo: email,
-      text: `From: ${name} (${email})\n\n${message}`,
-    })
+  // Humans never see the honeypot; report success so bots have no reason to retry
+  if (typeof honeypot === 'string' && honeypot.trim() !== '') {
+    return NextResponse.json({ success: true })
+  }
 
-    if (error) {
-      console.error('Resend error:', error)
-      return NextResponse.json(
-        { error: error.message || 'Failed to send message.' },
-        { status: 500 },
-      )
-    }
-
-    return NextResponse.json({ success: true, id: data?.id })
-  } catch (err) {
-    console.error('Contact API error:', err)
+  const input = normalizeContact({ name, email, message })
+  const fields = validateContact(input)
+  if (Object.keys(fields).length > 0) {
     return NextResponse.json(
-      { error: 'Failed to send message. Please try again.' },
-      { status: 500 },
+      { error: 'Please check the highlighted fields.', fields },
+      { status: 400 },
     )
   }
+
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    console.error('RESEND_API_KEY is not set')
+    return NextResponse.json({ error: CONTACT_SEND_ERROR }, { status: 503 })
+  }
+
+  try {
+    const { error } = await new Resend(apiKey).emails.send({
+      from: FROM,
+      to: TO,
+      subject: `Portfolio Contact from ${input.name}`,
+      replyTo: input.email,
+      text: `From: ${input.name} (${input.email})\n\n${input.message}`,
+    })
+    if (error) {
+      console.error('Resend error:', error)
+      return NextResponse.json({ error: CONTACT_SEND_ERROR }, { status: 502 })
+    }
+  } catch (err) {
+    console.error('Contact API error:', err)
+    return NextResponse.json({ error: CONTACT_SEND_ERROR }, { status: 502 })
+  }
+
+  return NextResponse.json({ success: true })
 }

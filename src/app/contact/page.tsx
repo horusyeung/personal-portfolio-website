@@ -10,6 +10,15 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn'
 import gsap from 'gsap'
 import { prefersReducedMotion } from '@/lib/animations'
 import { useEntranceAnimation } from '@/lib/motion'
+import {
+  CONTACT_FIELDS,
+  CONTACT_LIMITS,
+  HONEYPOT_FIELD,
+  normalizeContact,
+  validateContact,
+  type ContactErrors,
+  type ContactField,
+} from '@/lib/contact'
 import MagneticElement from '@/components/MagneticElement'
 
 // ── Data ────────────────────────────────────────────────────────────────────
@@ -133,6 +142,13 @@ const focusGlowSx = {
 
 export default function ContactPage() {
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
+  const [fieldErrors, setFieldErrors] = useState<ContactErrors>({})
+  // Synchronous guard: state updates are async, so a fast double-click could submit twice
+  const inFlight = useRef(false)
+
+  const clearFieldError = (field: ContactField) => {
+    if (fieldErrors[field]) setFieldErrors(({ [field]: _cleared, ...rest }) => rest)
+  }
 
   const pageRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
@@ -264,22 +280,49 @@ export default function ContactPage() {
 
   // ── Form submit handler ───────────────────────────────────────────────
 
+  const showFieldErrors = (form: HTMLFormElement, errors: ContactErrors) => {
+    setFieldErrors(errors)
+    const firstInvalid = CONTACT_FIELDS.find((field) => errors[field])
+    if (!firstInvalid) return false
+    form.querySelector<HTMLElement>(`[name="${firstInvalid}"]`)?.focus()
+    return true
+  }
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setStatus('sending')
+    if (inFlight.current) return
 
     const form = e.currentTarget
     const formData = new FormData(form)
-    const name = formData.get('name') as string
-    const email = formData.get('email') as string
-    const message = formData.get('message') as string
+    const field = (key: string) => String(formData.get(key) ?? '')
+    const input = normalizeContact({
+      name: field('name'),
+      email: field('email'),
+      message: field('message'),
+    })
+
+    if (showFieldErrors(form, validateContact(input))) {
+      setStatus('idle')
+      return
+    }
+
+    inFlight.current = true
+    setStatus('sending')
 
     try {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({ ...input, [HONEYPOT_FIELD]: field(HONEYPOT_FIELD) }),
       })
+
+      if (res.status === 400) {
+        const body: { fields?: ContactErrors } | null = await res.json().catch(() => null)
+        if (body?.fields && showFieldErrors(form, body.fields)) {
+          setStatus('idle')
+          return
+        }
+      }
 
       if (!res.ok) throw new Error()
       setStatus('success')
@@ -291,6 +334,8 @@ export default function ContactPage() {
       }
     } catch {
       setStatus('error')
+    } finally {
+      inFlight.current = false
     }
   }
 
@@ -485,7 +530,26 @@ export default function ContactPage() {
                 ref={formRef}
                 onSubmit={handleSubmit}
                 noValidate
+                aria-busy={status === 'sending'}
               >
+                {/* Honeypot: hidden from people and assistive tech; bots that fill it are ignored */}
+                <Box
+                  component='input'
+                  type='text'
+                  name={HONEYPOT_FIELD}
+                  tabIndex={-1}
+                  autoComplete='off'
+                  aria-hidden='true'
+                  defaultValue=''
+                  sx={{
+                    position: 'absolute',
+                    left: '-10000px',
+                    width: '1px',
+                    height: '1px',
+                    overflow: 'hidden',
+                    opacity: 0,
+                  }}
+                />
                 <Stack spacing={3}>
                   {/* #32 — Form field: Name */}
                   <Box
@@ -500,6 +564,11 @@ export default function ContactPage() {
                       required
                       fullWidth
                       variant='outlined'
+                      autoComplete='name'
+                      error={Boolean(fieldErrors.name)}
+                      helperText={fieldErrors.name}
+                      onChange={() => clearFieldError('name')}
+                      slotProps={{ htmlInput: { maxLength: CONTACT_LIMITS.name } }}
                       sx={focusGlowSx}
                     />
                   </Box>
@@ -518,6 +587,11 @@ export default function ContactPage() {
                       required
                       fullWidth
                       variant='outlined'
+                      autoComplete='email'
+                      error={Boolean(fieldErrors.email)}
+                      helperText={fieldErrors.email}
+                      onChange={() => clearFieldError('email')}
+                      slotProps={{ htmlInput: { maxLength: CONTACT_LIMITS.email } }}
                       sx={focusGlowSx}
                     />
                   </Box>
@@ -538,6 +612,10 @@ export default function ContactPage() {
                       minRows={4}
                       maxRows={8}
                       variant='outlined'
+                      error={Boolean(fieldErrors.message)}
+                      helperText={fieldErrors.message}
+                      onChange={() => clearFieldError('message')}
+                      slotProps={{ htmlInput: { maxLength: CONTACT_LIMITS.message } }}
                       sx={focusGlowSx}
                     />
                   </Box>
@@ -551,7 +629,8 @@ export default function ContactPage() {
                       variant='contained'
                       fullWidth
                       disableElevation
-                      disabled={status === 'sending'}
+                      // Not `disabled`: keeps keyboard focus on the button while sending
+                      aria-disabled={status === 'sending' || undefined}
                       onClick={handleRipple}
                       sx={{
                         position: 'relative',
@@ -572,6 +651,12 @@ export default function ContactPage() {
                           outline: '2px solid',
                           outlineColor: 'primary.main',
                           outlineOffset: 2,
+                        },
+                        // Same look as MUI's disabled contained button
+                        '&[aria-disabled="true"]': {
+                          bgcolor: 'action.disabledBackground',
+                          color: 'action.disabled',
+                          pointerEvents: 'none',
                         },
                       }}
                     >
