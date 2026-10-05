@@ -4,12 +4,9 @@ import { useRef, useCallback } from 'react'
 import { Box, Container, Typography, Chip } from '@mui/material'
 import { SiGithub } from 'react-icons/si'
 import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useGSAP } from '@gsap/react'
-import { prefersReducedMotion, createTiltEffect } from '@/lib/animations'
+import { createTiltEffect } from '@/lib/animations'
+import { useEntranceAnimation, useMotionEffect } from '@/lib/motion'
 import MagneticElement from '@/components/MagneticElement'
-
-gsap.registerPlugin(ScrollTrigger)
 
 // ── Data ────────────────────────────────────────────────────────────────────
 
@@ -97,175 +94,180 @@ export default function OpenSourcePage() {
     [],
   )
 
-  useGSAP(
-    () => {
-      if (prefersReducedMotion()) return
+  // ── Entrance animations ───────────────────────────────────────────────
+  useEntranceAnimation(() => {
+    // ── #21: Page title — Diagonal clip-path wipe ───────────────────────
+    if (titleRef.current) {
+      gsap.fromTo(
+        titleRef.current,
+        {
+          clipPath: 'polygon(0% 100%, 0% 100%, 0% 100%)',
+          opacity: 0,
+        },
+        {
+          clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+          opacity: 1,
+          duration: 0.9,
+          ease: 'power3.inOut',
+        },
+      )
+    }
 
-      // ── #21: Page title — Diagonal clip-path wipe ───────────────────────
-      if (titleRef.current) {
-        gsap.fromTo(
-          titleRef.current,
-          {
-            clipPath: 'polygon(0% 100%, 0% 100%, 0% 100%)',
+    // ── #22: Subtitle — Blur-to-focus fade-up after title ───────────────
+    if (subtitleRef.current) {
+      gsap.fromTo(
+        subtitleRef.current,
+        {
+          filter: 'blur(8px)',
+          y: 15,
+          opacity: 0,
+        },
+        {
+          filter: 'blur(0px)',
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: 'power2.out',
+          delay: 0.9,
+        },
+      )
+    }
+
+    githubProjects.forEach((_project, index) => {
+      const card = cardRefs.current[index]
+      const tagContainer = tagContainerRefs.current[index]
+      if (!card) return
+
+      // ── #23: 3D perspective stagger on scroll ───────────────────────
+      gsap.fromTo(
+        card,
+        {
+          rotateY: 8,
+          x: 30,
+          opacity: 0,
+          transformPerspective: 800,
+        },
+        {
+          rotateY: 0,
+          x: 0,
+          opacity: 1,
+          duration: 0.6,
+          ease: 'power2.out',
+          delay: index * 0.15,
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 85%',
+            end: 'bottom 20%',
+            toggleActions: 'play none none none',
+          },
+        },
+      )
+
+      // ── #25: Staggered slide-right for tags after card enters ───────
+      if (tagContainer) {
+        const tags = tagContainer.querySelectorAll('.project-tag')
+        if (tags.length > 0) {
+          gsap.fromTo(
+            tags,
+            { x: -20, opacity: 0 },
+            {
+              x: 0,
+              opacity: 1,
+              duration: 0.4,
+              stagger: 0.05,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: card,
+                start: 'top 85%',
+                toggleActions: 'play none none none',
+              },
+              delay: index * 0.15 + 0.3,
+            },
+          )
+        }
+      }
+    })
+  }, containerRef)
+
+  // ── Hover and ambient effects ─────────────────────────────────────────
+  useMotionEffect((contextSafe) => {
+    const cleanups: (() => void)[] = []
+
+    githubProjects.forEach((project, index) => {
+      const card = cardRefs.current[index]
+      const glow = glowRefs.current[index]
+      const badge = badgeRefs.current[index]
+      if (!card) return
+
+      // ── #24: Hover tilt + cursor glow ───────────────────────────────
+      cleanups.push(createTiltEffect(card, 5, contextSafe))
+
+      if (glow) {
+        const handleMouseMove = contextSafe((e: MouseEvent) => {
+          const rect = card.getBoundingClientRect()
+          const x = e.clientX - rect.left
+          const y = e.clientY - rect.top
+          gsap.to(glow, {
+            left: x,
+            top: y,
+            opacity: 0.15,
+            duration: 0.3,
+            ease: 'power2.out',
+          })
+        })
+
+        const handleMouseLeave = contextSafe(() => {
+          gsap.to(glow, {
             opacity: 0,
-          },
-          {
-            clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
-            opacity: 1,
-            duration: 0.9,
-            ease: 'power3.inOut',
-          },
-        )
+            duration: 0.4,
+            ease: 'power2.out',
+          })
+        })
+
+        card.addEventListener('mousemove', handleMouseMove)
+        card.addEventListener('mouseleave', handleMouseLeave)
+        cleanups.push(() => {
+          card.removeEventListener('mousemove', handleMouseMove)
+          card.removeEventListener('mouseleave', handleMouseLeave)
+        })
       }
 
-      // ── #22: Subtitle — Blur-to-focus fade-up after title ───────────────
-      if (subtitleRef.current) {
-        gsap.fromTo(
-          subtitleRef.current,
-          {
-            filter: 'blur(8px)',
-            y: 15,
-            opacity: 0,
-          },
-          {
-            filter: 'blur(0px)',
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: 'power2.out',
-            delay: 0.9,
-          },
-        )
-      }
-
-      // ── Per-card animations ─────────────────────────────────────────────
-      githubProjects.forEach((project, index) => {
-        const card = cardRefs.current[index]
-        const glow = glowRefs.current[index]
-        const tagContainer = tagContainerRefs.current[index]
-        const badge = badgeRefs.current[index]
-
-        if (!card) return
-
-        // ── #23: 3D perspective stagger on scroll ───────────────────────
-        gsap.fromTo(
-          card,
-          {
-            rotateY: 8,
-            x: 30,
-            opacity: 0,
-            transformPerspective: 800,
-          },
-          {
-            rotateY: 0,
-            x: 0,
-            opacity: 1,
-            duration: 0.6,
-            ease: 'power2.out',
-            delay: index * 0.15,
+      // ── #26: Status badge — Color pulse glow / opacity breathe ──────
+      if (badge) {
+        if (project.status === 'Live') {
+          gsap.to(badge, {
+            boxShadow: '0 0 12px 4px rgba(52, 199, 89, 0.5)',
+            duration: 1,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
             scrollTrigger: {
               trigger: card,
-              start: 'top 85%',
-              end: 'bottom 20%',
-              toggleActions: 'play none none none',
+              start: 'top 90%',
+              end: 'bottom 10%',
+              toggleActions: 'play pause resume pause',
             },
-          },
-        )
-
-        // ── #24: Hover tilt + cursor glow ───────────────────────────────
-        const cleanupTilt = createTiltEffect(card, 5)
-
-        if (glow) {
-          const handleMouseMove = (e: MouseEvent) => {
-            const rect = card.getBoundingClientRect()
-            const x = e.clientX - rect.left
-            const y = e.clientY - rect.top
-            gsap.to(glow, {
-              left: x,
-              top: y,
-              opacity: 0.15,
-              duration: 0.3,
-              ease: 'power2.out',
-            })
-          }
-
-          const handleMouseLeave = () => {
-            gsap.to(glow, {
-              opacity: 0,
-              duration: 0.4,
-              ease: 'power2.out',
-            })
-          }
-
-          card.addEventListener('mousemove', handleMouseMove)
-          card.addEventListener('mouseleave', handleMouseLeave)
+          })
+        } else {
+          gsap.to(badge, {
+            opacity: 0.5,
+            duration: 1,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 90%',
+              end: 'bottom 10%',
+              toggleActions: 'play pause resume pause',
+            },
+          })
         }
+      }
+    })
 
-        // ── #25: Staggered slide-right for tags after card enters ───────
-        if (tagContainer) {
-          const tags = tagContainer.querySelectorAll('.project-tag')
-          if (tags.length > 0) {
-            gsap.fromTo(
-              tags,
-              { x: -20, opacity: 0 },
-              {
-                x: 0,
-                opacity: 1,
-                duration: 0.4,
-                stagger: 0.05,
-                ease: 'power2.out',
-                scrollTrigger: {
-                  trigger: card,
-                  start: 'top 85%',
-                  toggleActions: 'play none none none',
-                },
-                delay: index * 0.15 + 0.3,
-              },
-            )
-          }
-        }
-
-        // ── #26: Status badge — Color pulse glow / opacity breathe ──────
-        if (badge) {
-          if (project.status === 'Live') {
-            gsap.to(badge, {
-              boxShadow: '0 0 12px 4px rgba(52, 199, 89, 0.5)',
-              duration: 1,
-              repeat: -1,
-              yoyo: true,
-              ease: 'sine.inOut',
-              scrollTrigger: {
-                trigger: card,
-                start: 'top 90%',
-                end: 'bottom 10%',
-                toggleActions: 'play pause resume pause',
-              },
-            })
-          } else {
-            gsap.to(badge, {
-              opacity: 0.5,
-              duration: 1,
-              repeat: -1,
-              yoyo: true,
-              ease: 'sine.inOut',
-              scrollTrigger: {
-                trigger: card,
-                start: 'top 90%',
-                end: 'bottom 10%',
-                toggleActions: 'play pause resume pause',
-              },
-            })
-          }
-        }
-
-        // Cleanup tilt on GSAP context revert
-        return () => {
-          cleanupTilt()
-        }
-      })
-    },
-    { scope: containerRef },
-  )
+    return () => cleanups.forEach((cleanup) => cleanup())
+  }, containerRef)
 
   return (
     <Box ref={containerRef}>
@@ -282,6 +284,7 @@ export default function OpenSourcePage() {
         <Container maxWidth={false} sx={{ maxWidth: 680, textAlign: 'center' }}>
           <Typography
             ref={titleRef}
+            data-intro
             variant='h1'
             sx={{
               fontSize: { xs: '48px', md: '80px' },
@@ -289,14 +292,13 @@ export default function OpenSourcePage() {
               letterSpacing: '-0.015em',
               lineHeight: 1.05,
               color: 'text.primary',
-              opacity: 0,
-              clipPath: 'polygon(0% 100%, 0% 100%, 0% 100%)',
             }}
           >
             Open Source
           </Typography>
           <Typography
             ref={subtitleRef}
+            data-intro
             sx={{
               mt: 2,
               mx: 'auto',
@@ -305,7 +307,6 @@ export default function OpenSourcePage() {
               fontWeight: 400,
               lineHeight: 1.47,
               color: 'text.secondary',
-              opacity: 0,
             }}
           >
             Sharing production-tested patterns, starter templates, and development workflows with
@@ -335,6 +336,7 @@ export default function OpenSourcePage() {
                   rel='noopener noreferrer'
                   aria-label={project.name}
                   ref={setCardRef(index)}
+                  data-intro
                   sx={{
                     display: 'block',
                     position: 'relative',
@@ -344,7 +346,6 @@ export default function OpenSourcePage() {
                     borderColor: 'divider',
                     borderRadius: '16px',
                     textDecoration: 'none',
-                    opacity: 0,
                     transition: 'border-color 0.3s ease',
                     '&:hover': {
                       borderColor: 'primary.main',
@@ -461,6 +462,7 @@ export default function OpenSourcePage() {
                         size='small'
                         variant='outlined'
                         className='project-tag'
+                        data-intro
                         sx={{
                           fontSize: '12px',
                           fontWeight: 500,
@@ -468,7 +470,6 @@ export default function OpenSourcePage() {
                           borderRadius: '13px',
                           borderColor: 'divider',
                           color: 'text.secondary',
-                          opacity: 0,
                         }}
                       />
                     ))}

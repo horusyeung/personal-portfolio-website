@@ -2,8 +2,8 @@
 
 import { useRef, type ReactNode } from 'react'
 import { Box, type SxProps, type Theme } from '@mui/material'
-import { useGSAP } from '@gsap/react'
-import { createMagneticEffect, prefersReducedMotion } from '@/lib/animations'
+import { createMagneticEffect } from '@/lib/animations'
+import { useMotionEffect } from '@/lib/motion'
 
 interface MagneticElementProps {
   children: ReactNode
@@ -20,14 +20,10 @@ export default function MagneticElement({
 }: MagneticElementProps) {
   const ref = useRef<HTMLDivElement>(null)
 
-  useGSAP(
-    () => {
-      if (prefersReducedMotion() || !ref.current) return
-      const cleanup = createMagneticEffect(ref.current, strength, radius)
-      return cleanup
-    },
-    { scope: ref },
-  )
+  useMotionEffect((contextSafe) => {
+    if (!ref.current) return
+    return createMagneticEffect(ref.current, strength, radius, contextSafe)
+  }, ref)
 
   return (
     <Box ref={ref} sx={{ display: 'inline-block', ...sx }}>

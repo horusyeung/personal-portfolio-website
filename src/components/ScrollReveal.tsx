@@ -3,11 +3,7 @@
 import { useRef } from 'react'
 import { Box } from '@mui/material'
 import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useGSAP } from '@gsap/react'
-import { prefersReducedMotion } from '@/lib/animations'
-
-gsap.registerPlugin(ScrollTrigger)
+import { useEntranceAnimation } from '@/lib/motion'
 
 interface ScrollRevealProps {
   children: React.ReactNode
@@ -25,32 +21,29 @@ export default function ScrollReveal({
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null)
 
-  useGSAP(
-    () => {
-      if (prefersReducedMotion() || !ref.current) return
+  useEntranceAnimation(() => {
+    if (!ref.current) return
 
-      gsap.fromTo(
-        ref.current,
-        { opacity: 0, y: distance },
-        {
-          opacity: 1,
-          y: 0,
-          duration,
-          delay,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: ref.current,
-            start: 'top 85%',
-            once: true,
-          },
+    gsap.fromTo(
+      ref.current,
+      { opacity: 0, y: distance },
+      {
+        opacity: 1,
+        y: 0,
+        duration,
+        delay,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: ref.current,
+          start: 'top 85%',
+          once: true,
         },
-      )
-    },
-    { scope: ref },
-  )
+      },
+    )
+  }, ref)
 
   return (
-    <Box ref={ref} sx={{ opacity: 0 }}>
+    <Box ref={ref} data-intro>
       {children}
     </Box>
   )

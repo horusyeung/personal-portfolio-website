@@ -4,6 +4,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { ThemeModeProvider } from '@/lib/ThemeModeProvider'
+import { introScript } from '@/lib/intro'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import './globals.css'
@@ -123,15 +124,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang='en' suppressHydrationWarning>
-      <body
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '100vh',
-          margin: 0,
-        }}
-      >
+    <html lang='en' data-scroll-behavior='smooth' suppressHydrationWarning>
+      <head>
+        {/* Must run before the body paints: see src/lib/intro.ts */}
+        <script dangerouslySetInnerHTML={{ __html: introScript }} />
+      </head>
+      <body>
         <Script
           id='json-ld'
           type='application/ld+json'

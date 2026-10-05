@@ -82,7 +82,9 @@ export function createAppTheme(): Theme {
     components: {
       MuiCssBaseline: {
         styleOverrides: {
-          html: { scrollBehavior: 'smooth' },
+          '@media (prefers-reduced-motion: no-preference)': {
+            html: { scrollBehavior: 'smooth' },
+          },
           body: {
             fontFamily: fontStack,
             WebkitFontSmoothing: 'antialiased',

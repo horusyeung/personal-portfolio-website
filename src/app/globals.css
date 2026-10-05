@@ -2,3 +2,24 @@
   background: rgba(41, 151, 255, 0.2);
   color: inherit;
 }
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/*
+ * Entrance animations (src/lib/intro.ts): content renders visible. Only while JavaScript is
+ * expected to animate it in, and the user allows motion, does it start hidden or offset.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  html.js:not(.intro-skip) [data-intro] {
+    opacity: 0;
+  }
+
+  html.js:not(.intro-skip) [data-intro-offset] {
+    transform: translateX(30px);
+  }
+}
