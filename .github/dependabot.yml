@@ -8,6 +8,13 @@ updates:
     groups:
       minor-and-patch:
         update-types: [minor, patch]
+    ignore:
+      # Node types follow the pinned runtime (.nvmrc, engines)
+      - dependency-name: '@types/node'
+        update-types: [version-update:semver-major]
+      # MUI packages move to a new major together, as a planned upgrade
+      - dependency-name: '@mui/*'
+        update-types: [version-update:semver-major]
 
   - package-ecosystem: github-actions
     directory: /
