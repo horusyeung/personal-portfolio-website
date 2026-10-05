@@ -6,17 +6,25 @@ on:
   pull_request:
     branches: [master]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+
 jobs:
   lint-and-typecheck:
     name: Lint, Format & Type Check
     runs-on: ubuntu-latest
+    env:
+      CYPRESS_INSTALL_BINARY: '0'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-      - run: yarn install --immutable
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
       - run: yarn lint
       - run: yarn format:check
       - run: npx tsc --noEmit
@@ -24,30 +32,31 @@ jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
+    env:
+      CYPRESS_INSTALL_BINARY: '0'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-      - run: yarn install --immutable
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
       - run: yarn test
 
   cypress-tests:
     name: Cypress E2E
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      # Restored before install so Cypress's postinstall finds the binary
+      - uses: actions/cache@v6
         with:
-          node-version: 22
-          cache: yarn
-      - run: yarn install --immutable
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+      - uses: ./.github/actions/setup
       - run: yarn build
         env:
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-      - uses: cypress-io/github-action@v6
+          # The build only needs a non-empty key; E2E tests never send real email
+          RESEND_API_KEY: re_dummy_ci_build
+      - uses: cypress-io/github-action@v7
         with:
+          install: false
           start: yarn start
           wait-on: http://localhost:3000
           browser: chrome
@@ -57,22 +66,14 @@ jobs:
     needs: [lint-and-typecheck, unit-tests, cypress-tests]
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: ubuntu-latest
+    env:
+      CYPRESS_INSTALL_BINARY: '0'
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-      - run: yarn install --immutable
-      - run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      - run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      - run: npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - run: npx vercel@62.4.0 pull --yes --environment=production
+      - run: npx vercel@62.4.0 build --prod
+      - run: npx vercel@62.4.0 deploy --prebuilt --prod
