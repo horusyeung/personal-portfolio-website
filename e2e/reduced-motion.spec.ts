@@ -28,8 +28,9 @@ const CONTENT: Record<string, string[]> = {
     '[data-testid=contact-hero] h1',
     '[data-testid=contact-hero] p',
     '[data-testid=contact-info] > div',
-    '[data-testid=contact-form] input',
-    '[data-testid=contact-form] textarea',
+    '[data-testid=contact-form] input[name=name]',
+    '[data-testid=contact-form] input[name=email]',
+    '[data-testid=contact-form] textarea[name=message]',
   ],
 }
 
