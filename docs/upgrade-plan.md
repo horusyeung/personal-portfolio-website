@@ -170,6 +170,10 @@ The afternoon estimate in v1 was too low once the tests below are included. The 
 
 ### PR 4 — Contact form protection and delivery
 
+> **Split (2026-10-05).** **4a** holds everything that needs no account changes: validation, field errors, honeypot, BotID, limits, the double-submit guard and generic errors. Field-level errors were pulled forward from Step 2.5, because the live form was failing on a malformed reply-to address with only a generic message. **4b** switches the sender to `contact@horusyeung.com` once the Resend domain is verified and the scoped key is in Vercel.
+>
+> BotID only runs on Vercel. The client initialises it on `horusyeung.com` and `*.vercel.app` only, because its challenge never loads elsewhere and protected fetches would hang. The server checks only when `VERCEL` is set, and it fails open if the check throws (`VERCEL_OIDC_TOKEN` missing, or an outage).
+
 **Route (`src/app/api/contact/route.ts`). Checks run in this order:**
 1. `checkBotId()` → **403**. Bots get no validation feedback.
 2. Body size: reject when over 10 KB (Content-Length plus the length of `request.text()`) → **413**.
