@@ -51,6 +51,33 @@ test.describe('Navigation', () => {
     }
   })
 
+  test('page changes crossfade with the header on its own layer', async ({ page, browserName }) => {
+    // document.startViewTransition: Chromium and recent Safari; elsewhere pages just swap
+    await page.addInitScript(() => {
+      const w = window as Window & { __viewTransitions?: number }
+      w.__viewTransitions = 0
+      const start = document.startViewTransition?.bind(document)
+      if (start) {
+        document.startViewTransition = ((update: never) => {
+          w.__viewTransitions! += 1
+          return start(update)
+        }) as typeof document.startViewTransition
+      }
+    })
+    await page.goto('/')
+    await expect(page.getByTestId('navbar')).toHaveCSS('view-transition-name', 'site-header')
+
+    await page.getByTestId('nav-link-experience').click()
+    await expect(page).toHaveURL(/\/experience$/)
+    const supported = await page.evaluate(() => 'startViewTransition' in document)
+    test.skip(!supported, `no View Transitions API in this ${browserName} build`)
+    await expect
+      .poll(() =>
+        page.evaluate(() => (window as Window & { __viewTransitions?: number }).__viewTransitions),
+      )
+      .toBeGreaterThan(0)
+  })
+
   test('/projects returns 404', async ({ request }) => {
     const response = await request.get('/projects')
     expect(response.status()).toBe(404)

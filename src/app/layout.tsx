@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { ViewTransition } from 'react'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
@@ -110,7 +111,8 @@ export default function RootLayout({
             </a>
             <Navbar />
             <main id='main' tabIndex={-1} style={{ flex: 1 }}>
-              {children}
+              {/* Navigations are transitions, so the page content crossfades (see globals.css) */}
+              <ViewTransition default='page-fade'>{children}</ViewTransition>
             </main>
             {/* Set at build time: each deploy refreshes it, and the HTML and hydration agree */}
             <Footer year={new Date().getFullYear()} />
