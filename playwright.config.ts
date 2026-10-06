@@ -19,7 +19,9 @@ export default defineConfig({
   },
   expect: {
     // Visual snapshots are rendered in the Playwright Docker image (see e2e/visual.spec.ts)
-    toHaveScreenshot: { animations: 'disabled', caret: 'hide' },
+    // Strict: renders in the Docker image are deterministic, and the default 0.2 colour
+    // tolerance let a text colour change (#86868b → #6e6e73) pass unnoticed
+    toHaveScreenshot: { animations: 'disabled', caret: 'hide', threshold: 0 },
   },
   projects: [
     {
