@@ -238,6 +238,7 @@ export default function HomePage() {
               <Box
                 component='span'
                 className='arrow'
+                aria-hidden
                 sx={{
                   transition: 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
                   display: 'inline-block',
@@ -450,6 +451,7 @@ export default function HomePage() {
               <Box
                 component='span'
                 className='arrow'
+                aria-hidden
                 sx={{ transition: 'transform 0.3s ease', display: 'inline-block' }}
               >
                 &rarr;

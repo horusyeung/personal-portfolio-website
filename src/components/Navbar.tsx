@@ -71,6 +71,8 @@ export default function Navbar() {
 
           {/* Nav links */}
           <Box
+            component='nav'
+            aria-label='Main'
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -83,7 +85,9 @@ export default function Navbar() {
                 key={link.href}
                 component={Link}
                 href={link.href}
+                aria-current={isActive(link.href) ? 'page' : undefined}
                 sx={{
+                  position: 'relative',
                   fontSize: 12,
                   fontWeight: 400,
                   textDecoration: 'none',
@@ -93,6 +97,9 @@ export default function Navbar() {
                   '&:hover': {
                     color: isActive(link.href) ? 'primary.main' : 'text.primary',
                   },
+                  // A hit area at least 44px tall (WCAG 2.5.5) without moving anything: the invisible
+                  // box reaches 14px above and below the 18px line, and 8px into the gaps between links
+                  '&::after': { content: '""', position: 'absolute', inset: '-14px -8px' },
                   '&:focus-visible': {
                     outline: '2px solid',
                     outlineColor: 'primary.main',

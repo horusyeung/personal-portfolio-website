@@ -88,7 +88,6 @@ export default function OpenSourcePage() {
                   href={project.url}
                   target='_blank'
                   rel='noopener noreferrer'
-                  aria-label={project.name}
                   data-os='card'
                   data-intro
                   sx={{
@@ -149,10 +148,11 @@ export default function OpenSourcePage() {
                       {/* #27: GitHub icon — Magnetic pull */}
                       <MagneticElement strength={0.3} radius={80}>
                         <Box sx={{ color: 'text.primary', display: 'flex', alignItems: 'center' }}>
-                          <SiGithub size={20} />
+                          <SiGithub size={20} aria-hidden />
                         </Box>
                       </MagneticElement>
                       <Typography
+                        component='h2'
                         sx={{
                           fontSize: '17px',
                           fontWeight: 600,

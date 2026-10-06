@@ -10,6 +10,39 @@ body {
   margin: 0;
 }
 
+/* Skip link (src/app/layout.tsx): off screen until a keyboard user tabs to it */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 2000; /* above the navbar (MUI AppBar: 1100) */
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  color: #0066cc;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+  outline: 2px solid #0071e3;
+  outline-offset: 2px;
+}
+
+/* The skip link's target: focusable so keyboard focus moves there, but it needs no focus ring,
+   and it stops below the fixed 48px navbar instead of under it */
+#main {
+  scroll-margin-top: 48px;
+}
+
+#main:focus {
+  outline: none;
+}
+
 /*
  * Entrance animations (src/lib/intro.ts): content renders visible. Only while JavaScript is
  * expected to animate it in, and the user allows motion, does it start hidden or offset.

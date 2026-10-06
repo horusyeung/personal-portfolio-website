@@ -185,9 +185,10 @@ export default function ExperiencePage() {
                   {exp.period}
                 </Typography>
 
-                {/* Title */}
+                {/* Title: an h2 directly under the page's h1, styled as before */}
                 <Typography
                   variant='h4'
+                  component='h2'
                   sx={{
                     mt: 0.5,
                     fontSize: { xs: '24px', md: '28px' },
@@ -240,9 +241,11 @@ export default function ExperiencePage() {
                           fontSize: { xs: '15px', md: '17px' },
                           color: 'text.secondary',
                           lineHeight: 1.65,
+                          // Drawn by CSS, with empty alt text so screen readers skip it
+                          '&::before': { content: '"· " / ""' },
                         }}
                       >
-                        &middot; {bullet}
+                        {bullet}
                       </Typography>
                     </Box>
                   ))}
@@ -287,6 +290,7 @@ export default function ExperiencePage() {
               >
                 <Typography
                   variant='h4'
+                  component='h3'
                   sx={{
                     fontSize: { xs: '24px', md: '28px' },
                     fontWeight: 600,

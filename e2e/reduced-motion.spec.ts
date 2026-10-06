@@ -14,8 +14,8 @@ const CONTENT: Record<string, string[]> = {
   '/experience': [
     '[data-testid=experience-hero] h1',
     '[data-testid=experience-hero] h1 + div',
-    '[data-testid=work-experience] h4',
-    '[data-testid=education-section] h4',
+    '[data-testid=work-experience] h2',
+    '[data-testid=education-section] h3',
     '[data-testid=certifications-section] p',
   ],
   '/open-source': [
