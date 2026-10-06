@@ -11,6 +11,9 @@ declare global {
 
 const MOTION_ALLOWED = '(prefers-reduced-motion: no-preference)'
 
+/** A mouse or trackpad: hover effects only make sense with a pointer that can hover */
+export const FINE_POINTER = '(hover: hover) and (pointer: fine)'
+
 type ContextSafe = <T extends (...args: never[]) => unknown>(fn: T) => T
 type MotionCallback = (contextSafe: ContextSafe) => void | (() => void)
 
@@ -27,13 +30,15 @@ function useMotion(
   callback: MotionCallback,
   scope: RefObject<HTMLElement | null>,
   entrance: boolean,
+  query?: string,
 ) {
   useGSAP(
     (_context, contextSafe) => {
       if (entrance && !claimIntro()) return
       // Reverted (content back to its visible state) when the user turns on reduced motion
       const mm = gsap.matchMedia()
-      mm.add(MOTION_ALLOWED, () => callback(contextSafe as ContextSafe))
+      const condition = query ? `${MOTION_ALLOWED} and ${query}` : MOTION_ALLOWED
+      mm.add(condition, () => callback(contextSafe as ContextSafe))
       return () => mm.revert()
     },
     { scope },
@@ -48,7 +53,11 @@ export function useEntranceAnimation(
   useMotion(callback, scope, true)
 }
 
-/** Hover and ambient effects: only run while the user allows motion. */
-export function useMotionEffect(callback: MotionCallback, scope: RefObject<HTMLElement | null>) {
-  useMotion(callback, scope, false)
+/** Hover and ambient effects: only run while the user allows motion and `query` matches. */
+export function useMotionEffect(
+  callback: MotionCallback,
+  scope: RefObject<HTMLElement | null>,
+  query?: string,
+) {
+  useMotion(callback, scope, false, query)
 }

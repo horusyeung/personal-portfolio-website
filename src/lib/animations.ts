@@ -53,8 +53,41 @@ export function animateCountUp(
   })
 }
 
+// ── Magnetic pull ───────────────────────────────────────────────────────────
+// All magnetic elements share one document listener, and nothing is tweened while the pointer
+// is outside an element's radius: it follows the pointer inside, then springs back once.
+
+type Magnet = {
+  element: HTMLElement
+  strength: number
+  radius: number
+  active: boolean
+  pull: (x: number, y: number) => void
+  release: () => void
+}
+
+const magnets = new Set<Magnet>()
+
+function handleMagnetMove(e: MouseEvent) {
+  for (const magnet of magnets) {
+    const rect = magnet.element.getBoundingClientRect()
+    const deltaX = e.clientX - (rect.left + rect.width / 2)
+    const deltaY = e.clientY - (rect.top + rect.height / 2)
+
+    if (Math.hypot(deltaX, deltaY) < magnet.radius) {
+      magnet.pull(deltaX * magnet.strength, deltaY * magnet.strength)
+    } else if (magnet.active) {
+      magnet.release()
+    }
+  }
+}
+
+function handleMagnetExit() {
+  for (const magnet of magnets) if (magnet.active) magnet.release()
+}
+
 /**
- * Create a magnetic effect on an element that follows the cursor. Pass `wrap` (GSAP's
+ * Pull an element towards the cursor while it is within `radius`. Pass `wrap` (GSAP's
  * contextSafe) so tweens created by the handlers are reverted with their context.
  */
 export function createMagneticEffect(
@@ -63,46 +96,47 @@ export function createMagneticEffect(
   radius: number = 80,
   wrap: Wrap = noWrap,
 ) {
-  const handleMouseMove = wrap((e: MouseEvent) => {
-    const rect = element.getBoundingClientRect()
-    const centerX = rect.left + rect.width / 2
-    const centerY = rect.top + rect.height / 2
-    const deltaX = e.clientX - centerX
-    const deltaY = e.clientY - centerY
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+  const xTo = gsap.quickTo(element, 'x', { duration: 0.3, ease: 'power2.out' })
+  const yTo = gsap.quickTo(element, 'y', { duration: 0.3, ease: 'power2.out' })
+  let springBack: gsap.core.Tween | undefined
 
-    if (distance < radius) {
-      gsap.to(element, {
-        x: deltaX * strength,
-        y: deltaY * strength,
-        duration: 0.3,
-        ease: 'power2.out',
-      })
-    } else {
-      gsap.to(element, {
-        x: 0,
-        y: 0,
-        duration: 0.5,
-        ease: 'elastic.out(1, 0.3)',
-      })
-    }
-  })
+  const magnet: Magnet = {
+    element,
+    strength,
+    radius,
+    active: false,
+    pull: (x, y) => {
+      if (!magnet.active) {
+        // Start from where the spring-back left it, not where quickTo last aimed
+        magnet.active = true
+        springBack?.kill()
+        xTo(x, gsap.getProperty(element, 'x') as number)
+        yTo(y, gsap.getProperty(element, 'y') as number)
+        return
+      }
+      xTo(x)
+      yTo(y)
+    },
+    release: wrap(() => {
+      magnet.active = false
+      xTo.tween.pause()
+      yTo.tween.pause()
+      springBack = gsap.to(element, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.3)' })
+    }),
+  }
 
-  const handleMouseLeave = wrap(() => {
-    gsap.to(element, {
-      x: 0,
-      y: 0,
-      duration: 0.5,
-      ease: 'elastic.out(1, 0.3)',
-    })
-  })
-
-  document.addEventListener('mousemove', handleMouseMove)
-  element.addEventListener('mouseleave', handleMouseLeave)
+  if (magnets.size === 0) {
+    document.addEventListener('mousemove', handleMagnetMove)
+    document.documentElement.addEventListener('mouseleave', handleMagnetExit)
+  }
+  magnets.add(magnet)
 
   return () => {
-    document.removeEventListener('mousemove', handleMouseMove)
-    element.removeEventListener('mouseleave', handleMouseLeave)
+    magnets.delete(magnet)
+    if (magnets.size === 0) {
+      document.removeEventListener('mousemove', handleMagnetMove)
+      document.documentElement.removeEventListener('mouseleave', handleMagnetExit)
+    }
   }
 }
 
