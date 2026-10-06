@@ -374,6 +374,16 @@ Hurdles the conversion has to handle:
 - 44 px hit areas on the nav links via a pseudo-element, with no visual change.
 - **Manual checks:** keyboard-only pass, plus VoiceOver on Safari for the headings, form errors and split heading.
 
+> **Done in PR 11** (VoiceOver check still open, see below).
+> - `<nav aria-label="Main">` with `aria-current="page"`. The nav links get a 45px-tall hit area from an invisible `::after` box.
+> - Skip link (visible change #6) as the first Tab stop. It targets `<main id="main" tabIndex={-1}>`, which has a scroll margin so the fixed navbar doesn't cover it.
+> - **Headings** changed with `component`, so the look is unchanged. Experience roles become **h2**, not h3: no h2 sits above them, and adding one would mean new copy. Degrees become h3, and the contact form title and project names become h2.
+> - Decorative icons are `aria-hidden`. The project cards lost their overriding `aria-label`, so screen readers read the description and status too.
+> - Experience bullets are drawn with `::before { content: "· " / "" }`: identical pixels, and screen readers skip the dot.
+> - **Contact form:** already done in PR 4a. MUI adds `aria-invalid` and `aria-describedby` to fields with errors, and `autoComplete` was already set.
+> - **Checks:** `e2e/accessibility.spec.ts`; Lighthouse accessibility 100 on all 4 pages (with reduced motion); a keyboard-only pass, where every Tab stop on every page is in view with a visible focus indicator and the order is logical.
+> - **Still to do by hand:** VoiceOver on Safari for the headings, the contact form errors and the split hero name.
+
 ### 2.6 Cleanup
 - Delete `CountUp.tsx`, `TimelineLine.tsx`, `animateCountUp`, the unused `threshold` prop, unused refs and `@emotion/server`.
 - Rewrite the README (stack, scripts, env vars, deploy).
