@@ -7,10 +7,11 @@ import {
   normalizeContact,
   validateContact,
 } from '@/lib/contact'
-import { EMAIL } from '@/content/site'
+import { EMAIL, SITE_DOMAIN } from '@/content/site'
 
 const MAX_BODY_BYTES = 10_000
-const FROM = 'Portfolio Contact <onboarding@resend.dev>'
+// The domain is verified in Resend, so messages come from the site's own address
+const FROM = `Portfolio Contact <contact@${SITE_DOMAIN}>`
 const TO = EMAIL
 
 async function isBot(): Promise<boolean> {
