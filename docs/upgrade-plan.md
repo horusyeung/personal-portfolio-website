@@ -12,7 +12,7 @@ _v1 came from the 2026-10-04 review. v2 adds corrections from an independent Cod
 |---|---|---|
 | D1 | Which address is primary: `horusyeung.com` or `www.horusyeung.com`? | **Decided 2026-10-05: `www.horusyeung.com`.** Vercel stays as it is (bare domain → `www`). The code's canonical tags, sitemap, robots and JSON-LD move to `www` (PR 6). |
 | D2 | Do you approve the [visible changes](#visible-changes-need-your-ok)? | **Approved 2026-10-05.** |
-| D3 | Step 2: full Server Components conversion, or the lighter path? | **Decided 2026-10-05: full path**, after the /open-source prototype (see 2.1). |
+| D3 | Step 2: full Server Components conversion, or the lighter path? | **Decided 2026-10-05: light path.** /open-source stays converted; converting Home made it slower, so the other pages stay client components (see 2.1). |
 | D4 | Which Step 3 items, if any? | Decide after Steps 1–2. |
 
 ---
@@ -280,7 +280,7 @@ The afternoon estimate in v1 was too low once the tests below are included. The 
   - **Light path:** keep the pages and metadata layouts as they are; extract the data and repair the existing animations only.
 - Re-estimate the effort at that point.
 
-> **Done for /open-source (PR 7); D3 = full path.**
+> **Done for /open-source (PR 7); D3 = light path.**
 > - The page is a Server Component. `OpenSourceMotion` is the only new client component: it runs the same GSAP code and finds its targets by `data-os` attributes instead of refs.
 > - The project list is in `src/content/projects.ts`; the page exports its metadata and the pass-through layout is gone.
 > - Measured against `master` (local production build, Lighthouse 13.5 mobile, median of 5, Chromium 1243):
@@ -294,7 +294,16 @@ The afternoon estimate in v1 was too low once the tests below are included. The 
 > | Performance / LCP / TBT | 92 / 3247 ms / 11 ms | 92 / 3310 ms / 10 ms |
 >
 > - Strict visual snapshots match on all four devices; all Playwright and unit tests pass.
-> - Remaining routes, one PR each: home, experience, contact. Contact gains least, since its form stays a client component.
+> - **Home was tried next and made things worse.** A Server Component's output is sent twice, as HTML and as the RSC payload. Home is mostly markup (34 skill-icon SVGs and their styles), so 25 KB moved from JS into the HTML:
+>
+> | Home | client page | Server Component | Server Component, skills grid as client |
+> |---|---|---|---|
+> | First-load JS (gzip) | 258.6 KB | 233.5 KB | 257.6 KB |
+> | HTML (gzip) | 29.9 KB | 54.5 KB | 31.3 KB |
+> | Performance / LCP | 97 / 2615 ms | 95 / 2913 ms | 96 / 2762 ms |
+> | Main-thread work | 805 ms | 849 ms | 762 ms |
+>
+> - Keeping the icons on the client only breaks even, and Experience is built the same way, so the full path costs three PRs for no gain. Home, Experience and Contact stay client pages.
 
 Hurdles the conversion has to handle:
 - `skillIcons.tsx:155` mixes plain data with icon *functions*. Split it into server-safe data (`src/content/skills.ts`) and a client-side icon map.
@@ -309,6 +318,13 @@ Hurdles the conversion has to handle:
 - **Copy moves word for word.** The bios differ between home (`page.tsx:178`) and footer (`Footer.tsx:122`), so they stay **named variants** (for example `bio.hero`, `bio.footer`, `bio.meta`) and are not merged.
 - Today the bio prefix appears 5 times, the email 4 times across 3 files, and the full site URL 17 times. Each becomes a single reference.
 - The footer year is computed (visible change #9).
+
+> **Done in PR 8.**
+> - `src/content/site.ts`: URL, displayed domain, email, job title, location, social links and the bio variants (`BIO.hero`, `BIO.summary`, `BIO.meta`, `BIO.twitter`). The layout metadata, JSON-LD, footer, contact page, contact route, social image and home page read from it.
+> - `src/content/experience.ts`: roles, education and certifications. Education is now data rendered by a map, like the other two.
+> - `src/content/skills.ts`: names, colours and icon keys; the icons stay in `src/lib/skillIcons.tsx` as a map.
+> - The footer year comes from the layout at build time, so the prerendered HTML and hydration always agree; each deploy refreshes it.
+> - The rendered HTML of all four pages, the social image, robots.txt and the JSON-LD are identical to `master`. Only the `og:image` cache key changed, because Next hashes the image's source file.
 
 ### 2.3 Animation cleanup (both paths)
 - Upgrade to GSAP **3.15**. Register `ScrollTrigger` once, in `src/lib/gsap.ts` (today it's 8 files).
