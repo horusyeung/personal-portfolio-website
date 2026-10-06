@@ -241,6 +241,11 @@ The afternoon estimate in v1 was too low once the tests below are included. The 
 - **"Live" badge glow:** stop all motion within 5 seconds, for example two 2-second pulses. Three 2-second pulses would run 6 s and fail WCAG 2.2.2.
 - **"Coming Soon" badge:** remove the infinite opacity breathing (`open-source/page.tsx:245`). Its text dips to 1.93:1 at minimum opacity. Text stays fully opaque, and any motion stops within 5 s.
 
+> **Done in PR 5.**
+> - Blue text on grey gets a theme token, `primary.text` (#0066cc). It also covers a third spot of the same kind: the focused field label on the grey contact-form card.
+> - The visual snapshots now compare strictly (`threshold: 0`). The default 0.2 tolerance had let the grey change pass unnoticed.
+> - Lighthouse with reduced motion (so axe also checks content below the fold): colour contrast passes on all 4 pages, and accessibility is 98–99.
+
 ### PR 6 — Canonical domain
 - **Canonical domain → `www.horusyeung.com`** (D1):
   - Define the URL once (`SITE_URL`).
