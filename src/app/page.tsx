@@ -433,7 +433,7 @@ export default function HomePage() {
                 mt: 3,
                 fontSize: '21px',
                 fontWeight: 400,
-                color: 'primary.main',
+                color: 'primary.text',
                 textDecoration: 'none',
                 borderRadius: '4px',
                 transition: 'gap 0.3s ease',

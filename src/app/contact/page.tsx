@@ -134,7 +134,7 @@ const focusGlowSx = {
     },
   },
   '& .MuiInputLabel-root.Mui-focused': {
-    color: 'primary.main',
+    color: 'primary.text',
   },
 }
 

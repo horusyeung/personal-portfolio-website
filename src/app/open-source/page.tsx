@@ -232,37 +232,22 @@ export default function OpenSourcePage() {
         })
       }
 
-      // ── #26: Status badge — Color pulse glow / opacity breathe ──────
-      if (badge) {
-        if (project.status === 'Live') {
-          gsap.to(badge, {
-            boxShadow: '0 0 12px 4px rgba(52, 199, 89, 0.5)',
-            duration: 1,
-            repeat: -1,
-            yoyo: true,
-            ease: 'sine.inOut',
-            scrollTrigger: {
-              trigger: card,
-              start: 'top 90%',
-              end: 'bottom 10%',
-              toggleActions: 'play pause resume pause',
-            },
-          })
-        } else {
-          gsap.to(badge, {
-            opacity: 0.5,
-            duration: 1,
-            repeat: -1,
-            yoyo: true,
-            ease: 'sine.inOut',
-            scrollTrigger: {
-              trigger: card,
-              start: 'top 90%',
-              end: 'bottom 10%',
-              toggleActions: 'play pause resume pause',
-            },
-          })
-        }
+      // ── #26: "Live" badge — two glow pulses, then still ─────────────
+      // Automatic motion must stop within 5 s (WCAG 2.2.2): 4 × 1 s yoyo = 4 s
+      if (badge && project.status === 'Live') {
+        gsap.to(badge, {
+          boxShadow: '0 0 12px 4px rgba(52, 199, 89, 0.5)',
+          duration: 1,
+          repeat: 3,
+          yoyo: true,
+          ease: 'sine.inOut',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 90%',
+            end: 'bottom 10%',
+            toggleActions: 'play pause resume pause',
+          },
+        })
       }
     })
 
@@ -423,7 +408,8 @@ export default function OpenSourcePage() {
                           borderRadius: '12px',
                           bgcolor:
                             project.status === 'Live' ? 'rgba(52, 199, 89, 0.12)' : 'action.hover',
-                          color: project.status === 'Live' ? 'rgb(52, 199, 89)' : 'text.secondary',
+                          // #1d7a35 keeps the green at 4.9:1 on the chip (rgb(52, 199, 89) was 2.0:1)
+                          color: project.status === 'Live' ? '#1d7a35' : 'text.secondary',
                         }}
                       />
                     </Box>
