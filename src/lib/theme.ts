@@ -2,6 +2,16 @@
 
 import { createTheme, type Theme } from '@mui/material/styles'
 
+declare module '@mui/material/styles' {
+  interface PaletteColor {
+    /** Same hue as `main`, dark enough for text on `background.paper` (WCAG AA) */
+    text?: string
+  }
+  interface SimplePaletteColorOptions {
+    text?: string
+  }
+}
+
 const fontStack =
   '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Helvetica", "Arial", sans-serif'
 
@@ -14,6 +24,8 @@ export function createAppTheme(): Theme {
         light: '#2997ff',
         dark: '#005bba',
         contrastText: '#ffffff',
+        // #0071e3 is 4.3:1 on #f5f5f7; this is 5.1:1 (4.5:1 needed)
+        text: '#0066cc',
       },
       background: {
         default: '#ffffff',
@@ -21,7 +33,8 @@ export function createAppTheme(): Theme {
       },
       text: {
         primary: '#1d1d1f',
-        secondary: '#86868b',
+        // 5.1:1 on white, 4.7:1 on #f5f5f7 (was #86868b: 3.6:1 / 3.3:1)
+        secondary: '#6e6e73',
       },
       divider: '#d2d2d7',
     },

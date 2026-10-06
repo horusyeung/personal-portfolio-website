@@ -9,7 +9,8 @@ describe('createAppTheme', () => {
     expect(theme.palette.background.default).toBe('#ffffff')
     expect(theme.palette.background.paper).toBe('#f5f5f7')
     expect(theme.palette.text.primary).toBe('#1d1d1f')
-    expect(theme.palette.text.secondary).toBe('#86868b')
+    expect(theme.palette.text.secondary).toBe('#6e6e73')
+    expect(theme.palette.primary.text).toBe('#0066cc')
   })
 
   it('has h1 fontSize of 80', () => {

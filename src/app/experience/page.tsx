@@ -371,7 +371,7 @@ export default function ExperiencePage() {
                   mt: 0.5,
                   fontSize: '17px',
                   fontWeight: 400,
-                  color: 'primary.main',
+                  color: 'primary.text',
                 }}
               >
                 City University of Hong Kong
@@ -403,7 +403,7 @@ export default function ExperiencePage() {
                   mt: 0.5,
                   fontSize: '17px',
                   fontWeight: 400,
-                  color: 'primary.main',
+                  color: 'primary.text',
                 }}
               >
                 PolyU Hong Kong Community College
