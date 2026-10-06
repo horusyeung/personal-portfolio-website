@@ -339,6 +339,13 @@ Hurdles the conversion has to handle:
   - Only on `(hover: hover) and (pointer: fine)`.
   - No tween while idle.
 
+> **Done in PR 9.**
+> - GSAP was already on 3.15. Plugins are registered once, in `src/lib/gsap.ts`, and every module imports GSAP from there.
+> - **SplitText not adopted.** PR 3 already repaired the existing splitter (`aria-label`, `aria-hidden` letters, original text restored on cleanup). SplitText would add plugin code and need a stagger workaround for no visible gain.
+> - **Typewriter:** confirmed after the PR 3 deploy (Experience CLS 0.308 → 0.036).
+> - **Magnetic effect:** one shared listener, `gsap.quickTo` inside the radius, one spring-back tween on leaving, none while idle, and only for a fine pointer that can hover.
+> - It also fixes a bug found while comparing traces: each move outside the radius started a 0.5 s spring-back that was never cancelled, so a pulled icon snapped back to centre about 0.3 s after the pointer stopped near it. Taps on phones no longer nudge the icons either.
+
 ### 2.4 SEO (both paths)
 - JSON-LD as a plain `<script type="application/ld+json">` in the server HTML. It is currently `next/script` `afterInteractive`, and the live HTML has zero JSON-LD script elements. Add Medium to `sameAs`.
   - ⚠️ Commit `09f6b03` moved it *to* `next/script` to fix hydration error #418, which the earlier manual `<head>` tag caused.
