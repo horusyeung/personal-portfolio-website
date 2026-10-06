@@ -54,6 +54,9 @@ test.describe('Contact Page', () => {
       if (request.url().endsWith('/api/contact')) requests++
     })
 
+    // The subtitle's entrance changes wrapping above the form. Wait for it to settle before
+    // clicking the initially empty form, which otherwise races that movement in Safari.
+    await expect(page.getByTestId('contact-hero').locator('p').first()).toHaveCSS('opacity', '1')
     await page.getByRole('button', { name: 'Send Message' }).click()
     await expect(page.getByText('Please enter your name.')).toBeVisible()
     await expect(page.getByText('Please enter your email address.')).toBeVisible()
