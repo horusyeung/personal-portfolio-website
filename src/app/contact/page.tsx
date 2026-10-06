@@ -160,9 +160,7 @@ export default function ContactPage() {
   const iconRefs = useRef<(HTMLDivElement | null)[]>([])
   const formFieldsRef = useRef<(HTMLDivElement | null)[]>([])
 
-  const submitBtnRef = useRef<HTMLButtonElement>(null)
   const btnContainerRef = useRef<HTMLDivElement>(null)
-  const formRef = useRef<HTMLFormElement>(null)
 
   // ── GSAP animations ────────────────────────────────────────────────────
 
@@ -531,7 +529,6 @@ export default function ContactPage() {
               <Box
                 data-testid='contact-form'
                 component='form'
-                ref={formRef}
                 onSubmit={handleSubmit}
                 noValidate
                 aria-busy={status === 'sending'}
@@ -627,7 +624,6 @@ export default function ContactPage() {
                   {/* #34 — Submit button with ripple + confetti */}
                   <Box ref={btnContainerRef} sx={{ position: 'relative' }}>
                     <Button
-                      ref={submitBtnRef}
                       data-testid='submit-button'
                       type='submit'
                       variant='contained'
