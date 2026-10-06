@@ -48,7 +48,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
       # No-op when the image matches @playwright/test; downloads browsers if they drift
-      - run: npx playwright install chromium webkit
+      - run: npx playwright install chromium webkit firefox
       - run: yarn build
         env:
           # The build only needs a non-empty key; E2E tests never send real email

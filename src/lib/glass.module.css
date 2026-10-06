@@ -1,0 +1,90 @@
+/* Shared by CSS surfaces and the sx helpers. Portals inherit these tokens from <body>. */
+.tokens {
+  --glass-fill: rgba(255, 255, 255, 0.8);
+  --glass-decorative-fill: rgba(255, 255, 255, 0.18);
+  --glass-solid-fill: #ffffff;
+  --glass-blur: 20px;
+  --glass-saturate: 180%;
+  --glass-rim: 1px solid rgba(0, 0, 0, 0.08);
+  --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 10px 30px rgba(0, 0, 0, 0.14);
+  --glass-edge-blur: 16px;
+  --glass-edge-fill: transparent;
+}
+
+:global(html.dark) .tokens {
+  --glass-fill: rgba(29, 29, 31, 0.8);
+  --glass-decorative-fill: rgba(29, 29, 31, 0.18);
+  --glass-solid-fill: #1d1d1f;
+  --glass-rim: 1px solid rgba(255, 255, 255, 0.16);
+  --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Text-bearing surfaces always have at least 72% fill, even without preference detection. */
+.surface,
+.decorative {
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: var(
+    --glass-backdrop,
+    blur(var(--glass-blur)) saturate(var(--glass-saturate))
+  );
+  backdrop-filter: var(--glass-backdrop, blur(var(--glass-blur)) saturate(var(--glass-saturate)));
+  border: var(--glass-rim);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Only for decorative layers, never behind text or controls. */
+.decorative {
+  background: var(--glass-decorative-fill);
+}
+
+.edge {
+  background: var(--glass-edge-fill);
+  -webkit-backdrop-filter: var(--glass-edge-backdrop, blur(var(--glass-edge-blur)));
+  backdrop-filter: var(--glass-edge-backdrop, blur(var(--glass-edge-blur)));
+  pointer-events: none;
+}
+
+/* Fallbacks follow every base and dark rule, with matching specificity. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .tokens,
+  :global(html.dark) .tokens {
+    --glass-fill: var(--glass-solid-fill);
+    --glass-decorative-fill: var(--glass-solid-fill);
+    --glass-edge-fill: var(--glass-solid-fill);
+    --glass-backdrop: none;
+    --glass-edge-backdrop: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .tokens,
+  :global(html.dark) .tokens {
+    --glass-fill: var(--glass-solid-fill);
+    --glass-decorative-fill: var(--glass-solid-fill);
+    --glass-edge-fill: var(--glass-solid-fill);
+    --glass-backdrop: none;
+    --glass-edge-backdrop: none;
+  }
+
+  .edge {
+    mask-image: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .tokens,
+  :global(html.dark) .tokens {
+    --glass-solid-fill: Canvas;
+    --glass-fill: Canvas;
+    --glass-decorative-fill: Canvas;
+    --glass-edge-fill: Canvas;
+    --glass-rim: 1px solid CanvasText;
+    --glass-shadow: none;
+    --glass-backdrop: none;
+    --glass-edge-backdrop: none;
+  }
+
+  .edge {
+    mask-image: none;
+  }
+}

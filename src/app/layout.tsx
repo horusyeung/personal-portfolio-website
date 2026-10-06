@@ -10,6 +10,7 @@ import { BIO, JOB_TITLE, SITE_TITLE, SITE_URL, SOCIAL_LINKS } from '@/content/si
 import { baseOpenGraph } from '@/lib/metadata'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import glassStyles from '@/lib/glass.module.css'
 import './globals.css'
 
 const jsonLd = {
@@ -100,7 +101,7 @@ export default function RootLayout({
         {/* Must run before the body paints: see src/lib/intro.ts */}
         <script dangerouslySetInnerHTML={{ __html: introScript }} />
       </head>
-      <body>
+      <body className={glassStyles.tokens}>
         {/* Sets the light or dark class on <html> before the first paint, so there's no flash */}
         <InitColorSchemeScript attribute='class' defaultMode='system' />
         {/* A plain script so crawlers find it in the HTML (next/script is for code to run).
