@@ -13,7 +13,7 @@ _v1 came from the 2026-10-04 review. v2 adds corrections from an independent Cod
 | D1 | Which address is primary: `horusyeung.com` or `www.horusyeung.com`? | **Decided 2026-10-05: `www.horusyeung.com`.** Vercel stays as it is (bare domain → `www`). The code's canonical tags, sitemap, robots and JSON-LD move to `www` (PR 6). |
 | D2 | Do you approve the [visible changes](#visible-changes-need-your-ok)? | **Approved 2026-10-05.** |
 | D3 | Step 2: full Server Components conversion, or the lighter path? | **Decided 2026-10-05: light path.** /open-source stays converted; converting Home made it slower, so the other pages stay client components (see 2.1). |
-| D4 | Which Step 3 items, if any? | Decide after Steps 1–2. |
+| D4 | Which Step 3 items, if any? | **Decided 2026-10-06:** upgrades, page transitions, dark mode. Live GitHub stats skipped for now (see Step 3). |
 
 ---
 
@@ -438,6 +438,13 @@ Hurdles the conversion has to handle:
 | Dark mode | Follows the system, plus a toggle. Uses MUI CSS variables, so there's no flash. Shown to you as a preview first. | Approval of the preview |
 | Case studies | Pages with architecture diagrams. | Your content |
 | Upgrades | MUI 7 → 9 (codemods); Vitest 5, optionally with Browser Mode on the Playwright provider; TypeScript 6. Hold off on TS 7, since typescript-eslint supports only `<6.1`. | — |
+
+> **Step 3 status (2026-10-06):**
+> - **Upgrades: done.** TypeScript 6.0 (#23, typescript-eslint 8.71), Vitest 5 with Vite 8 (#24, config now `vitest.config.mts`), MUI 9.4 (#26). The MUI codemods found nothing to change, and every page plus the contact form states are pixel-identical. JS grew by 1.4–4.7 KB per route. Vitest Browser Mode was not needed.
+> - **Page transitions: done** (#25). A 200 ms crossfade via React `<ViewTransition>`, with the header on its own layer. Off under reduced motion.
+> - **Live GitHub stats: skipped for now.** Every public repo shows 0 stars, three were last pushed in March 2026, and `ai-augmented-dev-workflow` isn't public yet. The stats would weaken the cards. Revisit once the repos have stars or recent activity.
+> - **Dark mode: done** (#27). It follows the system and has a navbar toggle. MUI color schemes with CSS variables, so there's no flash. Light mode is unchanged apart from the toggle, dark text meets WCAG AA on every page, and dark snapshots were added.
+> - **Case studies:** not started; they need your content.
 
 ---
 
