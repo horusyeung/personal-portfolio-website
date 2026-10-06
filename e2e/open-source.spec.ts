@@ -38,7 +38,7 @@ test.describe('Open Source Page', () => {
 
   test('shows technology tags on projects', async ({ page }) => {
     const projects = page.getByTestId('projects-section')
-    for (const tech of ['Next.js', 'React Native', 'NestJS']) {
+    for (const tech of ['Next.js', 'React Native', 'Nest.js']) {
       await expect(projects).toContainText(tech)
     }
   })

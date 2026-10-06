@@ -259,7 +259,7 @@ export default function HomePage() {
                 letterSpacing: '0.02em',
               }}
             >
-              6+ Years &middot; Full-Stack
+              6+ Years &middot; Full Stack
             </Typography>
           </Box>
         </Container>
@@ -295,9 +295,10 @@ export default function HomePage() {
                 color: 'text.secondary',
               }}
             >
-              Lead distributed engineering teams of 5–7 across 4 countries, managing cross-timezone
-              sprints, coding standards, and CI/CD pipelines. Leverage AI-augmented development
-              workflows to accelerate delivery velocity and code quality.
+              Designed a microservice architecture from scratch. Lead a distributed team of 5
+              engineers while coding daily, managing cross-timezone sprints, coding standards and
+              CI/CD pipelines. Use AI-augmented development workflows to speed up delivery and raise
+              code quality.
             </Typography>
           </ScrollReveal>
         </Container>

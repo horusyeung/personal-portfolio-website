@@ -57,10 +57,10 @@ describe('ExperiencePage', () => {
     expect(hero.textContent).toContain('Experience')
   })
 
-  it('renders all 6 experience entries', () => {
+  it('renders all 5 experience entries', () => {
     renderWithTheme(<ExperiencePage />)
     const junoMarkets = screen.getAllByText('Juno Markets')
-    expect(junoMarkets).toHaveLength(3)
+    expect(junoMarkets).toHaveLength(2)
     expect(screen.getByText(/Beta Labs/)).toBeInTheDocument()
     expect(screen.getByText('The Hong Kong Jockey Club')).toBeInTheDocument()
     expect(screen.getByText('Pure Group')).toBeInTheDocument()
@@ -71,9 +71,11 @@ describe('ExperiencePage', () => {
     expect(screen.getByText('Education')).toBeInTheDocument()
   })
 
-  it('renders "BBA (Hons) Business Analysis"', () => {
+  it('renders the bachelor degree', () => {
     renderWithTheme(<ExperiencePage />)
-    expect(screen.getByText('BBA (Hons) Business Analysis')).toBeInTheDocument()
+    expect(
+      screen.getByText('Bachelor of Business Administration (Hons), Business Analysis'),
+    ).toBeInTheDocument()
   })
 
   it('renders second degree "Associate in Business, Hospitality Management (Distinction)"', () => {

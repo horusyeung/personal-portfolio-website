@@ -8,19 +8,21 @@ test.describe('Home Page', () => {
   test('displays the hero section with name and role', async ({ page }) => {
     await expect(page.getByTestId('hero-name')).toHaveText('Horus Yeung')
     await expect(page.getByTestId('hero-name')).toBeVisible()
-    await expect(page.getByText('Software Architect & Team Lead', { exact: true })).toBeVisible()
+    await expect(
+      page.getByText('Senior Full Stack Developer & Team Lead', { exact: true }),
+    ).toBeVisible()
   })
 
   test('displays the professional summary without company names', async ({ page }) => {
     await expect(page.locator('body')).not.toContainText('Currently leading')
     await expect(page.getByTestId('hero-section')).toContainText(
-      'Senior Software Architect and Team Lead',
+      'Senior Full Stack Developer and Team Lead',
     )
   })
 
   test('shows stats with key metrics', async ({ page }) => {
     await expect(page.getByTestId('hero-section')).toContainText('6+ Years')
-    await expect(page.getByTestId('hero-section')).toContainText('Full-Stack')
+    await expect(page.getByTestId('hero-section')).toContainText('Full Stack')
   })
 
   test('has working navigation to Experience page', async ({ page }) => {
@@ -45,7 +47,7 @@ test.describe('Home Page', () => {
       'Frontend',
       'Backend',
       'Database',
-      'Architecture',
+      'Mobile',
       'Cloud & DevOps',
       'Testing',
       'AI & Tooling',
