@@ -473,7 +473,7 @@ export default function ContactPage() {
                         display: 'inline-block',
                         fontSize: '17px',
                         fontWeight: 400,
-                        color: 'primary.main',
+                        color: 'primary.link',
                         textDecoration: 'none',
                         borderRadius: '4px',
                         '&:hover': {
