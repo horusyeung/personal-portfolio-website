@@ -33,26 +33,6 @@ export function splitTextIntoChars(element: HTMLElement) {
   return { chars, revert }
 }
 
-/**
- * Create a count-up animation for a number element.
- */
-export function animateCountUp(
-  element: HTMLElement,
-  endValue: number,
-  duration: number = 1.5,
-  suffix: string = '',
-) {
-  const obj = { value: 0 }
-  return gsap.to(obj, {
-    value: endValue,
-    duration,
-    ease: 'power2.out',
-    onUpdate: () => {
-      element.textContent = Math.round(obj.value) + suffix
-    },
-  })
-}
-
 // ── Magnetic pull ───────────────────────────────────────────────────────────
 // All magnetic elements share one document listener, and nothing is tweened while the pointer
 // is outside an element's radius: it follows the pointer inside, then springs back once.

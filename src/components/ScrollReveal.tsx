@@ -10,7 +10,6 @@ interface ScrollRevealProps {
   delay?: number
   distance?: number
   duration?: number
-  threshold?: number
 }
 
 export default function ScrollReveal({
