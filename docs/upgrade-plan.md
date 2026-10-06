@@ -12,7 +12,7 @@ _v1 came from the 2026-10-04 review. v2 adds corrections from an independent Cod
 |---|---|---|
 | D1 | Which address is primary: `horusyeung.com` or `www.horusyeung.com`? | **Decided 2026-10-05: `www.horusyeung.com`.** Vercel stays as it is (bare domain → `www`). The code's canonical tags, sitemap, robots and JSON-LD move to `www` (PR 6). |
 | D2 | Do you approve the [visible changes](#visible-changes-need-your-ok)? | **Approved 2026-10-05.** |
-| D3 | Step 2: full Server Components conversion, or the lighter path? | Decide after the one-route prototype in 2.1 has been measured. |
+| D3 | Step 2: full Server Components conversion, or the lighter path? | **Decided 2026-10-05: full path**, after the /open-source prototype (see 2.1). |
 | D4 | Which Step 3 items, if any? | Decide after Steps 1–2. |
 
 ---
@@ -279,6 +279,22 @@ The afternoon estimate in v1 was too low once the tests below are included. The 
   - **Full path:** convert all four pages. Delete the pass-through `layout.tsx` files and export `metadata` from the pages.
   - **Light path:** keep the pages and metadata layouts as they are; extract the data and repair the existing animations only.
 - Re-estimate the effort at that point.
+
+> **Done for /open-source (PR 7); D3 = full path.**
+> - The page is a Server Component. `OpenSourceMotion` is the only new client component: it runs the same GSAP code and finds its targets by `data-os` attributes instead of refs.
+> - The project list is in `src/content/projects.ts`; the page exports its metadata and the pass-through layout is gone.
+> - Measured against `master` (local production build, Lighthouse 13.5 mobile, median of 5, Chromium 1243):
+>
+> | /open-source | master | Server Component |
+> |---|---|---|
+> | First-load JS (gzip) | 256.0 KB | 233.3 KB (−9%) |
+> | HTML (gzip) | 8.7 KB | 10.4 KB |
+> | Script eval + compile | 439 ms | 411 ms |
+> | Main-thread work | 982 ms | 900 ms |
+> | Performance / LCP / TBT | 92 / 3247 ms / 11 ms | 92 / 3310 ms / 10 ms |
+>
+> - Strict visual snapshots match on all four devices; all Playwright and unit tests pass.
+> - Remaining routes, one PR each: home, experience, contact. Contact gains least, since its form stays a client component.
 
 Hurdles the conversion has to handle:
 - `skillIcons.tsx:155` mixes plain data with icon *functions*. Split it into server-safe data (`src/content/skills.ts`) and a client-side icon map.
