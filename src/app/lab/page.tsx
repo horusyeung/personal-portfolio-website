@@ -1,15 +1,10 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
-import { Box, Container, Typography } from '@mui/material'
-import {
-  EntryDemo,
-  LineRevealDemo,
-  LiquidGlassDemo,
-  NavPillDemo,
-  RailDemo,
-  SpotlightDemo,
-  TooltipDemo,
-} from './demos'
+import { Box, Container } from '@mui/material'
+import { githubProjects } from '@/content/projects'
+import LiquidGlassCanvas from './LiquidGlassCanvas'
+import { DockDemo, DynamicIslandDemo, HoneycombDemo, TvCardsDemo } from './AppleDemos'
+import { CardMorphDemo, GlassControlsDemo, GlowDemo, ScrubTextDemo, TabBarDemo } from './MoreDemos'
 import s from './lab.module.css'
 
 // Prototypes for review: not linked from the site, kept out of search and the sitemap
@@ -20,162 +15,158 @@ export const metadata: Metadata = {
 
 function Prototype({
   n,
+  name,
   title,
-  description,
-  meta,
+  lede,
+  note,
   children,
 }: {
   n: number
+  name: string
   title: string
-  description: string
-  meta: string
+  lede: string
+  note: string
   children: ReactNode
 }) {
   return (
     <section className={s.section} aria-labelledby={`p${n}`}>
-      <Typography
-        sx={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', color: 'text.secondary' }}
-      >
-        PROTOTYPE {n}
-      </Typography>
-      <Typography
-        id={`p${n}`}
-        variant='h2'
-        sx={{ mt: 1, fontSize: { xs: 28, md: 36 }, fontWeight: 700 }}
-      >
+      <div className={s.eyebrow}>
+        {String(n).padStart(2, '0')} · {name}
+      </div>
+      <h2 id={`p${n}`} className={s.heading}>
         {title}
-      </Typography>
-      <Typography sx={{ mt: 1.5, fontSize: 17, color: 'text.secondary', maxWidth: 720 }}>
-        {description}
-      </Typography>
-      <p className={s.meta}>{meta}</p>
-      {children}
+      </h2>
+      <p className={s.lede}>{lede}</p>
+      <div className={s.stage}>{children}</div>
+      <p className={s.note}>{note}</p>
     </section>
   )
 }
 
 export default function LabPage() {
   return (
-    <Container maxWidth={false} sx={{ maxWidth: 980, pb: 12 }}>
-      <Box sx={{ pt: { xs: 8, md: 12 }, pb: 6 }}>
-        <Typography
-          variant='h1'
-          sx={{ fontSize: { xs: 48, md: 80 }, fontWeight: 700, letterSpacing: '-0.015em' }}
-        >
-          Lab
-        </Typography>
-        <Typography sx={{ mt: 2, fontSize: 21, color: 'text.secondary', maxWidth: 680 }}>
-          Ten prototypes from the October 2026 research, built with the site&apos;s real content.
-          Nothing here changes the live pages. Try them in light and dark mode.
-        </Typography>
+    <Container maxWidth={false} sx={{ maxWidth: 1080, pb: 12 }}>
+      <Box sx={{ pt: { xs: 8, md: 12 }, pb: 8 }}>
+        <div className={s.eyebrow}>Lab · October 2026</div>
+        <h1 className={s.heading} style={{ fontSize: 'clamp(44px, 7vw, 80px)' }}>
+          Ten Apple-inspired prototypes.
+        </h1>
+        <p className={s.lede}>
+          Built with the site&apos;s real content, for review only. Drag, click and scroll each one,
+          and try them in light and dark mode. Nothing here changes the live pages.
+        </p>
       </Box>
 
       <Prototype
         n={1}
-        title='Line-by-line headline reveal'
-        description='Each line of a heading slides up from behind a mask, one after another. It would replace the letter-by-letter split on section headings (the hero name stays as it is).'
-        meta='Apple: apple.com/apple-music headlines. GSAP SplitText with line masks. All browsers. Off with reduced motion.'
+        name='Liquid Glass'
+        title='Your name, in Liquid Glass.'
+        lede='Drag the glass. Light bends at its rim, splits slightly into colour, and catches a highlight. A droplet trails behind it and melts back in, like iOS 26.'
+        note='Echoes the iOS 26 Lock Screen clock and WWDC25 artwork. WebGL draws the glass and its background together, so it refracts in Safari, Chrome and Firefox. Stays still with reduced motion.'
       >
-        <LineRevealDemo />
+        <LiquidGlassCanvas height={540}>
+          <span
+            style={{
+              fontSize: 36,
+              fontWeight: 700,
+              letterSpacing: '-0.02em',
+              color: '#fff',
+              textShadow: '0 1px 14px rgba(0,0,0,0.2)',
+            }}
+          >
+            Horus Yeung
+          </span>
+        </LiquidGlassCanvas>
       </Prototype>
 
       <Prototype
         n={2}
-        title='Liquid Glass'
-        description='A floating glass tab bar over your skills, a lens you can drag, and glass chips. In Chrome the glass bends what is behind it like a real lens. Safari and Firefox get the frosted version that apple.com itself uses.'
-        meta='Apple: iOS 26 Liquid Glass; apple.com uses blur(20px) saturate(180%) on translucent fills. Refraction needs Chrome. Solid fill with Reduce Transparency.'
+        name='Floating tab bar'
+        title='Navigation that floats.'
+        lede='A glass tab bar hovers over the page. The highlight stretches as it slides between tabs, the bar shrinks while you scroll down, and text melts into blur under it.'
+        note='Echoes the iOS 26 tab bar and scroll edge effect. Glass is the recipe apple.com uses (blur and saturate); all browsers.'
       >
-        <LiquidGlassDemo />
+        <TabBarDemo />
       </Prototype>
 
       <Prototype
         n={3}
-        title='Sliding nav pill'
-        description='The highlight behind the active link glides to the next one, like the iOS 26 tab bar. It uses the view transitions the site already has, so it would also run between real pages.'
-        meta='Apple: tab nav on apple.com/macbook-pro. React ViewTransition. Chrome, Safari 18+, Firefox 144+; elsewhere the pill jumps.'
+        name='Honeycomb'
+        title='Every tool, at a glance.'
+        lede='All 45 skills as an Apple Watch app grid. Drag to explore: icons swell in the middle and shrink towards the edge.'
+        note='Echoes the watchOS app grid. Hand-built with pointer events, no library. On the real page the categorised list would stay for screen readers.'
       >
-        <NavPillDemo />
+        <HoneycombDemo />
       </Prototype>
 
       <Prototype
         n={4}
-        title='Highlight copy'
-        description='Body text in grey with the key phrases in full colour. In Chrome and Safari the phrases light up as you scroll past.'
-        meta='Apple: apple.com/macbook-pro section copy. CSS only; the scroll-linked part needs Chrome 115+ or Safari 26+, and Firefox shows it static.'
+        name='Liquid Glass controls'
+        title='Controls you want to touch.'
+        lede='Press and hold the switch: its knob swells into clear glass. The category control slides a glass capsule that squashes and settles, and the skills below follow.'
+        note='Echoes iOS 26 switches and segmented controls. Real switch and radio semantics; all browsers.'
       >
-        <div className={s.stage}>
-          <p className={s.highlightCopy}>
-            <span className={s.hl}>Designed a microservice architecture from scratch.</span> Lead a
-            distributed team of 5 engineers <span className={s.hl}>while coding daily</span>,
-            managing cross-timezone sprints, coding standards and CI/CD pipelines. Use{' '}
-            <span className={s.hl}>AI-augmented development workflows</span> to speed up delivery
-            and raise code quality.
-          </p>
-        </div>
+        <GlassControlsDemo />
       </Prototype>
 
       <Prototype
         n={5}
-        title='Gradient accent text'
-        description='One phrase in a soft colour gradient, used sparingly, for example in the closing call to action.'
-        meta='Apple: apple.com/macbook-pro and Apple Intelligence headlines. CSS only, all browsers.'
+        name='Card morph'
+        title='Projects that open like the App Store.'
+        lede='Tap a card and it grows into a full sheet, then shrinks back into place when you close it.'
+        note='Echoes the App Store Today tab. React ViewTransition, which the site already uses. Chrome and Safari 18+; elsewhere the sheet simply appears. Esc closes it.'
       >
-        <div className={s.stage}>
-          <Typography
-            variant='h2'
-            sx={{ fontSize: { xs: 40, md: 56 }, fontWeight: 700, letterSpacing: '-0.015em' }}
-          >
-            Let&apos;s work <span className={s.gradientText}>together.</span>
-          </Typography>
-        </div>
+        <CardMorphDemo />
       </Prototype>
 
       <Prototype
         n={6}
-        title='Smooth entry for messages'
-        description='The contact form’s success and error messages fade and rise in, and fade out again, with CSS alone.'
-        meta='CSS @starting-style and transition-behavior. Chrome 117+, Safari 17.5+, Firefox 129+. Off with reduced motion.'
+        name='Dynamic Island'
+        title='Feedback that feels alive.'
+        lede='Sending the contact form morphs a little island: a spinner while it sends, then a confirmation that springs open.'
+        note='Echoes the iPhone Dynamic Island. CSS transitions with a spring curve; announced to screen readers as a status.'
       >
-        <EntryDemo />
+        <DynamicIslandDemo />
       </Prototype>
 
       <Prototype
         n={7}
-        title='Spotlight tiles'
-        description='A soft light and a glowing border follow the pointer across tiles, matching the glow already on the Open Source cards.'
-        meta='One pointer listener writing CSS variables. Mouse and trackpad only.'
+        name='Scroll-lit text'
+        title='Words that light up as you read.'
+        lede='Scroll slowly past the paragraph below.'
+        note='Echoes apple.com product pages. GSAP SplitText with a scrubbed ScrollTrigger; all browsers. Fully visible with reduced motion.'
       >
-        <SpotlightDemo />
+        <ScrubTextDemo />
       </Prototype>
 
       <Prototype
         n={8}
-        title='Tooltips that place themselves'
-        description='Hover or tab to an icon to see its name. Near the top of the screen the tooltip flips below the icon on its own.'
-        meta='CSS anchor positioning. Chrome 125+, Safari 26+, Firefox 147+; older browsers show it above.'
+        name='Apple TV cards'
+        title='Depth you can feel.'
+        lede='Move the pointer over a card. It lifts, tilts towards you, its layers separate and a glare slides across.'
+        note='Echoes the tvOS focus effect. Also reacts to keyboard focus; lift only on touch and with reduced motion.'
       >
-        <TooltipDemo />
+        <TvCardsDemo projects={githubProjects} />
       </Prototype>
 
       <Prototype
         n={9}
-        title='Squircle corners'
-        description='Apple’s smooth “continuous” corners instead of plain rounded ones. Compare the two shapes.'
-        meta='CSS corner-shape: squircle. Chrome 139+ only for now; other browsers show normal rounded corners.'
+        name='Dock'
+        title='Get in touch, the Mac way.'
+        lede='Run the pointer along the dock. Icons grow as you pass, with their names above.'
+        note='Echoes the macOS Dock. Mouse and trackpad get the magnification; touch and keyboard get plain links.'
       >
-        <div className={`${s.stage} ${s.squircleRow}`}>
-          <div className={s.shape}>border-radius</div>
-          <div className={`${s.shape} ${s.squircle}`}>corner-shape: squircle</div>
-        </div>
+        <DockDemo />
       </Prototype>
 
       <Prototype
         n={10}
-        title='Experience progress rail'
-        description='A thin line beside the roles fills in as you scroll through your career.'
-        meta='GSAP ScrollTrigger scrub, all browsers. Shown full and still with reduced motion. Adds one visual element to the Experience page.'
+        name='Apple Intelligence glow'
+        title='A little bit of magic.'
+        lede='Click into the message field, or hover the button, for the Apple Intelligence glow.'
+        note='Echoes the Apple Intelligence edge glow. CSS only: a rotating conic gradient with a soft halo. Static with reduced motion.'
       >
-        <RailDemo />
+        <GlowDemo />
       </Prototype>
     </Container>
   )

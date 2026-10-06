@@ -1,502 +1,541 @@
-/* Prototype styles for /lab only. Colors come from the MUI CSS variables, so both schemes work. */
+/* /lab only. Colours come from the MUI CSS variables, so light and dark both work. */
+
+/* ── Page ─────────────────────────────────────────────────────────────────── */
 
 .section {
-  padding: 72px 0;
+  padding: 112px 0;
   border-top: 1px solid var(--mui-palette-divider);
 }
 
-.meta {
-  margin-top: 8px;
+.eyebrow {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mui-palette-primary-link);
+}
+
+.heading {
+  margin: 8px 0 0;
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 700;
+  line-height: 1.07;
+  letter-spacing: -0.015em;
+  color: var(--mui-palette-text-primary);
+}
+
+.lede {
+  margin: 16px 0 0;
+  max-width: 680px;
+  font-size: 21px;
+  line-height: 1.45;
+  color: var(--mui-palette-text-secondary);
+}
+
+.note {
+  margin: 28px 0 0;
   font-size: 13px;
   color: var(--mui-palette-text-secondary);
 }
 
 .stage {
-  margin-top: 32px;
-  border-radius: 20px;
-  background: var(--mui-palette-background-paper);
-  padding: 40px 32px;
-  position: relative;
-  overflow: hidden;
+  margin-top: 48px;
 }
 
-.button {
-  margin-top: 20px;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--mui-palette-primary-link);
-  background: none;
-  border: 0;
-  padding: 8px 0;
-  cursor: pointer;
+.small {
+  font-size: 13px;
+  color: var(--mui-palette-text-secondary);
 }
 
-.button:focus-visible {
-  outline: 2px solid var(--mui-palette-primary-main);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* ── 2. Liquid Glass ──────────────────────────────────────────────────────── */
-
-.glassScroller {
-  height: 420px;
-  overflow-y: auto;
-  border-radius: 20px;
-  position: relative;
-  background: var(--mui-palette-background-default);
-}
-
-.glassContent {
-  padding: 96px 32px 140px;
-}
-
-/* Apple's web recipe: translucent fill + blur + saturate, with an iOS 26 rim */
-.glass {
-  --glass-fill: rgba(255, 255, 255, 0.62);
-  --glass-rim: rgba(255, 255, 255, 0.85);
-  --glass-edge: rgba(0, 0, 0, 0.08);
-  background: var(--glass-fill);
-  -webkit-backdrop-filter: blur(14px) saturate(180%);
-  backdrop-filter: blur(14px) saturate(180%);
-  box-shadow:
-    inset 0 1px 0 var(--glass-rim),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.25),
-    inset 0 0 0 0.5px var(--glass-edge),
-    0 8px 28px rgba(0, 0, 0, 0.12);
-}
-
-:global(html.dark) .glass {
-  --glass-fill: rgba(40, 40, 44, 0.55);
-  --glass-rim: rgba(255, 255, 255, 0.22);
-  --glass-edge: rgba(255, 255, 255, 0.1);
-}
-
-/* Chromium only: real refraction through an SVG displacement map (set by LiquidGlass.tsx) */
-.glass[data-refract='true'] {
-  -webkit-backdrop-filter: var(--refract) blur(0.5px) saturate(170%);
-  backdrop-filter: var(--refract) blur(0.5px) saturate(170%);
-  --glass-fill: rgba(255, 255, 255, 0.12);
-}
-
-:global(html.dark) .glass[data-refract='true'] {
-  --glass-fill: rgba(30, 30, 34, 0.18);
-}
-
-/* A specular highlight sweeping the top edge */
-.glass::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 45%);
-  mix-blend-mode: soft-light;
-}
-
-.tabBar {
-  position: sticky;
-  top: 16px;
-  margin: -80px auto 0;
-  width: fit-content;
-  display: flex;
-  gap: 4px;
-  padding: 6px;
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
   border-radius: 999px;
-  z-index: 2;
-}
-
-.tab {
-  font: inherit;
   font-size: 13px;
   color: var(--mui-palette-text-primary);
-  background: none;
-  border: 0;
-  padding: 8px 16px;
-  border-radius: 999px;
-  cursor: pointer;
-  position: relative;
-}
-
-.tabActive {
-  background: rgba(0, 0, 0, 0.06);
-  font-weight: 600;
-}
-
-:global(html.dark) .tabActive {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.lens {
-  position: absolute;
-  width: 220px;
-  height: 88px;
-  border-radius: 44px;
-  z-index: 3;
-  cursor: grab;
-  touch-action: none;
-}
-
-.lens:active {
-  cursor: grabbing;
-}
-
-.glassChips {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.glassChip {
-  position: relative;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 6px 14px;
-  border-radius: 999px;
-}
-
-.chipLive {
-  color: var(--mui-palette-live-text);
+  background: var(--mui-palette-background-paper);
+  border: 1px solid var(--mui-palette-divider);
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .glass,
-  .glass[data-refract='true'] {
+  .tabBar,
+  .segThumb {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     background: var(--mui-palette-background-paper);
   }
 }
 
-/* Lets the real site header try the rim while you are on /lab */
-:global(html.lab-glass-header) :global([data-testid='navbar']) {
-  box-shadow:
-    inset 0 -1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    0 6px 24px rgba(0, 0, 0, 0.06) !important;
-  border-bottom-color: transparent !important;
-}
+/* ── iOS 26 tab bar ───────────────────────────────────────────────────────── */
 
-/* ── 3. Sliding nav pill ──────────────────────────────────────────────────── */
-
-.pillNav {
-  display: inline-flex;
-  gap: 4px;
-  padding: 4px;
-  border-radius: 999px;
-  background: var(--mui-palette-background-default);
+.device {
+  position: relative;
+  height: 520px;
+  border-radius: 32px;
+  overflow: hidden;
   border: 1px solid var(--mui-palette-divider);
+  background: var(--mui-palette-background-default);
 }
 
-.pillItem {
+.deviceScroll {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.deviceContent {
+  padding: 96px clamp(20px, 6vw, 72px) 64px;
+}
+
+.deviceTitle {
+  margin: 0 0 24px;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.bullet {
+  margin: 0 0 8px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--mui-palette-text-secondary);
+}
+
+/* Scroll edge effect: each layer blurs harder and covers less, so content melts into the top */
+.edgeBlur {
+  position: sticky;
+  top: 0;
+  height: 110px;
+  margin-bottom: -110px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.edgeBlur span {
+  position: absolute;
+  inset: 0;
+  -webkit-backdrop-filter: blur(var(--b));
+  backdrop-filter: blur(var(--b));
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 calc(70% - var(--i) * 17%),
+    transparent calc(100% - var(--i) * 17%)
+  );
+}
+
+.tabBar {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 2;
+  display: flex;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  -webkit-backdrop-filter: blur(14px) saturate(190%);
+  backdrop-filter: blur(14px) saturate(190%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.06),
+    0 10px 30px rgba(0, 0, 0, 0.14);
+  transition:
+    scale 0.45s cubic-bezier(0.32, 0.72, 0, 1),
+    translate 0.45s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:global(html.dark) .tabBar {
+  background: rgba(44, 44, 48, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.1),
+    0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.tabBarCompact {
+  scale: 0.86;
+  translate: -50% -6px;
+}
+
+.tabPill {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  left: 0;
+  width: 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.07);
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+}
+
+:global(html.dark) .tabPill {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.tabItem {
   position: relative;
   font: inherit;
-  font-size: 13px;
-  padding: 8px 16px;
-  border: 0;
-  background: none;
-  color: var(--mui-palette-text-secondary);
-  cursor: pointer;
-  border-radius: 999px;
-  isolation: isolate;
-}
-
-.pillItem[aria-current='page'] {
-  color: var(--mui-palette-text-primary);
-  font-weight: 600;
-}
-
-.pill {
-  position: absolute;
-  inset: 0;
-  border-radius: 999px;
-  background: var(--mui-palette-background-paper);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  z-index: -1;
-}
-
-:global(::view-transition-group(.lab-pill)) {
-  animation-duration: 360ms;
-  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-/* ── 4. Scroll-lit highlight copy ─────────────────────────────────────────── */
-
-.highlightCopy {
-  font-size: clamp(22px, 3vw, 32px);
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--mui-palette-text-secondary);
-  max-width: 760px;
-}
-
-.hl {
-  color: var(--mui-palette-text-primary);
-}
-
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .hl {
-      animation: light-up linear both;
-      animation-timeline: view();
-      animation-range: entry 30% cover 50%;
-    }
-  }
-}
-
-@keyframes light-up {
-  from {
-    color: var(--mui-palette-text-secondary);
-  }
-  to {
-    color: var(--mui-palette-text-primary);
-  }
-}
-
-/* ── 5. Gradient accent text ──────────────────────────────────────────────── */
-
-.gradientText {
-  background: linear-gradient(90deg, #0894ff, #c959dd 34%, #ff2e54 68%, #ff9004);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
-@media (forced-colors: active) {
-  .gradientText {
-    -webkit-text-fill-color: currentColor;
-    background: none;
-  }
-}
-
-/* ── 6. @starting-style entry ─────────────────────────────────────────────── */
-
-.toast {
-  margin-top: 20px;
-  padding: 14px 18px;
-  border-radius: 14px;
-  font-size: 15px;
-  background: rgba(52, 199, 89, 0.12);
-  color: var(--mui-palette-live-text);
-  max-width: 420px;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .toast {
-    transition:
-      opacity 0.35s ease,
-      transform 0.35s cubic-bezier(0.32, 0.72, 0, 1),
-      display 0.35s allow-discrete;
-  }
-
-  .toast[hidden] {
-    display: none;
-    opacity: 0;
-    transform: translateY(10px) scale(0.98);
-  }
-
-  @starting-style {
-    .toast {
-      opacity: 0;
-      transform: translateY(10px) scale(0.98);
-    }
-  }
-}
-
-/* ── 7. Spotlight tiles ───────────────────────────────────────────────────── */
-
-.tiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
-}
-
-.tile {
-  --x: -500px;
-  --y: -500px;
-  position: relative;
-  padding: 20px;
-  border-radius: 18px;
-  background: var(--mui-palette-background-default);
-  border: 1px solid var(--mui-palette-divider);
-  overflow: hidden;
-}
-
-.tile::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    260px circle at var(--x) var(--y),
-    rgba(0, 113, 227, 0.12),
-    transparent 60%
-  );
-  pointer-events: none;
-}
-
-.tile::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: radial-gradient(
-    180px circle at var(--x) var(--y),
-    rgba(0, 113, 227, 0.7),
-    transparent 60%
-  );
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
-.tileTitle {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--mui-palette-text-secondary);
-}
-
-.tileSkills {
-  margin-top: 10px;
   font-size: 14px;
+  font-weight: 500;
+  padding: 9px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
   color: var(--mui-palette-text-primary);
+  cursor: pointer;
 }
 
-/* ── 8. Anchor-positioned tooltips ───────────────────────────────────────── */
-
-.iconRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
+.tabItemActive {
+  color: var(--mui-palette-primary-link);
+  font-weight: 600;
 }
 
-.iconButton {
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  border: 1px solid var(--mui-palette-divider);
-  background: var(--mui-palette-background-default);
-  color: var(--mui-palette-text-primary);
-  cursor: default;
-}
-
-.iconButton:focus-visible {
+.tabItem:focus-visible,
+.segItem:focus-visible,
+.switch:focus-visible,
+.todayCard:focus-visible {
   outline: 2px solid var(--mui-palette-primary-main);
   outline-offset: 2px;
 }
 
-.tip {
-  /* Fallback: above the icon. With anchor positioning it also flips below near the top edge */
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  translate: -50% 0;
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-  background: var(--mui-palette-text-primary);
-  color: var(--mui-palette-background-default);
-  opacity: 0;
-  pointer-events: none;
+/* ── Liquid Glass switch ──────────────────────────────────────────────────── */
+
+.switch {
+  position: relative;
+  width: 64px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(120, 120, 128, 0.32);
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-.iconButton:hover + .tip,
-.iconButton:focus-visible + .tip {
+.switchOn {
+  background: #30d158;
+}
+
+.switchKnob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  transition:
+    translate 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+    width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    height 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    top 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.25s ease;
+}
+
+.switchOn .switchKnob {
+  translate: 34px 0;
+}
+
+/* Pressed: the knob swells into clear glass, magnifying the track colour under it */
+.switchPressed .switchKnob {
+  width: 40px;
+  height: 34px;
+  top: -2px;
+  background: rgba(255, 255, 255, 0.18);
+  -webkit-backdrop-filter: blur(1.5px) saturate(220%) brightness(1.08);
+  backdrop-filter: blur(1.5px) saturate(220%) brightness(1.08);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -2px 4px rgba(255, 255, 255, 0.35),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.6),
+    0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.switchOn.switchPressed .switchKnob {
+  translate: 22px 0;
+}
+
+.switchLens {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.8), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.switchPressed .switchLens {
   opacity: 1;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .tip {
-    transition: opacity 0.15s ease;
-  }
+/* ── Segmented control ────────────────────────────────────────────────────── */
+
+.segmented {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(120, 120, 128, 0.14);
 }
 
-@supports (position-area: top) {
-  .tip {
-    bottom: auto;
-    left: auto;
-    translate: none;
-    margin: 8px;
-    position-area: top;
-    position-try-fallbacks: flip-block;
-  }
+.segThumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  width: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  backdrop-filter: blur(10px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 3px 10px rgba(0, 0, 0, 0.14);
 }
 
-/* ── 9. Squircles ─────────────────────────────────────────────────────────── */
+:global(html.dark) .segThumb {
+  background: rgba(99, 99, 102, 0.7);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 3px 10px rgba(0, 0, 0, 0.4);
+}
 
-.squircleRow {
+.segItem {
+  position: relative;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 18px;
+  border: 0;
+  background: none;
+  border-radius: 999px;
+  color: var(--mui-palette-text-secondary);
+  cursor: pointer;
+}
+
+.segItemActive {
+  color: var(--mui-palette-text-primary);
+  font-weight: 600;
+}
+
+/* ── App Store "Today" cards ──────────────────────────────────────────────── */
+
+.todayCard {
+  aspect-ratio: 3 / 4;
+  border: 0;
+  border-radius: 24px;
+  padding: 22px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  align-content: end;
+  gap: 6px;
+  text-align: left;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+  transition: scale 0.35s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-.shape {
-  height: 140px;
+.todayCard:hover {
+  scale: 1.02;
+}
+
+.todayCard:active {
+  scale: 0.97;
+}
+
+.cardPlaceholder {
+  aspect-ratio: 3 / 4;
+}
+
+.todayEyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.todayTitle {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.sheetBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
   display: grid;
   place-items: center;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--mui-palette-text-secondary);
-  background: var(--mui-palette-background-default);
-  border: 1px solid var(--mui-palette-divider);
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.sheet {
+  width: min(640px, 100%);
   border-radius: 28px;
+  overflow: hidden;
+  background: var(--mui-palette-background-paper);
+  color: var(--mui-palette-text-primary);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
 }
 
-.squircle {
-  border-radius: 56px;
-  corner-shape: squircle;
+.sheetHero {
+  height: 280px;
+  padding: 28px;
+  display: grid;
+  align-content: end;
+  gap: 8px;
+  color: #fff;
 }
 
-/* ── 10. Experience progress rail ─────────────────────────────────────────── */
-
-.railWrap {
-  position: relative;
-  padding-left: 28px;
-}
-
-.rail,
-.railFill {
-  position: absolute;
-  left: 6px;
-  top: 6px;
-  bottom: 6px;
-  width: 2px;
-  border-radius: 1px;
-}
-
-.rail {
-  background: var(--mui-palette-divider);
-}
-
-.railFill {
+.primaryButton {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 999px;
   background: var(--mui-palette-primary-main);
-  transform-origin: top;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
 }
 
-.role {
+.textButton {
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mui-palette-primary-link);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+:global(::view-transition-group(.today-morph)) {
+  animation-duration: 480ms;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:global(::view-transition-old(.today-morph)),
+:global(::view-transition-new(.today-morph)) {
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+/* ── Scroll-scrubbed type ─────────────────────────────────────────────────── */
+
+.scrubText {
+  margin: 0;
+  max-width: 920px;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--mui-palette-text-primary);
+}
+
+/* ── Apple Intelligence glow ──────────────────────────────────────────────── */
+
+@property --angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.glow {
   position: relative;
-  padding: 18px 0;
+  display: inline-block;
+  border-radius: 20px;
+  isolation: isolate;
 }
 
-.role::before {
+.glow::before,
+.glow::after {
   content: '';
   position: absolute;
-  left: -27px;
-  top: 25px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+  border-radius: inherit;
+  background: conic-gradient(from var(--angle), #0894ff, #c959dd, #ff2e54, #ff9004, #0894ff);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+/* A crisp 2px ring */
+.glow::before {
+  inset: -2px;
+  padding: 2px;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  z-index: 1;
+}
+
+/* And a soft halo behind it */
+.glow::after {
+  inset: -6px;
+  filter: blur(18px);
+  z-index: -1;
+}
+
+.glowOn::before,
+.glowHover:hover::before,
+.glowHover:focus-within::before {
+  opacity: 1;
+}
+
+.glowOn::after,
+.glowHover:hover::after,
+.glowHover:focus-within::after {
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .glow::before,
+  .glow::after {
+    animation: spin-angle 3.2s linear infinite;
+  }
+}
+
+@keyframes spin-angle {
+  to {
+    --angle: 360deg;
+  }
+}
+
+.glowField {
+  display: block;
+  width: 100%;
+  min-height: 132px;
+  padding: 18px 20px;
+  border: 1px solid var(--mui-palette-divider);
+  border-radius: 20px;
+  font: inherit;
+  font-size: 17px;
+  resize: vertical;
+  outline: none;
+  color: var(--mui-palette-text-primary);
   background: var(--mui-palette-background-paper);
-  border: 2px solid var(--mui-palette-primary-main);
+}
+
+.glowButton {
+  display: inline-block;
+  padding: 14px 30px;
+  border-radius: 999px;
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--mui-palette-text-primary);
+  background: var(--mui-palette-background-paper);
+  outline-offset: 4px;
 }
