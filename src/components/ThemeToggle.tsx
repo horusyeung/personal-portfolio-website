@@ -7,8 +7,9 @@ import LightModeOutlined from '@mui/icons-material/LightModeOutlined'
 
 /**
  * Switches between light and dark. Choosing the scheme the system already uses goes back to
- * following the system. CSS picks the icon from the class on <html>, so the server markup never
- * depends on the mode and nothing flashes before hydration.
+ * following the system. The icon shows the current scheme (sun in light, moon in dark). CSS picks
+ * it from the class on <html>, so the server markup never depends on the mode and nothing flashes
+ * before hydration.
  */
 export default function ThemeToggle() {
   const { mode, setMode } = useColorScheme()
@@ -35,9 +36,18 @@ export default function ThemeToggle() {
         '&::after': { content: '""', position: 'absolute', inset: -8 },
       }}
     >
-      <DarkModeOutlined sx={{ fontSize: 18, ':where(.dark) &': { display: 'none' } }} />
+      {/* applyStyles, not a ':where(.dark) &' key, which Emotion attaches to the icon itself */}
       <LightModeOutlined
-        sx={{ fontSize: 18, display: 'none', ':where(.dark) &': { display: 'block' } }}
+        data-testid='theme-icon-light'
+        sx={(theme) => ({ fontSize: 18, ...theme.applyStyles('dark', { display: 'none' }) })}
+      />
+      <DarkModeOutlined
+        data-testid='theme-icon-dark'
+        sx={(theme) => ({
+          fontSize: 18,
+          display: 'none',
+          ...theme.applyStyles('dark', { display: 'inline-block' }),
+        })}
       />
     </IconButton>
   )

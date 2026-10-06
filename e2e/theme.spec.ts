@@ -17,6 +17,18 @@ test.describe('Theme', () => {
     await expect(page.locator('body')).toHaveCSS('background-color', BLACK)
   })
 
+  test('the toggle icon shows the current scheme', async ({ page }) => {
+    const toggle = page.getByTestId('theme-toggle')
+    await page.emulateMedia({ colorScheme: 'light' })
+    await page.goto('/')
+    await expect(toggle.getByTestId('theme-icon-light')).toBeVisible()
+    await expect(toggle.getByTestId('theme-icon-dark')).toBeHidden()
+
+    await toggle.click()
+    await expect(toggle.getByTestId('theme-icon-dark')).toBeVisible()
+    await expect(toggle.getByTestId('theme-icon-light')).toBeHidden()
+  })
+
   test('the toggle switches, persists, and goes back to following the system', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'light' })
     await page.goto('/')
