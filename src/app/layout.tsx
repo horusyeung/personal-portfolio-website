@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ViewTransition } from 'react'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
+import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { ThemeModeProvider } from '@/lib/ThemeModeProvider'
@@ -98,6 +99,8 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: introScript }} />
       </head>
       <body>
+        {/* Sets the light or dark class on <html> before the first paint, so there's no flash */}
+        <InitColorSchemeScript attribute='class' defaultMode='system' />
         {/* A plain script so crawlers find it in the HTML (next/script is for code to run).
             Escaping < keeps the JSON from closing the tag. */}
         <script

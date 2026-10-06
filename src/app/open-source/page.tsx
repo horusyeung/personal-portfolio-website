@@ -176,10 +176,8 @@ export default function OpenSourcePage() {
                           fontWeight: 600,
                           height: '24px',
                           borderRadius: '12px',
-                          bgcolor:
-                            project.status === 'Live' ? 'rgba(52, 199, 89, 0.12)' : 'action.hover',
-                          // #1d7a35 keeps the green at 4.9:1 on the chip (rgb(52, 199, 89) was 2.0:1)
-                          color: project.status === 'Live' ? '#1d7a35' : 'text.secondary',
+                          bgcolor: project.status === 'Live' ? 'live.background' : 'action.hover',
+                          color: project.status === 'Live' ? 'live.text' : 'text.secondary',
                         }}
                       />
                     </Box>

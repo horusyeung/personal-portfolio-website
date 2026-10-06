@@ -27,6 +27,11 @@ body {
   transform: translateY(-200%);
 }
 
+html.dark .skip-link {
+  background: #1d1d1f;
+  color: #2997ff;
+}
+
 .skip-link:focus {
   transform: none;
   outline: 2px solid #0071e3;

@@ -221,7 +221,7 @@ export default function HomePage() {
                 gap: 0.5,
                 fontSize: '17px',
                 fontWeight: 400,
-                color: 'primary.main',
+                color: 'primary.link',
                 textDecoration: 'none',
                 borderRadius: '4px',
                 transition: 'gap 0.3s cubic-bezier(0.25, 1, 0.5, 1)',

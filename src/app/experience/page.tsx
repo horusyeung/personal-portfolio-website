@@ -206,7 +206,7 @@ export default function ExperiencePage() {
                     mt: 0.5,
                     fontSize: '17px',
                     fontWeight: 400,
-                    color: 'primary.main',
+                    color: 'primary.link',
                   }}
                 >
                   {exp.company}

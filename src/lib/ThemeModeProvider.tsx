@@ -8,7 +8,7 @@ const theme = createAppTheme()
 
 export function ThemeModeProvider({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme} defaultMode='system' disableTransitionOnChange>
       <CssBaseline />
       {children}
     </ThemeProvider>

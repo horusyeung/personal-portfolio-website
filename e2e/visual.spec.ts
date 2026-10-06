@@ -28,10 +28,15 @@ test.describe('Visual snapshots', () => {
     ['open-source', '/open-source'],
     ['contact', '/contact'],
   ]) {
-    test(`${name} page`, async ({ page }) => {
-      await page.goto(path)
-      await page.evaluate(() => document.fonts.ready)
-      await expect(page).toHaveScreenshot(`${name}.png`, { fullPage: true })
-    })
+    // Light keeps the original snapshot names; dark mode follows the system setting
+    for (const scheme of ['light', 'dark'] as const) {
+      test(`${name} page (${scheme})`, async ({ page }) => {
+        await page.emulateMedia({ colorScheme: scheme })
+        await page.goto(path)
+        await page.evaluate(() => document.fonts.ready)
+        const file = scheme === 'light' ? `${name}.png` : `${name}-dark.png`
+        await expect(page).toHaveScreenshot(file, { fullPage: true })
+      })
+    }
   }
 })

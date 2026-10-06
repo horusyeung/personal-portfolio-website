@@ -6,9 +6,19 @@ declare module '@mui/material/styles' {
   interface PaletteColor {
     /** Same hue as `main`, dark enough for text on `background.paper` (WCAG AA) */
     text?: string
+    /** Links and accent text on the page background (WCAG AA in both color schemes) */
+    link?: string
   }
   interface SimplePaletteColorOptions {
     text?: string
+    link?: string
+  }
+  interface Palette {
+    /** The "Live" status chip on /open-source */
+    live: { background: string; text: string }
+  }
+  interface PaletteOptions {
+    live?: { background: string; text: string }
   }
 }
 
@@ -17,26 +27,60 @@ const fontStack =
 
 export function createAppTheme(): Theme {
   return createTheme({
-    palette: {
-      mode: 'light',
-      primary: {
-        main: '#0071e3',
-        light: '#2997ff',
-        dark: '#005bba',
-        contrastText: '#ffffff',
-        // #0071e3 is 4.3:1 on #f5f5f7; this is 5.1:1 (4.5:1 needed)
-        text: '#0066cc',
+    // Light is the original palette; dark follows the system or the navbar toggle
+    cssVariables: { colorSchemeSelector: 'class' },
+    colorSchemes: {
+      light: {
+        palette: {
+          primary: {
+            main: '#0071e3',
+            light: '#2997ff',
+            dark: '#005bba',
+            contrastText: '#ffffff',
+            // #0071e3 is 4.3:1 on #f5f5f7; this is 5.1:1 (4.5:1 needed)
+            text: '#0066cc',
+            link: '#0071e3',
+          },
+          background: {
+            default: '#ffffff',
+            paper: '#f5f5f7',
+          },
+          text: {
+            primary: '#1d1d1f',
+            // 5.1:1 on white, 4.7:1 on #f5f5f7 (was #86868b: 3.6:1 / 3.3:1)
+            secondary: '#6e6e73',
+          },
+          divider: '#d2d2d7',
+          // #1d7a35 keeps the green at 4.9:1 on the chip (rgb(52, 199, 89) was 2.0:1)
+          live: { background: 'rgba(52, 199, 89, 0.12)', text: '#1d7a35' },
+        },
       },
-      background: {
-        default: '#ffffff',
-        paper: '#f5f5f7',
+      dark: {
+        palette: {
+          primary: {
+            // Buttons and focus rings keep the light blue: white text on it is 4.6:1
+            main: '#0071e3',
+            light: '#2997ff',
+            dark: '#005bba',
+            contrastText: '#ffffff',
+            // 5.6:1 on #1d1d1f, 7.0:1 on black (#0071e3 text would be 4.4:1 on black)
+            text: '#2997ff',
+            link: '#2997ff',
+          },
+          background: {
+            default: '#000000',
+            paper: '#1d1d1f',
+          },
+          text: {
+            primary: '#f5f5f7',
+            // 8.7:1 on black, 6.5:1 on #1d1d1f
+            secondary: '#a1a1a6',
+          },
+          divider: '#424245',
+          // 8.4:1 on the chip
+          live: { background: 'rgba(48, 209, 88, 0.16)', text: '#30d158' },
+        },
       },
-      text: {
-        primary: '#1d1d1f',
-        // 5.1:1 on white, 4.7:1 on #f5f5f7 (was #86868b: 3.6:1 / 3.3:1)
-        secondary: '#6e6e73',
-      },
-      divider: '#d2d2d7',
     },
     typography: {
       fontFamily: fontStack,
@@ -94,7 +138,7 @@ export function createAppTheme(): Theme {
     },
     components: {
       MuiCssBaseline: {
-        styleOverrides: {
+        styleOverrides: (theme) => ({
           '@media (prefers-reduced-motion: no-preference)': {
             html: { scrollBehavior: 'smooth' },
           },
@@ -112,11 +156,13 @@ export function createAppTheme(): Theme {
           '::-webkit-scrollbar-thumb': {
             background: 'rgba(0, 0, 0, 0.15)',
             borderRadius: 4,
+            ...theme.applyStyles('dark', { background: 'rgba(255, 255, 255, 0.2)' }),
           },
           '::-webkit-scrollbar-thumb:hover': {
             background: 'rgba(0, 0, 0, 0.3)',
+            ...theme.applyStyles('dark', { background: 'rgba(255, 255, 255, 0.35)' }),
           },
-        },
+        }),
       },
       MuiButton: {
         styleOverrides: {

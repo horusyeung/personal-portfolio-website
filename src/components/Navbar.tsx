@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AppBar, Toolbar, Typography, Box } from '@mui/material'
+import ThemeToggle from '@/components/ThemeToggle'
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -22,16 +23,17 @@ export default function Navbar() {
         data-testid='navbar'
         position='fixed'
         elevation={0}
-        sx={{
+        sx={(theme) => ({
           // Its own view transition layer: the header stays still above the fading content
           viewTransitionName: 'site-header',
           background: 'rgba(255, 255, 255, 0.8)',
+          ...theme.applyStyles('dark', { background: 'rgba(22, 22, 23, 0.8)' }),
           backdropFilter: 'blur(20px) saturate(180%)',
           WebkitBackdropFilter: 'blur(20px) saturate(180%)',
           borderBottom: '1px solid',
           borderColor: 'divider',
           color: 'text.primary',
-        }}
+        })}
       >
         <Toolbar
           sx={{
@@ -55,7 +57,7 @@ export default function Navbar() {
               color: 'text.primary',
               transition: 'color 0.2s',
               borderRadius: '4px',
-              '&:hover': { color: 'primary.main' },
+              '&:hover': { color: 'primary.link' },
               '&:focus-visible': {
                 outline: '2px solid',
                 outlineColor: 'primary.main',
@@ -64,7 +66,7 @@ export default function Navbar() {
             }}
           >
             HY
-            <Box component='span' sx={{ color: 'primary.main' }}>
+            <Box component='span' sx={{ color: 'primary.link' }}>
               .
             </Box>
           </Typography>
@@ -93,11 +95,11 @@ export default function Navbar() {
                   fontSize: 12,
                   fontWeight: 400,
                   textDecoration: 'none',
-                  color: isActive(link.href) ? 'primary.main' : 'text.secondary',
+                  color: isActive(link.href) ? 'primary.link' : 'text.secondary',
                   transition: 'color 0.3s',
                   borderRadius: '4px',
                   '&:hover': {
-                    color: isActive(link.href) ? 'primary.main' : 'text.primary',
+                    color: isActive(link.href) ? 'primary.link' : 'text.primary',
                   },
                   // A hit area at least 44px tall (WCAG 2.5.5) without moving anything: the invisible
                   // box reaches 14px above and below the 18px line, and 8px into the gaps between links
@@ -112,6 +114,9 @@ export default function Navbar() {
                 {link.label}
               </Typography>
             ))}
+          </Box>
+          <Box sx={{ ml: { xs: 1.5, sm: 2 }, display: 'flex' }}>
+            <ThemeToggle />
           </Box>
         </Toolbar>
       </AppBar>
