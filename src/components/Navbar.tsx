@@ -23,6 +23,8 @@ export default function Navbar() {
         position='fixed'
         elevation={0}
         sx={{
+          // Its own view transition layer: the header stays still above the fading content
+          viewTransitionName: 'site-header',
           background: 'rgba(255, 255, 255, 0.8)',
           backdropFilter: 'blur(20px) saturate(180%)',
           WebkitBackdropFilter: 'blur(20px) saturate(180%)',

@@ -56,3 +56,39 @@ body {
     transform: translateX(30px);
   }
 }
+
+/*
+ * Page transitions (src/app/layout.tsx): a short crossfade between pages. The header has its own
+ * layer, so it holds still and stays above the content. Off under reduced motion.
+ */
+::view-transition-group(*),
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: 200ms;
+}
+
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+/* Clicks reach the page while a transition runs */
+::view-transition {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
