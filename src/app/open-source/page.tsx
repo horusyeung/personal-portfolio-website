@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { baseOpenGraph } from '@/lib/metadata'
 import { Box, Container, Typography, Chip } from '@mui/material'
 import { SiGithub } from 'react-icons/si'
 import MagneticElement from '@/components/MagneticElement'
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
     'Open source projects and contributions by Horus Yeung — project structures, trading tools, and developer utilities on GitHub.',
   alternates: { canonical: '/open-source' },
   openGraph: {
+    ...baseOpenGraph,
     title: 'Open Source | Horus Yeung',
     description:
       'Open source projects and contributions by Horus Yeung — project structures, trading tools, and developer utilities.',

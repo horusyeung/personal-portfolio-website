@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
-import { JOB_TITLE, SITE_DOMAIN } from '@/content/site'
+import { JOB_TITLE, SITE_DOMAIN, SITE_TITLE } from '@/content/site'
 
-export const alt = 'Horus Yeung — Software Architect'
+export const alt = SITE_TITLE
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
