@@ -2,7 +2,7 @@
 
 Bring all ten `/lab` prototypes (draft PR #32, branch `proto/lab`) to the real pages. The owner approved all ten as prototypes.
 
-v2 folds in an independent Codex review of v1; see the [changelog](#changelog-v1--v2) at the end. **Status: waiting for the owner's answers on D5 to D12. Nothing is implemented yet.**
+v2 folds in an independent Codex review of v1; see the [changelog](#changelog-v1--v2) at the end. **Status: approved 2026-10-06. The owner accepted every recommendation for D5 to D12. Implementation is handed to Codex, one PR at a time, starting with PR A. Nothing is implemented yet.**
 
 **Ground rules (unchanged from the upgrade plan):**
 - Keep the page copy. The only new text is the UI labels listed in [New UI text](#8-new-ui-text).
@@ -271,7 +271,7 @@ v2 folds in an independent Codex review of v1; see the [changelog](#changelog-v1
 - Draggable and Inertia aren't needed; the hand-rolled pointer code stays.
 
 **Lab**
-- `/lab` stays (noindex) until PR I, then is deleted.
+- `/lab` lives only on the `proto/lab` branch (draft PR #32) as the reference implementation. It never reaches `master`; PR I closes draft PR #32 once everything has shipped.
 
 ---
 
@@ -374,7 +374,7 @@ Visual snapshots are regenerated only after the owner approves each visible chan
 | F | Open Source: TV cards, Details button + GitHub shortcut, sheet morph, deep links, `OpenSourceIntro` | Yes |
 | G | Contact: Dynamic Island with a persistent live region + glow on the message field | Yes |
 | H | Footer: Dock with touch captions | Yes |
-| I | Cleanup: delete `/lab` and unused components (`MagneticElement` if unused, the old toggle), README, final perf medians, re-baseline Lighthouse | No |
+| I | Cleanup: remove components left unused (`MagneticElement` if unused, the old `ThemeToggle`), README, final perf medians, re-baseline Lighthouse, then close draft PR #32 | No |
 
 **For each PR:**
 1. Preview in the browser pane.
@@ -391,7 +391,7 @@ Each PR leaves the site consistent and can be reverted on its own.
 
 ## 7. Decisions
 
-| # | Question | Recommendation (after review) |
+| # | Question | Decision (approved 2026-10-06) |
 |---|---|---|
 | D5 | A colourful wallpaper in the Home hero only? | **Yes, conditionally:** restrained intensity, readable name and body text at worst-case pixels, a stable poster, and LCP measured against the baseline. |
 | D6 | Mobile nav placement? | **Top capsule on all sizes first.** A bottom tab bar can follow once safe-area, keyboard and focus-obstruction checks pass. |
@@ -447,6 +447,12 @@ Each PR leaves the site consistent and can be reverted on its own.
 | Design drift from the minimal look | One colourful moment (the hero); everything else stays monochrome glass |
 
 ---
+
+## Where things live
+
+- **This plan:** `docs/apple-effects-plan.md` on branch `proto/lab`. Read it with `git show origin/proto/lab:docs/apple-effects-plan.md`.
+- **Reference prototypes:** `src/app/lab/` on branch `proto/lab`. Port ideas from them; never merge the branch.
+- **Implementation PRs:** each one branches from the latest `master`.
 
 ## Changelog v1 → v2
 
