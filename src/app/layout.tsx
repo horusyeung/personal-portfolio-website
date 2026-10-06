@@ -105,8 +105,13 @@ export default function RootLayout({
         />
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           <ThemeModeProvider>
+            <a href='#main' className='skip-link'>
+              Skip to content
+            </a>
             <Navbar />
-            <main style={{ flex: 1 }}>{children}</main>
+            <main id='main' tabIndex={-1} style={{ flex: 1 }}>
+              {children}
+            </main>
             {/* Set at build time: each deploy refreshes it, and the HTML and hydration agree */}
             <Footer year={new Date().getFullYear()} />
           </ThemeModeProvider>

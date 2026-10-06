@@ -45,14 +45,14 @@ const contactItems = [
     label: 'GitHub',
     value: withoutScheme(SOCIAL_LINKS.github.url),
     href: SOCIAL_LINKS.github.url,
-    icon: <SiGithub size={18} />,
+    icon: <SiGithub size={18} aria-hidden />,
     external: true,
   },
   {
     label: 'Medium',
     value: withoutScheme(SOCIAL_LINKS.medium.url),
     href: SOCIAL_LINKS.medium.url,
-    icon: <SiMedium size={18} />,
+    icon: <SiMedium size={18} aria-hidden />,
     external: true,
   },
   {
@@ -517,6 +517,7 @@ export default function ContactPage() {
             >
               <Typography
                 variant='h4'
+                component='h2'
                 sx={{
                   fontSize: { xs: '24px', md: '28px' },
                   fontWeight: 600,

@@ -123,7 +123,7 @@ function wrapReactIcon(
   Icon: IconType,
 ): ComponentType<{ size?: number; style?: React.CSSProperties }> {
   const Wrapped = ({ size = 20, style }: { size?: number; style?: React.CSSProperties }) => (
-    <Icon size={size} style={{ display: 'block', ...style }} />
+    <Icon size={size} style={{ display: 'block', ...style }} aria-hidden />
   )
   Wrapped.displayName = Icon.name || 'WrappedIcon'
   return Wrapped
