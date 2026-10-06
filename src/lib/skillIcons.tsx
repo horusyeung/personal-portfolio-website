@@ -139,97 +139,44 @@ function wrapMuiIcon(
   return Wrapped
 }
 
-// ── Skill Data ───────────────────────────────────────────────────────────────
+// ── Icon per skill (names used by src/content/skills.ts) ─────────────────────
 
-export interface SkillItem {
-  name: string
-  icon: ComponentType<{ size?: number; style?: React.CSSProperties }>
-  brandColor?: string
-}
+export type SkillIconComponent = ComponentType<{ size?: number; style?: React.CSSProperties }>
 
-export interface SkillCategory {
-  title: string
-  skills: SkillItem[]
-}
+export const skillIcons = {
+  typescript: wrapReactIcon(SiTypescript),
+  javascript: wrapReactIcon(SiJavascript),
+  python: wrapReactIcon(SiPython),
+  react: wrapReactIcon(SiReact),
+  nextjs: wrapReactIcon(SiNextdotjs),
+  nodejs: wrapReactIcon(SiNodedotjs),
+  nestjs: wrapReactIcon(SiNestjs),
+  express: wrapReactIcon(SiExpress),
+  graphql: wrapReactIcon(SiGraphql),
+  restApi: wrapMuiIcon(RestApiIcon),
+  postgresql: wrapReactIcon(SiPostgresql),
+  mongodb: wrapReactIcon(SiMongodb),
+  mysql: wrapReactIcon(SiMysql),
+  microservices: wrapMuiIcon(MicroservicesIcon),
+  rabbitmq: wrapReactIcon(SiRabbitmq),
+  apiGateway: wrapMuiIcon(ApiGatewayIcon),
+  redis: wrapReactIcon(SiRedis),
+  aws: wrapMuiIcon(AwsIcon),
+  docker: wrapReactIcon(SiDocker),
+  ciCd: wrapMuiIcon(CiCdIcon),
+  githubActions: wrapReactIcon(SiGithubactions),
+  jenkins: wrapReactIcon(SiJenkins),
+  playwright: wrapMuiIcon(PlaywrightIcon),
+  cypress: wrapReactIcon(SiCypress),
+  selenium: wrapReactIcon(SiSelenium),
+  postman: wrapReactIcon(SiPostman),
+  claude: wrapReactIcon(SiClaude),
+  cursor: wrapMuiIcon(CursorIcon),
+  coderabbit: wrapReactIcon(SiCoderabbit),
+  n8n: wrapReactIcon(SiN8N),
+  agile: wrapMuiIcon(AgileIcon),
+  scrum: wrapMuiIcon(ScrumIcon),
+  jira: wrapReactIcon(SiJira),
+} satisfies Record<string, SkillIconComponent>
 
-export const skillCategories: SkillCategory[] = [
-  {
-    title: 'Programming Languages',
-    skills: [
-      { name: 'TypeScript', icon: wrapReactIcon(SiTypescript), brandColor: '#3178C6' },
-      { name: 'JavaScript', icon: wrapReactIcon(SiJavascript), brandColor: '#F7DF1E' },
-      { name: 'Python', icon: wrapReactIcon(SiPython), brandColor: '#3776AB' },
-    ],
-  },
-  {
-    title: 'Frontend',
-    skills: [
-      { name: 'React.js', icon: wrapReactIcon(SiReact), brandColor: '#61DAFB' },
-      { name: 'Next.js', icon: wrapReactIcon(SiNextdotjs) },
-      { name: 'React Native', icon: wrapReactIcon(SiReact), brandColor: '#61DAFB' },
-    ],
-  },
-  {
-    title: 'Backend',
-    skills: [
-      { name: 'Node.js', icon: wrapReactIcon(SiNodedotjs), brandColor: '#5FA04E' },
-      { name: 'Nest.js', icon: wrapReactIcon(SiNestjs), brandColor: '#E0234E' },
-      { name: 'Express.js', icon: wrapReactIcon(SiExpress) },
-      { name: 'GraphQL', icon: wrapReactIcon(SiGraphql), brandColor: '#E10098' },
-      { name: 'REST APIs', icon: wrapMuiIcon(RestApiIcon) },
-    ],
-  },
-  {
-    title: 'Database',
-    skills: [
-      { name: 'PostgreSQL', icon: wrapReactIcon(SiPostgresql), brandColor: '#4169E1' },
-      { name: 'MongoDB', icon: wrapReactIcon(SiMongodb), brandColor: '#47A248' },
-      { name: 'MySQL', icon: wrapReactIcon(SiMysql), brandColor: '#4479A1' },
-    ],
-  },
-  {
-    title: 'Architecture',
-    skills: [
-      { name: 'Microservices', icon: wrapMuiIcon(MicroservicesIcon) },
-      { name: 'RabbitMQ', icon: wrapReactIcon(SiRabbitmq), brandColor: '#FF6600' },
-      { name: 'API Gateway', icon: wrapMuiIcon(ApiGatewayIcon) },
-      { name: 'Redis', icon: wrapReactIcon(SiRedis), brandColor: '#FF4438' },
-    ],
-  },
-  {
-    title: 'Cloud & DevOps',
-    skills: [
-      { name: 'AWS', icon: wrapMuiIcon(AwsIcon), brandColor: '#FF9900' },
-      { name: 'Docker', icon: wrapReactIcon(SiDocker), brandColor: '#2496ED' },
-      { name: 'CI/CD', icon: wrapMuiIcon(CiCdIcon) },
-      { name: 'GitHub Actions', icon: wrapReactIcon(SiGithubactions), brandColor: '#2088FF' },
-      { name: 'Jenkins', icon: wrapReactIcon(SiJenkins), brandColor: '#D24939' },
-    ],
-  },
-  {
-    title: 'Testing',
-    skills: [
-      { name: 'Playwright', icon: wrapMuiIcon(PlaywrightIcon), brandColor: '#2EAD33' },
-      { name: 'Cypress', icon: wrapReactIcon(SiCypress), brandColor: '#69D3A7' },
-      { name: 'Selenium', icon: wrapReactIcon(SiSelenium), brandColor: '#43B02A' },
-      { name: 'Postman', icon: wrapReactIcon(SiPostman), brandColor: '#FF6C37' },
-    ],
-  },
-  {
-    title: 'AI & Tooling',
-    skills: [
-      { name: 'Claude Code', icon: wrapReactIcon(SiClaude), brandColor: '#D97757' },
-      { name: 'Cursor', icon: wrapMuiIcon(CursorIcon), brandColor: '#00B4D8' },
-      { name: 'CodeRabbit', icon: wrapReactIcon(SiCoderabbit), brandColor: '#FF570A' },
-      { name: 'n8n', icon: wrapReactIcon(SiN8N), brandColor: '#EA4B71' },
-    ],
-  },
-  {
-    title: 'Process',
-    skills: [
-      { name: 'Agile', icon: wrapMuiIcon(AgileIcon) },
-      { name: 'Scrum', icon: wrapMuiIcon(ScrumIcon) },
-      { name: 'Jira', icon: wrapReactIcon(SiJira), brandColor: '#0052CC' },
-    ],
-  },
-]
+export type SkillIconName = keyof typeof skillIcons

@@ -6,7 +6,9 @@ import Link from 'next/link'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import gsap from 'gsap'
 import ScrollReveal from '@/components/ScrollReveal'
-import { skillCategories } from '@/lib/skillIcons'
+import { skillCategories } from '@/content/skills'
+import { skillIcons } from '@/lib/skillIcons'
+import { BIO, JOB_TITLE } from '@/content/site'
 import { splitTextIntoChars } from '@/lib/animations'
 import { useEntranceAnimation } from '@/lib/motion'
 
@@ -131,7 +133,7 @@ export default function HomePage() {
               mb: 2,
             }}
           >
-            Software Architect & Team Lead
+            {JOB_TITLE}
           </Typography>
 
           {/* Name */}
@@ -165,9 +167,7 @@ export default function HomePage() {
               color: 'text.secondary',
             }}
           >
-            Senior Software Architect and Team Lead with 6+ years building high-performance fintech
-            and trading platforms. Architect and ship full-stack products end-to-end, from system
-            design to deployment.
+            {BIO.hero}
           </Typography>
 
           {/* CTAs */}
@@ -354,7 +354,7 @@ export default function HomePage() {
 
                   <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
                     {category.skills.map((skill) => {
-                      const IconComponent = skill.icon
+                      const IconComponent = skillIcons[skill.icon]
                       return (
                         <Box
                           key={skill.name}

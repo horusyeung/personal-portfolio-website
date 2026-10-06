@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Box, Typography, Divider } from '@mui/material'
+import { BIO, EMAIL, LOCATION, SOCIAL_LINKS } from '@/content/site'
 
 const exploreLinks = [
   { href: '/experience', label: 'Experience' },
@@ -10,22 +11,12 @@ const exploreLinks = [
 ]
 
 const connectLinks = [
-  { href: 'mailto:horusyeungg@gmail.com', label: 'Email', external: false },
-  {
-    href: 'https://linkedin.com/in/horusyeung',
-    label: 'LinkedIn',
+  { href: `mailto:${EMAIL}`, label: 'Email', external: false },
+  ...[SOCIAL_LINKS.linkedin, SOCIAL_LINKS.github, SOCIAL_LINKS.medium].map(({ label, url }) => ({
+    href: url,
+    label,
     external: true,
-  },
-  {
-    href: 'https://github.com/horusyeung',
-    label: 'GitHub',
-    external: true,
-  },
-  {
-    href: 'https://medium.com/@horusyeung',
-    label: 'Medium',
-    external: true,
-  },
+  })),
 ]
 
 const columnHeaderSx = {
@@ -54,7 +45,7 @@ const linkSx = {
   },
 }
 
-export default function Footer() {
+export default function Footer({ year }: { year: number }) {
   return (
     <Box
       data-testid='footer'
@@ -119,8 +110,7 @@ export default function Footer() {
                 lineHeight: 1.8,
               }}
             >
-              Senior Software Architect and Frontend Team Lead with 6+ years building
-              high-performance fintech and trading platforms.
+              {BIO.summary}
             </Typography>
             <Typography
               sx={{
@@ -130,7 +120,7 @@ export default function Footer() {
                 mt: 1,
               }}
             >
-              Vancouver, BC
+              {LOCATION}
             </Typography>
           </Box>
         </Box>
@@ -146,7 +136,7 @@ export default function Footer() {
             textAlign: 'center',
           }}
         >
-          &copy; 2026 Horus Yeung. Built with Next.js &amp; MUI.
+          &copy; {year} Horus Yeung. Built with Next.js &amp; MUI.
         </Typography>
       </Box>
     </Box>

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { skillCategories } from '@/lib/skillIcons'
+import { skillCategories } from '@/content/skills'
+import { skillIcons } from '@/lib/skillIcons'
 
 describe('skillCategories', () => {
   it('is an array with 9 categories', () => {
@@ -36,8 +37,7 @@ describe('skillCategories', () => {
         expect(skill.name).toBeDefined()
         expect(typeof skill.name).toBe('string')
         expect(skill.name.length).toBeGreaterThan(0)
-        expect(skill.icon).toBeDefined()
-        expect(typeof skill.icon).toBe('function')
+        expect(typeof skillIcons[skill.icon]).toBe('function')
       })
     })
   })
