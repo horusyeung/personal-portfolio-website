@@ -1,9 +1,6 @@
 'use client'
 
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
-gsap.registerPlugin(ScrollTrigger)
+import { gsap } from '@/lib/gsap'
 
 type Wrap = <T extends (...args: never[]) => unknown>(fn: T) => T
 const noWrap: Wrap = (fn) => fn

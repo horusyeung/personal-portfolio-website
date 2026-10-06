@@ -7,7 +7,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn'
 import LanguageIcon from '@mui/icons-material/Language'
 import { SiGithub, SiMedium } from 'react-icons/si'
 import LinkedInIcon from '@mui/icons-material/LinkedIn'
-import gsap from 'gsap'
+import { gsap } from '@/lib/gsap'
 import { prefersReducedMotion } from '@/lib/animations'
 import { useEntranceAnimation } from '@/lib/motion'
 import {

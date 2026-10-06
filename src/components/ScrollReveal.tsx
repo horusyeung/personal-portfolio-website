@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import { Box } from '@mui/material'
-import gsap from 'gsap'
+import { gsap } from '@/lib/gsap'
 import { useEntranceAnimation } from '@/lib/motion'
 
 interface ScrollRevealProps {

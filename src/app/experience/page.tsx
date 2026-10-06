@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import { Box, Container, Typography } from '@mui/material'
-import gsap from 'gsap'
+import { gsap } from '@/lib/gsap'
 import { splitTextIntoChars } from '@/lib/animations'
 import { useEntranceAnimation } from '@/lib/motion'
 import ScrollReveal from '@/components/ScrollReveal'

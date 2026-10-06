@@ -1,11 +1,7 @@
 'use client'
 
 import type { RefObject } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useGSAP } from '@gsap/react'
-
-gsap.registerPlugin(ScrollTrigger, useGSAP)
+import { gsap, useGSAP } from '@/lib/gsap'
 
 declare global {
   interface Window {
