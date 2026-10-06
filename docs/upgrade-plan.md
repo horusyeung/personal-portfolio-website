@@ -253,6 +253,12 @@ The afternoon estimate in v1 was too low once the tests below are included. The 
   - Verify with `curl -I` on both hosts that the canonical matches the final URL.
   - Afterwards, re-submit the sitemap in Google Search Console.
 
+> **Done in PR 6.**
+> - The origin lives in `src/content/site.ts` (`SITE_URL`).
+> - Canonicals and `og:url` are relative to `metadataBase`, so the domain is written once in the metadata.
+> - JSON-LD, `sitemap.ts`, `robots.ts` and the contact page's website link use `SITE_URL`.
+> - `e2e/seo.spec.ts` locks it in.
+
 **Step 1 is done when:**
 - All 6 PRs are merged with CI green.
 - The Playwright suite passes on Chromium, WebKit and mobile.
