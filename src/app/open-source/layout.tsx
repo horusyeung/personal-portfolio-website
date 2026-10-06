@@ -5,13 +5,13 @@ export const metadata: Metadata = {
   description:
     'Open source projects and contributions by Horus Yeung — project structures, trading tools, and developer utilities on GitHub.',
   alternates: {
-    canonical: 'https://horusyeung.com/open-source',
+    canonical: '/open-source',
   },
   openGraph: {
     title: 'Open Source | Horus Yeung',
     description:
       'Open source projects and contributions by Horus Yeung — project structures, trading tools, and developer utilities.',
-    url: 'https://horusyeung.com/open-source',
+    url: '/open-source',
   },
 }
 

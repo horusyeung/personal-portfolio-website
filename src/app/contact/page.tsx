@@ -20,6 +20,7 @@ import {
   type ContactField,
 } from '@/lib/contact'
 import MagneticElement from '@/components/MagneticElement'
+import { SITE_URL } from '@/content/site'
 
 // ── Data ────────────────────────────────────────────────────────────────────
 
@@ -62,7 +63,7 @@ const contactItems = [
   {
     label: 'Website',
     value: 'horusyeung.com',
-    href: 'https://horusyeung.com',
+    href: SITE_URL,
     icon: <LanguageIcon sx={{ fontSize: 20 }} />,
     external: true,
   },

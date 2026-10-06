@@ -5,13 +5,13 @@ export const metadata: Metadata = {
   description:
     'Work experience, education, and certifications of Horus Yeung — Frontend Team Lead and Software Architect specializing in fintech and trading platforms.',
   alternates: {
-    canonical: 'https://horusyeung.com/experience',
+    canonical: '/experience',
   },
   openGraph: {
     title: 'Experience | Horus Yeung',
     description:
       'Work experience, education, and certifications of Horus Yeung — Frontend Team Lead and Software Architect.',
-    url: 'https://horusyeung.com/experience',
+    url: '/experience',
   },
 }
 
