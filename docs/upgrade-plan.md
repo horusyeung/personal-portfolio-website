@@ -405,6 +405,22 @@ Hurdles the conversion has to handle:
 - Keep it easy to opt out (the config flag, or `'use no memo'` per file).
 - Merge only if it measurably helps. No gain is promised.
 
+> **Tried 2026-10-06; not merged.** React Compiler 1.0 (Babel plugin) on a production build, measured in headless Chromium:
+>
+> | | Without | With (contact page refactored to compile) |
+> |---|---|---|
+> | Re-renders on an empty contact submit | 291 | 165 |
+> | Re-renders per keystroke (fields are uncontrolled) | 0.5 | 0.5 |
+> | Input event time, 4× slower CPU | median 24–32 ms, max 32 ms | median 24 ms, max 32 ms |
+> | First-load JS per page | — | +0.9 to +1.9 KB |
+> | Compile step of the build | ~1.6 s | ~1.9 s |
+>
+> - Out of the box the compiler skipped the contact page, the only page with state that changes after load. It reports a computed key in a destructuring pattern and `try`/`finally` plus `throw` inside `try`, all syntax it can't compile yet. The other pages compile, but they have nothing left to re-render after the first paint.
+> - With the contact page refactored, all Playwright tests, the strict visual snapshots and the magnetic-effect trace still pass. It is safe, but no response time improves, and every page carries a little more JS.
+> - The experiment is kept on the local branch `exp/react-compiler`. Revisit once the site gains more interactive UI.
+
+**Step 2 status (2026-10-06):** visual snapshots pass unchanged, CLS ≤ 0.035 on every page, accessibility 100 and the Lighthouse budgets pass in CI, and the keyboard-only check is done. **Open:** the VoiceOver check (owner).
+
 **Step 2 is done when:**
 - The Playwright visual snapshots (from PR 3) pass unchanged, and manual screenshots match Step 0 apart from the approved visible changes.
 - CLS < 0.1 on all pages.
