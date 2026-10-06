@@ -195,6 +195,8 @@ The afternoon estimate in v1 was too low once the tests below are included. The 
 - Change `from: 'Portfolio Contact <onboarding@resend.dev>'` (`route.ts:15`) to `contact@horusyeung.com`.
 - A key scoped to the domain cannot send as `onboarding@resend.dev`.
 
+> **4b done (2026-10-06).** `horusyeung.com` is verified in Resend: the DKIM key and the `send` subdomain resolve at GoDaddy DNS. The route now sends as `Portfolio Contact <contact@horusyeung.com>`, built from `SITE_DOMAIN`. **Your remaining steps:** after this deploys, send a test message, then revoke the old full-access Resend key.
+
 **Form (`src/app/contact/page.tsx`):**
 - Add a visually hidden honeypot input and include it in the `fetch` payload (`:289`), which only sends name, email and message today.
 - Add `maxLength` on the fields.

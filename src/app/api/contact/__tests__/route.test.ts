@@ -43,7 +43,7 @@ describe('POST /api/contact', () => {
     expect(res.status).toBe(200)
     expect(await res.json()).toEqual({ success: true })
     expect(send).toHaveBeenCalledWith({
-      from: 'Portfolio Contact <onboarding@resend.dev>',
+      from: 'Portfolio Contact <contact@horusyeung.com>',
       to: 'horusyeungg@gmail.com',
       subject: 'Portfolio Contact from Ada Lovelace',
       replyTo: 'ada@example.com',
