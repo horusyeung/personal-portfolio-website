@@ -63,9 +63,28 @@ jobs:
             test-results/
           retention-days: 14
 
+  lighthouse:
+    name: Lighthouse
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - run: yarn build
+        env:
+          RESEND_API_KEY: re_dummy_ci_build
+      # Budgets live in lighthouserc.cjs; the runner image already has Chrome
+      - run: npx -y @lhci/cli@0.15.1 autorun --config=./lighthouserc.cjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          retention-days: 14
+
   deploy:
     name: Deploy to Vercel
-    needs: [lint-and-typecheck, unit-tests, e2e-tests]
+    needs: [lint-and-typecheck, unit-tests, e2e-tests, lighthouse]
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: ubuntu-latest
     env:
