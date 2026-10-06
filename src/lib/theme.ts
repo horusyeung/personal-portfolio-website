@@ -1,6 +1,7 @@
 'use client'
 
 import { createTheme, type Theme } from '@mui/material/styles'
+import { layerVariables, siteLayers } from './layers'
 
 declare module '@mui/material/styles' {
   interface PaletteColor {
@@ -29,6 +30,7 @@ export function createAppTheme(): Theme {
   return createTheme({
     // Light is the original palette; dark follows the system or the navbar toggle
     cssVariables: { colorSchemeSelector: 'class' },
+    zIndex: { appBar: siteLayers.nav, modal: siteLayers.dialog },
     colorSchemes: {
       light: {
         palette: {
@@ -139,6 +141,7 @@ export function createAppTheme(): Theme {
     components: {
       MuiCssBaseline: {
         styleOverrides: (theme) => ({
+          ':root': layerVariables,
           '@media (prefers-reduced-motion: no-preference)': {
             html: { scrollBehavior: 'smooth' },
           },

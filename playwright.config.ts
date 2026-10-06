@@ -32,6 +32,11 @@ export default defineConfig({
       name: 'Desktop Safari',
       use: { ...devices['Desktop Safari'], viewport: { width: 1280, height: 800 } },
     },
+    {
+      name: 'Desktop Firefox',
+      use: { ...devices['Desktop Firefox'], viewport: { width: 1280, height: 800 } },
+      testIgnore: /visual\.spec\.ts/,
+    },
     { name: 'Mobile Chrome', use: { ...devices['Pixel 7'] } },
     { name: 'Mobile Safari', use: { ...devices['iPhone 13'] } },
   ],

@@ -48,11 +48,13 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
       # No-op when the image matches @playwright/test; downloads browsers if they drift
-      - run: npx playwright install chromium webkit
+      - run: npx playwright install chromium webkit firefox
       - run: yarn build
         env:
           # The build only needs a non-empty key; E2E tests never send real email
           RESEND_API_KEY: re_dummy_ci_build
+      # Firefox requires the home directory to belong to the container's current user.
+      - run: chown "$(id -u):$(id -g)" "$HOME"
       - run: yarn test:e2e
       - uses: actions/upload-artifact@v7
         if: failure()

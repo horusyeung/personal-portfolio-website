@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { createAppTheme } from '@/lib/theme'
+import { siteLayers } from '@/lib/layers'
 
 describe('createAppTheme', () => {
   it('returns a valid light theme with correct palette colors', () => {
@@ -16,5 +17,14 @@ describe('createAppTheme', () => {
   it('has h1 fontSize of 80', () => {
     const theme = createAppTheme()
     expect(theme.typography.h1.fontSize).toBe(80)
+  })
+
+  it('keeps feedback above the nav, dialogs above feedback, and the skip link above dialogs', () => {
+    const theme = createAppTheme()
+    expect(theme.zIndex.appBar).toBe(siteLayers.nav)
+    expect(theme.zIndex.modal).toBe(siteLayers.dialog)
+    expect(siteLayers.island).toBeGreaterThan(theme.zIndex.appBar)
+    expect(theme.zIndex.modal).toBeGreaterThan(siteLayers.island)
+    expect(siteLayers.skipLink).toBeGreaterThan(theme.zIndex.modal)
   })
 })
