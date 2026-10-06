@@ -5,12 +5,12 @@ export const metadata: Metadata = {
   description:
     'Get in touch with Horus Yeung — Software Architect based in Vancouver, BC. Available for collaboration and opportunities.',
   alternates: {
-    canonical: 'https://horusyeung.com/contact',
+    canonical: '/contact',
   },
   openGraph: {
     title: 'Contact | Horus Yeung',
     description: 'Get in touch with Horus Yeung — Software Architect based in Vancouver, BC.',
-    url: 'https://horusyeung.com/contact',
+    url: '/contact',
   },
 }
 

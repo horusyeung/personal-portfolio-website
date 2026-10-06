@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { ThemeModeProvider } from '@/lib/ThemeModeProvider'
 import { introScript } from '@/lib/intro'
+import { SITE_URL } from '@/content/site'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import './globals.css'
@@ -14,20 +15,20 @@ const jsonLd = {
   '@graph': [
     {
       '@type': 'WebSite',
-      '@id': 'https://horusyeung.com/#website',
-      url: 'https://horusyeung.com',
+      '@id': `${SITE_URL}/#website`,
+      url: SITE_URL,
       name: 'Horus Yeung',
       description:
         'Senior Software Architect and Frontend Team Lead with 6+ years building high-performance fintech and trading platforms.',
-      publisher: { '@id': 'https://horusyeung.com/#person' },
+      publisher: { '@id': `${SITE_URL}/#person` },
     },
     {
       '@type': 'Person',
-      '@id': 'https://horusyeung.com/#person',
+      '@id': `${SITE_URL}/#person`,
       name: 'Horus Yeung',
       givenName: 'Horus',
       familyName: 'Yeung',
-      url: 'https://horusyeung.com',
+      url: SITE_URL,
       jobTitle: 'Software Architect & Team Lead',
       worksFor: {
         '@type': 'Organization',
@@ -49,7 +50,7 @@ const jsonLd = {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://horusyeung.com'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'Horus Yeung — Software Architect',
     template: '%s | Horus Yeung',
@@ -90,13 +91,13 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: 'https://horusyeung.com',
+    canonical: '/',
   },
   openGraph: {
     title: 'Horus Yeung — Software Architect',
     description:
       'Senior Software Architect and Frontend Team Lead with 6+ years building high-performance fintech and trading platforms.',
-    url: 'https://horusyeung.com',
+    url: '/',
     siteName: 'Horus Yeung',
     locale: 'en_US',
     type: 'website',

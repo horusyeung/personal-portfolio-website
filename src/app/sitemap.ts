@@ -1,7 +1,8 @@
 import type { MetadataRoute } from 'next'
+import { SITE_URL } from '@/content/site'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://horusyeung.com'
+  const baseUrl = SITE_URL
 
   return [
     {
