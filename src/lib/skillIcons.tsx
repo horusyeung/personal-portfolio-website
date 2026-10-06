@@ -9,17 +9,13 @@ import {
   SiJavascript,
   SiNodedotjs,
   SiNestjs,
-  SiExpress,
   SiGraphql,
   SiPostgresql,
   SiMongodb,
-  SiMysql,
   SiRabbitmq,
   SiRedis,
   SiDocker,
   SiGithubactions,
-  SiJenkins,
-  SiCypress,
   SiSelenium,
   SiPostman,
   SiClaude,
@@ -27,7 +23,24 @@ import {
   SiPython,
   SiJira,
   SiCoderabbit,
+  SiMui,
+  SiGoogleanalytics,
+  SiGooglesearchconsole,
+  SiSwift,
+  SiKotlin,
+  SiFirebase,
+  SiApple,
+  SiGrafana,
+  SiKibana,
+  SiJest,
+  SiVitest,
+  SiAppium,
+  SiXcode,
+  SiTricentis,
 } from 'react-icons/si'
+import ApartmentOutlined from '@mui/icons-material/ApartmentOutlined'
+import StorageOutlined from '@mui/icons-material/StorageOutlined'
+import TerminalOutlined from '@mui/icons-material/TerminalOutlined'
 import { type IconType } from 'react-icons'
 
 // ── Custom SVG Icons for skills without Simple Icons ─────────────────────────
@@ -44,23 +57,6 @@ function MicroservicesIcon(props: SvgIconProps) {
   return (
     <SvgIcon {...props} viewBox='0 0 24 24'>
       <path d='M12 2a3 3 0 013 3c0 .85-.36 1.62-.93 2.16l2.1 3.64A3 3 0 0121 14a3 3 0 01-5.83 1H8.83A3 3 0 013 14a3 3 0 014.83-2.36l2.1-3.48A2.99 2.99 0 019 5a3 3 0 013-3zm0 2a1 1 0 100 2 1 1 0 000-2zM6 13a1 1 0 100 2 1 1 0 000-2zm12 0a1 1 0 100 2 1 1 0 000-2z' />
-    </SvgIcon>
-  )
-}
-
-function ApiGatewayIcon(props: SvgIconProps) {
-  return (
-    <SvgIcon {...props} viewBox='0 0 24 24'>
-      {/* Three source boxes at top */}
-      <path d='M2 3h5v4H2V3zm7.5 0h5v4h-5V3zm7.5 0h5v4h-5V3z' />
-      {/* Central gateway box */}
-      <path d='M8 10h8v4H8v-4z' />
-      {/* Destination box at bottom */}
-      <path d='M8 18h8v3H8v-3z' />
-      {/* Connecting lines from top boxes to gateway (filled as thin rects) */}
-      <path d='M4 7h1.5v3H4V7zm7.25 0h1.5v3h-1.5V7zm7.25 0h1.5v3h-1.5V7z' />
-      {/* Connecting line from gateway to bottom */}
-      <path d='M11.25 14h1.5v4h-1.5v-4z' />
     </SvgIcon>
   )
 }
@@ -147,30 +143,42 @@ export const skillIcons = {
   typescript: wrapReactIcon(SiTypescript),
   javascript: wrapReactIcon(SiJavascript),
   python: wrapReactIcon(SiPython),
+  sql: wrapMuiIcon(StorageOutlined),
   react: wrapReactIcon(SiReact),
   nextjs: wrapReactIcon(SiNextdotjs),
+  mui: wrapReactIcon(SiMui),
+  seo: wrapReactIcon(SiGooglesearchconsole),
+  googleAnalytics: wrapReactIcon(SiGoogleanalytics),
+  swift: wrapReactIcon(SiSwift),
+  kotlin: wrapReactIcon(SiKotlin),
+  firebase: wrapReactIcon(SiFirebase),
+  apple: wrapReactIcon(SiApple),
   nodejs: wrapReactIcon(SiNodedotjs),
   nestjs: wrapReactIcon(SiNestjs),
-  express: wrapReactIcon(SiExpress),
   graphql: wrapReactIcon(SiGraphql),
   restApi: wrapMuiIcon(RestApiIcon),
+  rabbitmq: wrapReactIcon(SiRabbitmq),
+  redis: wrapReactIcon(SiRedis),
+  microservices: wrapMuiIcon(MicroservicesIcon),
+  multiTenancy: wrapMuiIcon(ApartmentOutlined),
   postgresql: wrapReactIcon(SiPostgresql),
   mongodb: wrapReactIcon(SiMongodb),
-  mysql: wrapReactIcon(SiMysql),
-  microservices: wrapMuiIcon(MicroservicesIcon),
-  rabbitmq: wrapReactIcon(SiRabbitmq),
-  apiGateway: wrapMuiIcon(ApiGatewayIcon),
-  redis: wrapReactIcon(SiRedis),
   aws: wrapMuiIcon(AwsIcon),
   docker: wrapReactIcon(SiDocker),
   ciCd: wrapMuiIcon(CiCdIcon),
   githubActions: wrapReactIcon(SiGithubactions),
-  jenkins: wrapReactIcon(SiJenkins),
+  grafana: wrapReactIcon(SiGrafana),
+  kibana: wrapReactIcon(SiKibana),
+  jest: wrapReactIcon(SiJest),
+  vitest: wrapReactIcon(SiVitest),
   playwright: wrapMuiIcon(PlaywrightIcon),
-  cypress: wrapReactIcon(SiCypress),
+  appium: wrapReactIcon(SiAppium),
+  xcode: wrapReactIcon(SiXcode),
   selenium: wrapReactIcon(SiSelenium),
+  tricentis: wrapReactIcon(SiTricentis),
   postman: wrapReactIcon(SiPostman),
   claude: wrapReactIcon(SiClaude),
+  codex: wrapMuiIcon(TerminalOutlined),
   cursor: wrapMuiIcon(CursorIcon),
   coderabbit: wrapReactIcon(SiCoderabbit),
   n8n: wrapReactIcon(SiN8N),

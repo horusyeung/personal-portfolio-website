@@ -13,7 +13,7 @@ export const githubProjects: GithubProject[] = [
   {
     name: 'project-structures',
     description:
-      'Production-ready project structures and boilerplates for Next.js, NestJS, React Native, and monorepo architectures used in real-world fintech products.',
+      'Production-ready project structures and boilerplates for Next.js, Nest.js, React Native and monorepo setups, used in real fintech products.',
     tags: ['reactjs', 'nextjs', 'react-native', 'expo', 'turborepo'],
     url: 'https://github.com/horusyeung/project-structures',
     status: 'Live',
@@ -21,7 +21,7 @@ export const githubProjects: GithubProject[] = [
   {
     name: 'personal-portfolio-website',
     description:
-      'This portfolio site — built with Next.js 16, React 19, and MUI 7. Clean design with scroll animations, SEO optimized, and full test coverage.',
+      'The source for this site, built with Next.js 16, React 19 and MUI 9, with GSAP animations, dark mode and Playwright end-to-end tests.',
     tags: ['nextjs', 'reactjs', 'material-ui'],
     url: 'https://github.com/horusyeung/personal-portfolio-website',
     status: 'Live',
@@ -29,7 +29,7 @@ export const githubProjects: GithubProject[] = [
   {
     name: 'react-native-starter',
     description:
-      'React Native starter template with Expo, navigation, state management, and common mobile patterns. Ready for production mobile app development.',
+      'A React Native starter with Expo, navigation, state management and common mobile patterns, ready for production apps.',
     tags: ['react-native', 'expo', 'redux-toolkit', 'react-navigation'],
     url: 'https://github.com/horusyeung/react-native-starter',
     status: 'Live',
@@ -37,7 +37,7 @@ export const githubProjects: GithubProject[] = [
   {
     name: 'nextjs-nestjs-fullstack-starter',
     description:
-      'Full-stack starter template with Next.js frontend and NestJS backend. Includes authentication, database setup, API integration, and deployment configuration.',
+      'A full-stack starter with a Next.js frontend and a Nest.js backend, including authentication, database setup, API integration and deployment config.',
     tags: ['nextjs', 'nestjs', 'postgresql', 'prisma', 'docker'],
     url: 'https://github.com/horusyeung/nextjs-nestjs-fullstack-starter',
     status: 'Live',
@@ -46,7 +46,7 @@ export const githubProjects: GithubProject[] = [
   {
     name: 'ai-augmented-dev-workflow',
     description:
-      'End-to-end AI-augmented development workflow using agent orchestration. Demonstrates how AI agents collaborate across planning, coding, reviewing, and deployment.',
+      'An AI-augmented development workflow built on agent orchestration, showing how AI agents work together on planning, coding, review and deployment.',
     tags: ['ai-agents', 'orchestration', 'devops'],
     url: 'https://github.com/horusyeung/ai-augmented-dev-workflow',
     status: 'Coming Soon',

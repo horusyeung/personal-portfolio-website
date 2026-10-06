@@ -24,7 +24,7 @@ describe('skillCategories', () => {
     expect(titles).toContain('Frontend')
     expect(titles).toContain('Backend')
     expect(titles).toContain('Database')
-    expect(titles).toContain('Architecture')
+    expect(titles).toContain('Mobile')
     expect(titles).toContain('Cloud & DevOps')
     expect(titles).toContain('Testing')
     expect(titles).toContain('AI & Tooling')

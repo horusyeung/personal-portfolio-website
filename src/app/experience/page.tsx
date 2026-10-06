@@ -10,8 +10,7 @@ import { certifications, education, experiences } from '@/content/experience'
 
 // ── Data ────────────────────────────────────────────────────────────────────
 
-const SUBTITLE_TEXT =
-  'From quality assurance to software architecture — a trajectory of continuous growth and technical leadership.'
+const SUBTITLE_TEXT = 'From test automation to full stack development and team leadership.'
 
 // ── Component ───────────────────────────────────────────────────────────────
 

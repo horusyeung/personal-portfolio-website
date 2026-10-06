@@ -9,13 +9,13 @@ import OpenSourceMotion from './OpenSourceMotion'
 export const metadata: Metadata = {
   title: 'Open Source',
   description:
-    'Open source projects and contributions by Horus Yeung — project structures, trading tools, and developer utilities on GitHub.',
+    'Open source projects by Horus Yeung on GitHub: project structures, starter templates and development workflows.',
   alternates: { canonical: '/open-source' },
   openGraph: {
     ...baseOpenGraph,
     title: 'Open Source | Horus Yeung',
     description:
-      'Open source projects and contributions by Horus Yeung — project structures, trading tools, and developer utilities.',
+      'Open source projects by Horus Yeung: project structures, starter templates and development workflows.',
     url: '/open-source',
   },
 }
@@ -63,8 +63,8 @@ export default function OpenSourcePage() {
               color: 'text.secondary',
             }}
           >
-            Sharing production-tested patterns, starter templates, and development workflows with
-            the community.
+            Sharing production-tested patterns, starter templates and development workflows with the
+            community.
           </Typography>
         </Container>
       </Box>

@@ -10,7 +10,7 @@ test.describe('Experience Page', () => {
     await expect(hero).toBeVisible()
     await expect(hero).toContainText('Experience')
     // The subtitle is typed in over ~1.5s; web-first assertions wait for it
-    await expect(hero).toContainText('continuous growth and technical leadership')
+    await expect(hero).toContainText('full stack development and team leadership')
   })
 
   test('shows all work experience entries', async ({ page }) => {
@@ -41,7 +41,7 @@ test.describe('Experience Page', () => {
     const education = page.getByTestId('education-section')
     for (const text of [
       'Education',
-      'BBA (Hons) Business Analysis',
+      'Bachelor of Business Administration (Hons), Business Analysis',
       'City University of Hong Kong',
       'Associate in Business, Hospitality Management (Distinction)',
       'PolyU Hong Kong Community College',
@@ -65,7 +65,7 @@ test.describe('Experience Page', () => {
   test('shows updated resume content with detailed bullets', async ({ page }) => {
     const work = page.getByTestId('work-experience')
     await expect(work).toContainText('50K+ users')
-    await expect(work).toContainText('80% automated code review coverage')
-    await expect(work).toContainText('reducing developer costs by 50%')
+    await expect(work).toContainText('page load from 3.5s to 0.7s')
+    await expect(work).toContainText('9 microservices on AWS ECS')
   })
 })

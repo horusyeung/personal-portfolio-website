@@ -11,6 +11,7 @@ export type SkillCategory = {
   skills: SkillItem[]
 }
 
+// The categories and order follow the CV
 export const skillCategories: SkillCategory[] = [
   {
     title: 'Programming Languages',
@@ -18,6 +19,7 @@ export const skillCategories: SkillCategory[] = [
       { name: 'TypeScript', icon: 'typescript', brandColor: '#3178C6' },
       { name: 'JavaScript', icon: 'javascript', brandColor: '#F7DF1E' },
       { name: 'Python', icon: 'python', brandColor: '#3776AB' },
+      { name: 'SQL', icon: 'sql' },
     ],
   },
   {
@@ -25,7 +27,20 @@ export const skillCategories: SkillCategory[] = [
     skills: [
       { name: 'React.js', icon: 'react', brandColor: '#61DAFB' },
       { name: 'Next.js', icon: 'nextjs' },
+      { name: 'MUI', icon: 'mui', brandColor: '#007FFF' },
+      { name: 'SEO', icon: 'seo', brandColor: '#458CF5' },
+      { name: 'Google Analytics 4', icon: 'googleAnalytics', brandColor: '#E37400' },
+    ],
+  },
+  {
+    title: 'Mobile',
+    skills: [
       { name: 'React Native', icon: 'react', brandColor: '#61DAFB' },
+      { name: 'SwiftUI', icon: 'swift', brandColor: '#F05138' },
+      { name: 'Kotlin', icon: 'kotlin', brandColor: '#7F52FF' },
+      { name: 'Firebase', icon: 'firebase', brandColor: '#DD2C00' },
+      { name: 'FCM', icon: 'firebase', brandColor: '#DD2C00' },
+      { name: 'APNs', icon: 'apple' },
     ],
   },
   {
@@ -33,9 +48,12 @@ export const skillCategories: SkillCategory[] = [
     skills: [
       { name: 'Node.js', icon: 'nodejs', brandColor: '#5FA04E' },
       { name: 'Nest.js', icon: 'nestjs', brandColor: '#E0234E' },
-      { name: 'Express.js', icon: 'express' },
       { name: 'GraphQL', icon: 'graphql', brandColor: '#E10098' },
       { name: 'REST APIs', icon: 'restApi' },
+      { name: 'RabbitMQ', icon: 'rabbitmq', brandColor: '#FF6600' },
+      { name: 'Redis', icon: 'redis', brandColor: '#FF4438' },
+      { name: 'Microservices', icon: 'microservices' },
+      { name: 'Multi-tenancy', icon: 'multiTenancy' },
     ],
   },
   {
@@ -43,16 +61,6 @@ export const skillCategories: SkillCategory[] = [
     skills: [
       { name: 'PostgreSQL', icon: 'postgresql', brandColor: '#4169E1' },
       { name: 'MongoDB', icon: 'mongodb', brandColor: '#47A248' },
-      { name: 'MySQL', icon: 'mysql', brandColor: '#4479A1' },
-    ],
-  },
-  {
-    title: 'Architecture',
-    skills: [
-      { name: 'Microservices', icon: 'microservices' },
-      { name: 'RabbitMQ', icon: 'rabbitmq', brandColor: '#FF6600' },
-      { name: 'API Gateway', icon: 'apiGateway' },
-      { name: 'Redis', icon: 'redis', brandColor: '#FF4438' },
     ],
   },
   {
@@ -62,15 +70,20 @@ export const skillCategories: SkillCategory[] = [
       { name: 'Docker', icon: 'docker', brandColor: '#2496ED' },
       { name: 'CI/CD', icon: 'ciCd' },
       { name: 'GitHub Actions', icon: 'githubActions', brandColor: '#2088FF' },
-      { name: 'Jenkins', icon: 'jenkins', brandColor: '#D24939' },
+      { name: 'Grafana', icon: 'grafana', brandColor: '#F46800' },
+      { name: 'Kibana', icon: 'kibana', brandColor: '#005571' },
     ],
   },
   {
     title: 'Testing',
     skills: [
+      { name: 'Jest', icon: 'jest', brandColor: '#C21325' },
+      { name: 'Vitest', icon: 'vitest', brandColor: '#6E9F18' },
       { name: 'Playwright', icon: 'playwright', brandColor: '#2EAD33' },
-      { name: 'Cypress', icon: 'cypress', brandColor: '#69D3A7' },
+      { name: 'Appium', icon: 'appium' },
+      { name: 'XCUITest', icon: 'xcode', brandColor: '#147EFB' },
       { name: 'Selenium', icon: 'selenium', brandColor: '#43B02A' },
+      { name: 'Tricentis Tosca', icon: 'tricentis' },
       { name: 'Postman', icon: 'postman', brandColor: '#FF6C37' },
     ],
   },
@@ -78,6 +91,7 @@ export const skillCategories: SkillCategory[] = [
     title: 'AI & Tooling',
     skills: [
       { name: 'Claude Code', icon: 'claude', brandColor: '#D97757' },
+      { name: 'Codex', icon: 'codex' },
       { name: 'Cursor', icon: 'cursor', brandColor: '#00B4D8' },
       { name: 'CodeRabbit', icon: 'coderabbit', brandColor: '#FF570A' },
       { name: 'n8n', icon: 'n8n', brandColor: '#EA4B71' },

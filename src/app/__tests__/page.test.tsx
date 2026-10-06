@@ -56,9 +56,9 @@ describe('HomePage', () => {
     expect(screen.getByTestId('hero-name').textContent).toContain('Horus')
   })
 
-  it('renders "Software Architect & Team Lead" overline', () => {
+  it('renders "Senior Full Stack Developer & Team Lead" overline', () => {
     renderWithTheme(<HomePage />)
-    expect(screen.getByText('Software Architect & Team Lead')).toBeInTheDocument()
+    expect(screen.getByText('Senior Full Stack Developer & Team Lead')).toBeInTheDocument()
   })
 
   it('contains "View Experience" button', () => {
