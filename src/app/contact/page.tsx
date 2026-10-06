@@ -20,49 +20,51 @@ import {
   type ContactField,
 } from '@/lib/contact'
 import MagneticElement from '@/components/MagneticElement'
-import { SITE_URL } from '@/content/site'
+import { EMAIL, LOCATION, SITE_DOMAIN, SITE_URL, SOCIAL_LINKS } from '@/content/site'
 
 // ── Data ────────────────────────────────────────────────────────────────────
+
+const withoutScheme = (url: string) => url.replace(/^https:\/\//, '')
 
 const contactItems = [
   {
     label: 'Email',
-    value: 'horusyeungg@gmail.com',
-    href: 'mailto:horusyeungg@gmail.com',
+    value: EMAIL,
+    href: `mailto:${EMAIL}`,
     icon: <EmailIcon sx={{ fontSize: 20 }} />,
     external: false,
   },
   {
     label: 'LinkedIn',
-    value: 'linkedin.com/in/horusyeung',
-    href: 'https://linkedin.com/in/horusyeung',
+    value: withoutScheme(SOCIAL_LINKS.linkedin.url),
+    href: SOCIAL_LINKS.linkedin.url,
     icon: <LinkedInIcon sx={{ fontSize: 20 }} />,
     external: true,
   },
   {
     label: 'GitHub',
-    value: 'github.com/horusyeung',
-    href: 'https://github.com/horusyeung',
+    value: withoutScheme(SOCIAL_LINKS.github.url),
+    href: SOCIAL_LINKS.github.url,
     icon: <SiGithub size={18} />,
     external: true,
   },
   {
     label: 'Medium',
-    value: 'medium.com/@horusyeung',
-    href: 'https://medium.com/@horusyeung',
+    value: withoutScheme(SOCIAL_LINKS.medium.url),
+    href: SOCIAL_LINKS.medium.url,
     icon: <SiMedium size={18} />,
     external: true,
   },
   {
     label: 'Location',
-    value: 'Vancouver, BC, Canada',
+    value: `${LOCATION}, Canada`,
     href: null,
     icon: <LocationOnIcon sx={{ fontSize: 20 }} />,
     external: false,
   },
   {
     label: 'Website',
-    value: 'horusyeung.com',
+    value: SITE_DOMAIN,
     href: SITE_URL,
     icon: <LanguageIcon sx={{ fontSize: 20 }} />,
     external: true,

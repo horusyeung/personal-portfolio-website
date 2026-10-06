@@ -5,7 +5,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { ThemeModeProvider } from '@/lib/ThemeModeProvider'
 import { introScript } from '@/lib/intro'
-import { SITE_URL } from '@/content/site'
+import { BIO, JOB_TITLE, SITE_URL, SOCIAL_LINKS } from '@/content/site'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import './globals.css'
@@ -18,8 +18,7 @@ const jsonLd = {
       '@id': `${SITE_URL}/#website`,
       url: SITE_URL,
       name: 'Horus Yeung',
-      description:
-        'Senior Software Architect and Frontend Team Lead with 6+ years building high-performance fintech and trading platforms.',
+      description: BIO.summary,
       publisher: { '@id': `${SITE_URL}/#person` },
     },
     {
@@ -29,7 +28,7 @@ const jsonLd = {
       givenName: 'Horus',
       familyName: 'Yeung',
       url: SITE_URL,
-      jobTitle: 'Software Architect & Team Lead',
+      jobTitle: JOB_TITLE,
       worksFor: {
         '@type': 'Organization',
         name: 'Juno Markets',
@@ -44,7 +43,7 @@ const jsonLd = {
         'Fintech',
         'Trading Platforms',
       ],
-      sameAs: ['https://github.com/horusyeung', 'https://linkedin.com/in/horusyeung'],
+      sameAs: [SOCIAL_LINKS.github.url, SOCIAL_LINKS.linkedin.url],
     },
   ],
 }
@@ -55,8 +54,7 @@ export const metadata: Metadata = {
     default: 'Horus Yeung — Software Architect',
     template: '%s | Horus Yeung',
   },
-  description:
-    'Senior Software Architect and Frontend Team Lead with 6+ years building high-performance fintech and trading platforms. Based in Vancouver, BC.',
+  description: BIO.meta,
   keywords: [
     'Horus Yeung',
     'Horus',
@@ -95,8 +93,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'Horus Yeung — Software Architect',
-    description:
-      'Senior Software Architect and Frontend Team Lead with 6+ years building high-performance fintech and trading platforms.',
+    description: BIO.summary,
     url: '/',
     siteName: 'Horus Yeung',
     locale: 'en_US',
@@ -113,8 +110,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Horus Yeung — Software Architect',
-    description:
-      'Senior Software Architect and Frontend Team Lead building high-performance fintech platforms.',
+    description: BIO.twitter,
     images: ['/opengraph-image'],
   },
 }
@@ -140,7 +136,8 @@ export default function RootLayout({
           <ThemeModeProvider>
             <Navbar />
             <main style={{ flex: 1 }}>{children}</main>
-            <Footer />
+            {/* Set at build time: each deploy refreshes it, and the HTML and hydration agree */}
+            <Footer year={new Date().getFullYear()} />
           </ThemeModeProvider>
           <Analytics />
           <SpeedInsights />

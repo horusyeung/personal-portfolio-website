@@ -7,10 +7,11 @@ import {
   normalizeContact,
   validateContact,
 } from '@/lib/contact'
+import { EMAIL } from '@/content/site'
 
 const MAX_BODY_BYTES = 10_000
 const FROM = 'Portfolio Contact <onboarding@resend.dev>'
-const TO = 'horusyeungg@gmail.com'
+const TO = EMAIL
 
 async function isBot(): Promise<boolean> {
   try {

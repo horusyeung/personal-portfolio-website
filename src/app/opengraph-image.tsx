@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og'
+import { JOB_TITLE, SITE_DOMAIN } from '@/content/site'
 
 export const alt = 'Horus Yeung — Software Architect'
 export const size = { width: 1200, height: 630 }
@@ -53,7 +54,7 @@ export default function OGImage() {
           letterSpacing: '0.05em',
         }}
       >
-        Software Architect & Team Lead
+        {JOB_TITLE}
       </div>
       <div
         style={{
@@ -62,7 +63,7 @@ export default function OGImage() {
           marginTop: 24,
         }}
       >
-        horusyeung.com
+        {SITE_DOMAIN}
       </div>
     </div>,
     { ...size },
