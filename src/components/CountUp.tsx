@@ -2,12 +2,8 @@
 
 import { useRef } from 'react'
 import { Box, Typography } from '@mui/material'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useGSAP } from '@gsap/react'
+import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
 import { prefersReducedMotion } from '@/lib/animations'
-
-gsap.registerPlugin(ScrollTrigger)
 
 interface StatItem {
   value: number

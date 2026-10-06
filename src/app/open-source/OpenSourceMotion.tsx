@@ -2,7 +2,7 @@
 
 import { useRef, type ReactNode } from 'react'
 import { Box } from '@mui/material'
-import gsap from 'gsap'
+import { gsap } from '@/lib/gsap'
 import { createTiltEffect } from '@/lib/animations'
 import { useEntranceAnimation, useMotionEffect } from '@/lib/motion'
 
