@@ -80,6 +80,8 @@ jobs:
         with:
           name: lighthouse-reports
           path: .lighthouseci/
+          # upload-artifact skips dot-folders unless told otherwise
+          include-hidden-files: true
           retention-days: 14
 
   deploy:
