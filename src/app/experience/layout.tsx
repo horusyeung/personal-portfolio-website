@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { baseOpenGraph } from '@/lib/metadata'
 
 export const metadata: Metadata = {
   title: 'Experience',
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
     canonical: '/experience',
   },
   openGraph: {
+    ...baseOpenGraph,
     title: 'Experience | Horus Yeung',
     description:
       'Work experience, education, and certifications of Horus Yeung — Frontend Team Lead and Software Architect.',

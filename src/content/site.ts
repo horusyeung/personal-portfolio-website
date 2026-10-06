@@ -7,6 +7,8 @@ export const SITE_URL = 'https://www.horusyeung.com'
 /** The domain as shown to visitors: horusyeung.com */
 export const SITE_DOMAIN = new URL(SITE_URL).hostname.replace(/^www\./, '')
 
+export const SITE_TITLE = 'Horus Yeung — Software Architect'
+
 export const EMAIL = 'horusyeungg@gmail.com'
 
 export const JOB_TITLE = 'Software Architect & Team Lead'
@@ -30,7 +32,4 @@ export const BIO = {
   summary: SUMMARY,
   /** Default meta description */
   meta: `${SUMMARY} Based in ${LOCATION}.`,
-  /** Twitter card */
-  twitter:
-    'Senior Software Architect and Frontend Team Lead building high-performance fintech platforms.',
 }

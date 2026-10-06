@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
-import Script from 'next/script'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { ThemeModeProvider } from '@/lib/ThemeModeProvider'
 import { introScript } from '@/lib/intro'
-import { BIO, JOB_TITLE, SITE_URL, SOCIAL_LINKS } from '@/content/site'
+import { BIO, JOB_TITLE, SITE_TITLE, SITE_URL, SOCIAL_LINKS } from '@/content/site'
+import { baseOpenGraph } from '@/lib/metadata'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import './globals.css'
@@ -43,7 +43,7 @@ const jsonLd = {
         'Fintech',
         'Trading Platforms',
       ],
-      sameAs: [SOCIAL_LINKS.github.url, SOCIAL_LINKS.linkedin.url],
+      sameAs: [SOCIAL_LINKS.github.url, SOCIAL_LINKS.linkedin.url, SOCIAL_LINKS.medium.url],
     },
   ],
 }
@@ -51,27 +51,10 @@ const jsonLd = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Horus Yeung — Software Architect',
+    default: SITE_TITLE,
     template: '%s | Horus Yeung',
   },
   description: BIO.meta,
-  keywords: [
-    'Horus Yeung',
-    'Horus',
-    'Yeung',
-    'Horus Yeung portfolio',
-    'Horus Yeung developer',
-    'Horus Yeung software architect',
-    'Software Architect',
-    'Frontend Team Lead',
-    'React',
-    'Next.js',
-    'TypeScript',
-    'Full Stack Developer',
-    'Vancouver developer',
-    'Fintech',
-    'Trading Platform',
-  ],
   authors: [{ name: 'Horus Yeung' }],
   creator: 'Horus Yeung',
   icons: {
@@ -92,27 +75,14 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'Horus Yeung — Software Architect',
+    ...baseOpenGraph,
+    title: SITE_TITLE,
     description: BIO.summary,
     url: '/',
-    siteName: 'Horus Yeung',
-    locale: 'en_US',
-    type: 'website',
-    images: [
-      {
-        url: '/opengraph-image',
-        width: 1200,
-        height: 630,
-        alt: 'Horus Yeung — Software Architect',
-      },
-    ],
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Horus Yeung — Software Architect',
-    description: BIO.twitter,
-    images: ['/opengraph-image'],
-  },
+  // Only the card type: Next fills in each page's own title, description and image from its
+  // Open Graph tags, so subpages no longer repeat the home title
+  twitter: { card: 'summary_large_image' },
 }
 
 export default function RootLayout({
@@ -127,10 +97,11 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: introScript }} />
       </head>
       <body>
-        <Script
-          id='json-ld'
+        {/* A plain script so crawlers find it in the HTML (next/script is for code to run).
+            Escaping < keeps the JSON from closing the tag. */}
+        <script
           type='application/ld+json'
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
         />
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           <ThemeModeProvider>
