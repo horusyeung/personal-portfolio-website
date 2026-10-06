@@ -53,6 +53,8 @@ jobs:
         env:
           # The build only needs a non-empty key; E2E tests never send real email
           RESEND_API_KEY: re_dummy_ci_build
+      # Firefox requires the home directory to belong to the container's current user.
+      - run: chown "$(id -u):$(id -g)" "$HOME"
       - run: yarn test:e2e
       - uses: actions/upload-artifact@v7
         if: failure()
