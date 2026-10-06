@@ -355,6 +355,13 @@ Hurdles the conversion has to handle:
 - `twitter` reduced to `{ card }` so subpages stop showing the home Twitter title.
 - Real `lastModified` dates in the sitemap. Drop `keywords`.
 
+> **Done in PR 10.**
+> - JSON-LD is a plain `<script>` in `<body>`, so it is in the server HTML. `<` is escaped and Medium is in `sameAs`. No hydration errors in production builds (Chromium and WebKit, including client-side navigation) or in dev.
+> - Every page spreads `baseOpenGraph` (`src/lib/metadata.ts`), so the subpages get `og:image`, site name, locale and type back.
+> - `twitter` is only `{ card }`. Next then fills each page's Twitter title, description and image from its own Open Graph tags, so subpages no longer show the home title.
+> - The sitemap uses fixed content dates (2026-03-14, the last text change). The deploy checkout is shallow, so git dates aren't available at build time; update a page's date in `sitemap.ts` when its text changes.
+> - `keywords` removed. `e2e/seo.spec.ts` covers all of the above.
+
 ### 2.5 Accessibility (both paths)
 - `<nav aria-label>` with `aria-current="page"`.
 - **Skip link** (visible change #6) targeting `<main id="main" tabIndex={-1}>`.
