@@ -389,6 +389,15 @@ Hurdles the conversion has to handle:
 - Rewrite the README (stack, scripts, env vars, deploy).
 - Add a Lighthouse CI job with budgets agreed from the Step 0 numbers.
 
+> **Done in PR 12.**
+> - Removed `CountUp.tsx`, `TimelineLine.tsx`, `animateCountUp`, the `threshold` prop, two refs that were never read (`formRef`, `submitBtnRef`) and `@emotion/server` (only the Pages Router needs it). `knip` now reports no unused files or exports.
+> - README rewritten: stack, setup, environment variables, scripts (including the Docker visual tests), layout, CI and deploy.
+> - **Lighthouse CI** (`lighthouserc.cjs`, job "Lighthouse"): 4 pages × 3 runs on every PR and push. Budgets agreed 2026-10-06:
+>   - **Fail:** accessibility or SEO below 100, CLS above 0.1, JS above 350 KB, total above 420 KB (measured: 313 KB and at most 362 KB, including prefetches).
+>   - **Warn only:** performance below 90, LCP above 4 s, TBT above 300 ms.
+>   - Best practices is not asserted: outside Vercel the Analytics scripts 404, which costs 4 points that production doesn't lose.
+>   - Reports are uploaded as a workflow artifact. Deploys wait for the job, but it is not yet a required PR check.
+
 ### 2.7 React Compiler: a separate, measured experiment
 - Own PR with `reactCompiler: true`.
 - Profile before and after: render counts, INP, build time.
