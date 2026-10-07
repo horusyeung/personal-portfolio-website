@@ -79,6 +79,10 @@
   height: 100%;
 }
 
+:global(html.dark) .icon {
+  color: var(--skill-brand-dark);
+}
+
 .name {
   max-width: 100%;
   color: var(--mui-palette-text-primary);
@@ -264,6 +268,10 @@
   .number,
   .name,
   .icon {
+    color: CanvasText;
+  }
+
+  :global(html.dark) .icon {
     color: CanvasText;
   }
 

@@ -7,3 +7,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Standing approval for repair rounds
+
+Owner instruction, 2026-10-07: "always allow repair rounds".
+
+Additional repair rounds and budget extensions needed to complete agreed work are pre-approved. Extend total and per-signature repair budgets as needed without asking for repeated round approvals. Keep tracking original failures, diagnoses, changes and verification outcomes. Preserve meaningful checks; a successful retry is not evidence of a diagnosed fix.

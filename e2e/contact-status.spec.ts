@@ -10,7 +10,7 @@ const glow = (page: Page) => page.getByTestId('message-glow')
 
 async function fillForm(page: Page) {
   await page.getByLabel(/^Name/).fill('Ada')
-  await page.getByLabel(/^Email/).fill('ada@example.com')
+  await page.getByRole('textbox', { name: /^Email/ }).fill('ada@example.com')
   await message(page).fill('Hello')
 }
 
@@ -214,7 +214,7 @@ test.describe('Contact status', () => {
     await expect.poll(() => glowState(page)).toMatchObject({ opacity: 0, animations: [] })
     await page.getByLabel(/^Name/).focus()
     await expect.poll(() => glowState(page)).toMatchObject({ opacity: 0, animations: [] })
-    await page.getByLabel(/^Email/).focus()
+    await page.getByRole('textbox', { name: /^Email/ }).focus()
     await expect.poll(() => glowState(page)).toMatchObject({ opacity: 0, animations: [] })
     await fillForm(page)
     await expect.poll(async () => (await glowState(page)).opacity).toBe(1)

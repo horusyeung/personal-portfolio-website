@@ -110,6 +110,10 @@ export default function SkillsShowcase() {
                     style={
                       {
                         '--skill-brand': skill.brandColor || 'var(--mui-palette-text-primary)',
+                        '--skill-brand-dark':
+                          skill.darkBrandColor ||
+                          skill.brandColor ||
+                          'var(--mui-palette-text-primary)',
                       } as CSSProperties
                     }
                   >

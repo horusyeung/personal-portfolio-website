@@ -4,7 +4,7 @@ This is the current portfolio effects and interaction plan. It replaces the v2 r
 
 **Current owner-approved direction:** keep the original full-width top navigation, the stable CSS hero background and the unwrapped name. Use Bento spotlight categories on desktop and category shelves on mobile. The floating capsule, WebGL hero/lens, liquid-glass name wrapper, Honeycomb and Apple Watch frame are retired experiments, not pending production work. Their former contracts are retained in the historical appendix solely as a record.
 
-The owner approved the cumulative F, G and Home preview for merge/deployment on 2026-10-07. Approval authorizes release after verification; it does not turn a failing CI run into a passing one. F is deployed and verified on the canonical site. G is merged with required CI passing, and its production pipeline is running. The status table records this release checkpoint; refresh it from actual deployment evidence as the remaining releases finish.
+The owner approved the cumulative F, G and Home preview for merge/deployment on 2026-10-07. All three are merged, deployed and verified on the canonical site. Required CI passed before each merge. The owner also approved H's compact Footer Dock and brand-colour refinements for PR, merge and deployment; its release checks are in progress on the latest merged master.
 
 ## 1. Status and sequence
 
@@ -16,19 +16,21 @@ The owner approved the cumulative F, G and Home preview for merge/deployment on 
 | D              | Technologies: desktop Bento spotlight, mobile category shelves                             | Shipped with the owner's revised direction                                                                                       |
 | E              | Scroll-lit About text and interaction glow on the Home closing CTA                         | Shipped; [PR #35](https://github.com/horusyeung/personal-portfolio-website/pull/35) merged                                       |
 | F              | Open Source TV cards, project sheet, deep links and separate repository actions            | Shipped; [PR #36](https://github.com/horusyeung/personal-portfolio-website/pull/36) merged at `635d999`; canonical site verified |
-| G              | Contact status island and message-field interaction glow                                   | [PR #37](https://github.com/horusyeung/personal-portfolio-website/pull/37) merged at `b1f3731`; production verification pending  |
-| Home follow-up | Per-category scroll fades and clearer hero paragraph hierarchy, with exact copy preserved  | Built and now approved in the cumulative preview; release pending                                                                |
-| H              | Footer Dock with keyboard labels and touch captions                                        | Built and verified locally; owner visual approval and release pending                                                            |
-| H1             | Audit all animation and page animation; fix missing or inconsistent fade-ins               | New step before final cleanup; not started                                                                                       |
-| H2             | R&D beautiful, expressive showpiece animation; browser prototypes and owner choice         | New research/prototype step; no production effect selected                                                                       |
-| H3             | R&D a mini-game or fancy interactive UI demonstration; browser prototypes and owner choice | New research/prototype step; no production demo selected                                                                         |
+| G              | Contact status island and message-field interaction glow                                   | Shipped; [PR #37](https://github.com/horusyeung/personal-portfolio-website/pull/37) merged at `b1f3731`; canonical site verified |
+| Home follow-up | Per-category scroll fades and clearer hero paragraph hierarchy, with exact copy preserved  | Shipped; [PR #38](https://github.com/horusyeung/personal-portfolio-website/pull/38) merged at `86906e6`; canonical site verified |
+| H              | Footer Dock with keyboard labels and touch captions                                        | Owner approved; release checks and deployment verification in progress                                                           |
+| H1             | Audit all animation and page animation; fix missing or inconsistent fade-ins               | Read-only inventory draft prepared; browser audit and repairs pending                                                            |
+| H2             | R&D beautiful, expressive showpiece animation; browser prototypes and owner choice         | Initial primary-source shortlist prepared; prototypes and owner choice pending                                                   |
+| H3             | R&D a mini-game or fancy interactive UI demonstration; browser prototypes and owner choice | Initial primary-source shortlist prepared; playable prototypes and owner choice pending                                          |
 | I              | Final cleanup, documentation, final performance and accessibility checks                   | Last step, after H1, H2 and H3 decisions                                                                                         |
 
-**Order:** finish F → release G and the approved Home follow-up → H → H1 → H2 → H3 → I. Keep one implementation PR in flight at a time. H2 and H3 authorize research and prototypes; a chosen production integration needs an explicit owner decision, a bounded scope and the same release gates as other visible work. If no candidate is selected, record that outcome and continue to I.
+**Remaining order:** H → H1 → H2 → H3 → I. F, G and the approved Home follow-up are released. Keep one implementation PR in flight at a time. H2 and H3 authorize research and prototypes; a chosen production integration needs an explicit owner decision, a bounded scope and the same release gates as other visible work. If no candidate is selected, record that outcome and continue to I.
 
-Six of the original nine steps are shipped at this checkpoint. G is merged and awaits production verification; H and I remain, with three newly requested steps inserted before I. The Home follow-up is a separate approved correction, not an invented replacement for an original step.
+Seven of the original nine steps are shipped at this checkpoint. H and I remain, with H1, H2 and H3 inserted before I: five steps remain in total. The Home follow-up is a separate approved correction, not an invented replacement for an original step.
 
 F's final PR browser job completed with 574 passed, 127 skipped and one flaky Escape-dismissal case that passed on the CI retry. An earlier local Firefox reduced-motion Close failure also remains unresolved. Preserve both observations and investigate the sheet lifecycle during H1; green CI is not evidence that either intermittent failure was repaired.
+
+Home's PR browser job passed 617 cases with 130 skips and no flakes. Its final master browser job passed 616 cases with 130 skips and one Mobile Safari rapid close/reopen/navigation flake that passed on retry. The completed deployment and live four-route smoke passed; the sheet intermittency remains an H1 investigation item.
 
 ## 2. Ground rules and release workflow
 
@@ -39,6 +41,7 @@ F's final PR browser job completed with 574 passed, 127 skipped and one flaky Es
 - Commit author and committer are **Horus Yeung <84363315+horusyeung@users.noreply.github.com>**. Use per-command Git identity settings without changing repository configuration. Commit and PR titles/messages have no AI attribution and no `Co-authored-by` trailer.
 - PR descriptions contain exactly `## Summary` and `## Test plan`; validation uses checkboxes. Report failures and manual checks that were not performed honestly.
 - Tests change in the same PR as the behavior they cover. Do not weaken assertions, increase image tolerances or retry away an unresolved failure to claim readiness.
+- The owner grants standing approval for additional repair rounds and total/per-signature budget extensions needed to complete agreed work. Continue without repeated round-approval questions; retain the failure/diagnosis/repair ledger and actual verification outcomes.
 - Require passing CI before merge. Verify the resulting production deployment and canonical routes before marking a step shipped.
 - Each production PR leaves the site consistent and can be reverted independently.
 
@@ -136,6 +139,7 @@ For each implementation PR: browser preview → light/dark evidence → owner ap
 ### 3.7 Footer Dock (H, next)
 
 - Use the same four destinations: Email, LinkedIn, GitHub and Medium. Each retains its accessible name and at least a 44px hit area.
+- Owner refinement: keep the Dock compact with 20px glyphs in 34px tinted tiles, a quiet frame, 20px footer top padding and 8px heading spacing. Preserve actual company/stack brand hues; monochrome marks reverse with the theme. Use the same LinkedIn blue in Footer and Contact, with portfolio blue reserved for the generic Email icon. Fine-pointer captions sit below the icons so they cannot cover the Connect heading.
 - Fine pointer gets cosine magnification with pointer reads/writes batched in an animation frame. Magnification must not shrink a hit area, shift surrounding content or obscure nearby focused controls.
 - Keyboard focus shows the macOS-style destination label and a clear focus indicator. The destination remains an ordinary link with predictable activation and tab order.
 - Touch gets no magnification and a visible caption under each icon. Reduced motion gets a stable presentation, with all links usable.

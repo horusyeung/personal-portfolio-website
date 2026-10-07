@@ -5,7 +5,7 @@ import { Box, Container, Typography, TextField, Button, Stack } from '@mui/mater
 import EmailIcon from '@mui/icons-material/Email'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import LanguageIcon from '@mui/icons-material/Language'
-import { SiGithub, SiMedium } from 'react-icons/si'
+import { SiGithub } from 'react-icons/si'
 import LinkedInIcon from '@mui/icons-material/LinkedIn'
 import { gsap } from '@/lib/gsap'
 import { prefersReducedMotion } from '@/lib/animations'
@@ -20,7 +20,9 @@ import {
   type ContactField,
 } from '@/lib/contact'
 import MagneticElement from '@/components/MagneticElement'
+import MediumIcon from '@/components/MediumIcon'
 import { EMAIL, LOCATION, SITE_DOMAIN, SITE_URL, SOCIAL_LINKS } from '@/content/site'
+import { brandColors } from '@/content/brands'
 import ContactFeedback, { type ContactStatus } from './ContactFeedback'
 import styles from './ContactEffects.module.css'
 
@@ -34,6 +36,7 @@ const contactItems = [
     value: EMAIL,
     href: `mailto:${EMAIL}`,
     icon: <EmailIcon sx={{ fontSize: 20 }} />,
+    color: 'text.secondary',
     external: false,
   },
   {
@@ -41,6 +44,7 @@ const contactItems = [
     value: withoutScheme(SOCIAL_LINKS.linkedin.url),
     href: SOCIAL_LINKS.linkedin.url,
     icon: <LinkedInIcon sx={{ fontSize: 20 }} />,
+    color: brandColors.linkedin,
     external: true,
   },
   {
@@ -48,13 +52,15 @@ const contactItems = [
     value: withoutScheme(SOCIAL_LINKS.github.url),
     href: SOCIAL_LINKS.github.url,
     icon: <SiGithub size={18} aria-hidden />,
+    color: brandColors.monochrome,
     external: true,
   },
   {
     label: 'Medium',
     value: withoutScheme(SOCIAL_LINKS.medium.url),
     href: SOCIAL_LINKS.medium.url,
-    icon: <SiMedium size={18} aria-hidden />,
+    icon: <MediumIcon width={18} height={18} />,
+    color: brandColors.monochrome,
     external: true,
   },
   {
@@ -62,6 +68,7 @@ const contactItems = [
     value: `${LOCATION}, Canada`,
     href: null,
     icon: <LocationOnIcon sx={{ fontSize: 20 }} />,
+    color: 'text.secondary',
     external: false,
   },
   {
@@ -69,6 +76,7 @@ const contactItems = [
     value: SITE_DOMAIN,
     href: SITE_URL,
     icon: <LanguageIcon sx={{ fontSize: 20 }} />,
+    color: 'text.secondary',
     external: true,
   },
 ]
@@ -425,7 +433,7 @@ export default function ContactPage() {
                           iconRefs.current[idx] = el
                         }}
                         sx={{
-                          color: 'text.secondary',
+                          color: item.color,
                           display: 'flex',
                           alignItems: 'center',
                           fontSize: '20px',
@@ -440,7 +448,7 @@ export default function ContactPage() {
                         iconRefs.current[idx] = el
                       }}
                       sx={{
-                        color: 'text.secondary',
+                        color: item.color,
                         display: 'flex',
                         alignItems: 'center',
                         fontSize: '20px',

@@ -34,6 +34,21 @@ test.describe('Visual snapshots', () => {
         await page.emulateMedia({ colorScheme: scheme })
         await page.goto(path)
         await page.evaluate(() => document.fonts.ready)
+        await expect(
+          page.getByRole('button', {
+            name: `Switch to ${scheme === 'light' ? 'dark' : 'light'} theme`,
+          }),
+        ).toBeEnabled()
+        if (path === '/contact') {
+          // Fonts can be ready before MUI hydrates and applies the autosized field height.
+          await expect
+            .poll(() =>
+              page.getByRole('textbox', { name: /^Message/ }).evaluate((field) => {
+                return (field as HTMLTextAreaElement).style.height
+              }),
+            )
+            .not.toBe('')
+        }
         const file = scheme === 'light' ? `${name}.png` : `${name}-dark.png`
         await expect(page).toHaveScreenshot(file, { fullPage: true })
       })
