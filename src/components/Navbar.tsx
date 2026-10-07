@@ -28,6 +28,9 @@ export default function Navbar() {
           viewTransitionName: 'site-header',
           background: 'rgba(255, 255, 255, 0.8)',
           ...theme.applyStyles('dark', { background: 'rgba(22, 22, 23, 0.8)' }),
+          '@media (prefers-color-scheme: dark)': {
+            'html:not(.light):not(.dark) &': { background: 'rgba(22, 22, 23, 0.8)' },
+          },
           backdropFilter: 'blur(20px) saturate(180%)',
           WebkitBackdropFilter: 'blur(20px) saturate(180%)',
           borderBottom: '1px solid',
@@ -57,7 +60,7 @@ export default function Navbar() {
               color: 'text.primary',
               transition: 'color 0.2s',
               borderRadius: '4px',
-              '&:hover': { color: 'primary.link' },
+              '&:hover': { color: 'primary.text' },
               '&:focus-visible': {
                 outline: '2px solid',
                 outlineColor: 'primary.main',
@@ -66,7 +69,7 @@ export default function Navbar() {
             }}
           >
             HY
-            <Box component='span' sx={{ color: 'primary.link' }}>
+            <Box component='span' sx={{ color: 'primary.text' }}>
               .
             </Box>
           </Typography>
@@ -95,11 +98,11 @@ export default function Navbar() {
                   fontSize: 12,
                   fontWeight: 400,
                   textDecoration: 'none',
-                  color: isActive(link.href) ? 'primary.link' : 'text.secondary',
+                  color: isActive(link.href) ? 'primary.text' : 'text.secondary',
                   transition: 'color 0.3s',
                   borderRadius: '4px',
                   '&:hover': {
-                    color: isActive(link.href) ? 'primary.link' : 'text.primary',
+                    color: isActive(link.href) ? 'primary.text' : 'text.primary',
                   },
                   // A hit area at least 44px tall (WCAG 2.5.5) without moving anything: the invisible
                   // box reaches 14px above and below the 18px line, and 8px into the gaps between links
