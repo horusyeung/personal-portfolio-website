@@ -67,12 +67,18 @@ test.describe('Accessibility', () => {
     })
   }
 
-  test('project cards are named by their content, not just the project name', async ({ page }) => {
+  test('project cards expose separately named Details and GitHub actions', async ({ page }) => {
     await page.goto('/open-source')
+    const card = page.getByTestId('project-project-structures')
     await expect(
-      page.getByRole('link', { name: /project-structures.*Production-ready project structures/ }),
+      card.getByRole('button', { name: 'Details for project-structures', exact: true }),
     ).toHaveCount(1)
-    await expect(page.getByRole('heading', { name: 'project-structures', level: 2 })).toHaveCount(1)
+    await expect(
+      card.getByRole('link', { name: 'GitHub repository for project-structures', exact: true }),
+    ).toHaveAttribute('href', 'https://github.com/horusyeung/project-structures')
+    await expect(card.getByRole('heading', { name: 'project-structures', level: 2 })).toHaveCount(1)
+    await expect(card).toContainText('Production-ready project structures')
+    await expect(card.locator('a button, button a')).toHaveCount(0)
   })
 
   test('experience bullets are drawn by CSS, not typed into the text', async ({ page }) => {

@@ -14,6 +14,7 @@ vi.mock('next/link', () => ({
 
 vi.mock('next/navigation', () => ({
   usePathname: () => '/open-source',
+  useSearchParams: () => new URLSearchParams(),
 }))
 
 class MockIntersectionObserver {

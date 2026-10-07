@@ -85,6 +85,14 @@ html.dark .skip-link {
   animation: none;
 }
 
+/* A project sheet moves locally; the surrounding page remains still. */
+:root:active-view-transition-type(project-sheet)::view-transition-group(root),
+:root:active-view-transition-type(project-sheet)::view-transition-old(root),
+:root:active-view-transition-type(project-sheet)::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 /* Clicks reach the page while a transition runs */
 ::view-transition {
   pointer-events: none;

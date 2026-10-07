@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
 import { baseOpenGraph } from '@/lib/metadata'
-import { Box, Container, Typography, Chip } from '@mui/material'
-import { SiGithub } from 'react-icons/si'
-import MagneticElement from '@/components/MagneticElement'
+import { Box, Container, Typography } from '@mui/material'
 import { githubProjects } from '@/content/projects'
-import OpenSourceMotion from './OpenSourceMotion'
+import OpenSourceIntro from './OpenSourceIntro'
+import ProjectGallery from './ProjectGallery'
 
 export const metadata: Metadata = {
   title: 'Open Source',
@@ -20,11 +19,11 @@ export const metadata: Metadata = {
   },
 }
 
-// Server Component: the markup renders on the server and OpenSourceMotion animates it
+// Server Component: the markup renders on the server and OpenSourceIntro animates it
 
 export default function OpenSourcePage() {
   return (
-    <OpenSourceMotion>
+    <OpenSourceIntro>
       {/* ===== HERO SECTION ===== */}
       <Box
         data-testid='open-source-hero'
@@ -79,161 +78,9 @@ export default function OpenSourcePage() {
         }}
       >
         <Container maxWidth={false} sx={{ maxWidth: 780 }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {githubProjects.map((project) => (
-              <Box key={project.name} sx={{ perspective: '800px' }}>
-                <Box
-                  data-testid={`project-${project.name}`}
-                  component='a'
-                  href={project.url}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  data-os='card'
-                  data-intro
-                  sx={{
-                    display: 'block',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    p: { xs: 3, md: 4 },
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    borderRadius: '16px',
-                    textDecoration: 'none',
-                    transition: 'border-color 0.3s ease',
-                    '&:hover': {
-                      borderColor: 'primary.main',
-                    },
-                    '&:focus-visible': {
-                      outline: '2px solid',
-                      outlineColor: 'primary.main',
-                      outlineOffset: 2,
-                    },
-                  }}
-                >
-                  {/* Cursor glow overlay (#24) */}
-                  <Box
-                    data-os='glow'
-                    sx={{
-                      position: 'absolute',
-                      width: 200,
-                      height: 200,
-                      borderRadius: '50%',
-                      background:
-                        'radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 70%)',
-                      pointerEvents: 'none',
-                      transform: 'translate(-50%, -50%)',
-                      opacity: 0,
-                      zIndex: 1,
-                    }}
-                  />
-
-                  {/* Header row */}
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      mb: 1.5,
-                      position: 'relative',
-                      zIndex: 2,
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1.5,
-                      }}
-                    >
-                      {/* #27: GitHub icon — Magnetic pull */}
-                      <MagneticElement strength={0.3} radius={80}>
-                        <Box sx={{ color: 'text.primary', display: 'flex', alignItems: 'center' }}>
-                          <SiGithub size={20} aria-hidden />
-                        </Box>
-                      </MagneticElement>
-                      <Typography
-                        component='h2'
-                        sx={{
-                          fontSize: '17px',
-                          fontWeight: 600,
-                          color: 'text.primary',
-                        }}
-                      >
-                        {project.name}
-                      </Typography>
-                    </Box>
-                    {/* #26: Status badge */}
-                    <Box
-                      data-os='badge'
-                      data-status={project.status}
-                      sx={{ display: 'inline-flex', borderRadius: '12px' }}
-                    >
-                      <Chip
-                        label={project.status}
-                        size='small'
-                        sx={{
-                          fontSize: '11px',
-                          fontWeight: 600,
-                          height: '24px',
-                          borderRadius: '12px',
-                          bgcolor: project.status === 'Live' ? 'live.background' : 'action.hover',
-                          color: project.status === 'Live' ? 'live.text' : 'text.secondary',
-                        }}
-                      />
-                    </Box>
-                  </Box>
-
-                  {/* Description */}
-                  <Typography
-                    sx={{
-                      fontSize: '15px',
-                      fontWeight: 400,
-                      lineHeight: 1.5,
-                      color: 'text.secondary',
-                      mb: 2,
-                      position: 'relative',
-                      zIndex: 2,
-                    }}
-                  >
-                    {project.description}
-                  </Typography>
-
-                  {/* Tags (#25) */}
-                  <Box
-                    data-os='tags'
-                    sx={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: 1,
-                      position: 'relative',
-                      zIndex: 2,
-                    }}
-                  >
-                    {project.tags.map((tag) => (
-                      <Chip
-                        key={tag}
-                        label={tag}
-                        size='small'
-                        variant='outlined'
-                        className='project-tag'
-                        data-intro
-                        sx={{
-                          fontSize: '12px',
-                          fontWeight: 500,
-                          height: '26px',
-                          borderRadius: '13px',
-                          borderColor: 'divider',
-                          color: 'text.secondary',
-                        }}
-                      />
-                    ))}
-                  </Box>
-                </Box>
-              </Box>
-            ))}
-          </Box>
+          <ProjectGallery projects={githubProjects} />
         </Container>
       </Box>
-    </OpenSourceMotion>
+    </OpenSourceIntro>
   )
 }
