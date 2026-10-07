@@ -1,0 +1,14 @@
+.word {
+  color: var(--mui-palette-text-secondary);
+  color: color-mix(
+    in srgb,
+    var(--mui-palette-text-primary) var(--word-lit, 0%),
+    var(--mui-palette-text-secondary)
+  );
+}
+
+@media (forced-colors: active) {
+  .word {
+    color: CanvasText;
+  }
+}

@@ -6,8 +6,9 @@ import Link from 'next/link'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { gsap } from '@/lib/gsap'
 import ScrollReveal from '@/components/ScrollReveal'
-import { skillCategories } from '@/content/skills'
-import { skillIcons } from '@/lib/skillIcons'
+import AboutScrollText from '@/components/AboutScrollText'
+import CtaGlow from '@/components/CtaGlow'
+import SkillsShowcase from '@/components/SkillsShowcase'
 import { BIO, JOB_TITLE } from '@/content/site'
 import { useEntranceAnimation } from '@/lib/motion'
 
@@ -273,22 +274,13 @@ export default function HomePage() {
             >
               Building products that scale.
             </Typography>
-            <Typography
-              sx={{
-                mt: 3,
-                maxWidth: 640,
-                fontSize: '21px',
-                fontWeight: 400,
-                lineHeight: 1.47,
-                color: 'text.secondary',
-              }}
-            >
-              Designed a microservice architecture from scratch. Lead a distributed team of 5
-              engineers while coding daily, managing cross-timezone sprints, coding standards and
-              CI/CD pipelines. Use AI-augmented development workflows to speed up delivery and raise
-              code quality.
-            </Typography>
           </ScrollReveal>
+          <AboutScrollText>
+            Designed a microservice architecture from scratch. Lead a distributed team of 5
+            engineers while coding daily, managing cross-timezone sprints, coding standards and
+            CI/CD pipelines. Use AI-augmented development workflows to speed up delivery and raise
+            code quality.
+          </AboutScrollText>
         </Container>
       </Box>
 
@@ -298,7 +290,7 @@ export default function HomePage() {
         component='section'
         sx={{ bgcolor: 'background.default', py: { xs: '80px', md: '120px' } }}
       >
-        <Container maxWidth={false} sx={{ maxWidth: 780 }}>
+        <Container maxWidth={false} sx={{ maxWidth: 1200 }}>
           <ScrollReveal>
             <Typography
               variant='h2'
@@ -316,68 +308,7 @@ export default function HomePage() {
             </Typography>
           </ScrollReveal>
 
-          <Box>
-            {skillCategories.map((category, index) => (
-              <ScrollReveal key={category.title} delay={index * 0.1}>
-                <Box
-                  sx={{
-                    display: 'grid',
-                    gridTemplateColumns: { xs: '1fr', md: '180px 1fr' },
-                    gap: { xs: 1, md: 4 },
-                    py: '20px',
-                    borderBottom: index < skillCategories.length - 1 ? '1px solid' : 'none',
-                    borderColor: 'divider',
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.08em',
-                      color: 'text.secondary',
-                      pt: { md: '2px' },
-                    }}
-                  >
-                    {category.title}
-                  </Typography>
-
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                    {category.skills.map((skill) => {
-                      const IconComponent = skillIcons[skill.icon]
-                      return (
-                        <Box
-                          key={skill.name}
-                          sx={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            mr: '20px',
-                            mb: '8px',
-                            color: 'text.secondary',
-                            cursor: 'default',
-                            transition: 'color 0.3s ease',
-                            '&:hover': { color: 'text.primary' },
-                          }}
-                        >
-                          <IconComponent
-                            size={20}
-                            style={{ color: skill.brandColor || 'inherit' }}
-                          />
-                          <Typography
-                            component='span'
-                            sx={{ fontSize: '14px', fontWeight: 400, color: 'inherit' }}
-                          >
-                            {skill.name}
-                          </Typography>
-                        </Box>
-                      )
-                    })}
-                  </Box>
-                </Box>
-              </ScrollReveal>
-            ))}
-          </Box>
+          <SkillsShowcase />
         </Container>
       </Box>
 
@@ -413,39 +344,40 @@ export default function HomePage() {
               Have a project in mind or want to discuss architecture? I&apos;d love to hear from
               you.
             </Typography>
-            <Box
-              component={Link}
-              href='/contact'
-              sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 0.5,
-                mt: 3,
-                fontSize: '21px',
-                fontWeight: 400,
-                color: 'primary.text',
-                textDecoration: 'none',
-                borderRadius: '4px',
-                transition: 'gap 0.3s ease',
-                '&:hover': { gap: 1 },
-                '&:hover .arrow': { transform: 'translateX(4px)' },
-                '&:focus-visible': {
-                  outline: '2px solid',
-                  outlineColor: 'primary.main',
-                  outlineOffset: 2,
-                },
-              }}
-            >
-              Get in touch
+            <CtaGlow>
               <Box
-                component='span'
-                className='arrow'
-                aria-hidden
-                sx={{ transition: 'transform 0.3s ease', display: 'inline-block' }}
+                component={Link}
+                href='/contact'
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  fontSize: '21px',
+                  fontWeight: 400,
+                  color: 'primary.text',
+                  textDecoration: 'none',
+                  borderRadius: '4px',
+                  transition: 'gap 0.3s ease',
+                  '&:hover': { gap: 1 },
+                  '&:hover .arrow': { transform: 'translateX(4px)' },
+                  '&:focus-visible': {
+                    outline: '2px solid',
+                    outlineColor: 'primary.main',
+                    outlineOffset: 2,
+                  },
+                }}
               >
-                &rarr;
+                Get in touch
+                <Box
+                  component='span'
+                  className='arrow'
+                  aria-hidden
+                  sx={{ transition: 'transform 0.3s ease', display: 'inline-block' }}
+                >
+                  &rarr;
+                </Box>
               </Box>
-            </Box>
+            </CtaGlow>
           </ScrollReveal>
         </Container>
       </Box>
