@@ -66,11 +66,14 @@ test.describe('Contact Page', () => {
     await expect(page.getByLabel(/^Name/)).toBeFocused()
 
     await page.getByLabel(/^Name/).fill('Ada')
-    await page.getByLabel(/^Email/).fill('not-an-email')
+    await page.getByRole('textbox', { name: /^Email/ }).fill('not-an-email')
     await page.getByLabel(/^Message/).fill('Hello')
     await page.getByRole('button', { name: 'Send Message' }).click()
     await expect(page.getByText('Please enter a valid email address.')).toBeVisible()
-    await expect(page.getByLabel(/^Email/)).toHaveAttribute('aria-invalid', 'true')
+    await expect(page.getByRole('textbox', { name: /^Email/ })).toHaveAttribute(
+      'aria-invalid',
+      'true',
+    )
 
     expect(requests).toBe(0)
   })
@@ -82,7 +85,7 @@ test.describe('Contact Page', () => {
     })
 
     await page.getByLabel(/^Name/).fill('Ada')
-    await page.getByLabel(/^Email/).fill('ada@example.com')
+    await page.getByRole('textbox', { name: /^Email/ }).fill('ada@example.com')
     await page.getByLabel(/^Message/).fill('Hello')
     await page.getByRole('button', { name: 'Send Message' }).dblclick()
 
@@ -100,7 +103,7 @@ test.describe('Contact Page', () => {
     )
 
     await page.getByLabel(/^Name/).fill('Ada')
-    await page.getByLabel(/^Email/).fill('ada@example.com')
+    await page.getByRole('textbox', { name: /^Email/ }).fill('ada@example.com')
     await page.getByLabel(/^Message/).fill('Hello')
     await page.getByRole('button', { name: 'Send Message' }).click()
 
