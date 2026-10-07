@@ -118,7 +118,9 @@ export default function RootLayout({
             <Navbar />
             <main id='main' tabIndex={-1} style={{ flex: 1 }}>
               {/* Navigations are transitions, so the page content crossfades (see globals.css) */}
-              <ViewTransition default='page-fade'>{children}</ViewTransition>
+              <ViewTransition default={{ 'project-sheet': 'none', default: 'page-fade' }}>
+                {children}
+              </ViewTransition>
             </main>
             {/* Set at build time: each deploy refreshes it, and the HTML and hydration agree */}
             <Footer year={new Date().getFullYear()} />

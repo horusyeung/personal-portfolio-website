@@ -129,9 +129,33 @@ test('CTA glow starts only on interaction and each activation ends in a static r
   await page.goto('/')
   const link = closingLink(page.getByTestId('cta-section'))
   await expect.poll(() => glowState(link)).toMatchObject({ opacity: 0, animations: [] })
+  // The entrance reveal must settle before hover so it cannot move away from the pointer.
+  await link.scrollIntoViewIfNeeded()
+  await expect
+    .poll(() =>
+      link.evaluate((node) => {
+        const style = getComputedStyle(node.closest('[data-intro]')!)
+        const transform = new DOMMatrixReadOnly(
+          style.transform === 'none' ? undefined : style.transform,
+        )
+        return (
+          Number(style.opacity) === 1 &&
+          Math.abs(transform.m41) < 0.01 &&
+          Math.abs(transform.m42) < 0.01
+        )
+      }),
+    )
+    .toBe(true)
   if (!isMobile) await link.hover()
   else await link.focus()
   await expect.poll(async () => (await glowState(link)).opacity).toBe(1)
+  // A pending CSS animation has a null startTime until the browser starts its timeline.
+  await link.evaluate(async (node) => {
+    const animations = node
+      .parentElement!.getAnimations({ subtree: true })
+      .filter((animation) => animation instanceof CSSAnimation)
+    await Promise.all(animations.map((animation) => animation.ready))
+  })
   const active = await glowState(link)
   expect(active.animations).toHaveLength(2)
   for (const animation of active.animations) {
