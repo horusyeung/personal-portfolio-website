@@ -1,7 +1,7 @@
 'use client'
 
 import { FormEvent, useState, useRef, useCallback } from 'react'
-import { Box, Container, Typography, TextField, Button, Stack, Alert } from '@mui/material'
+import { Box, Container, Typography, TextField, Button, Stack } from '@mui/material'
 import EmailIcon from '@mui/icons-material/Email'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import LanguageIcon from '@mui/icons-material/Language'
@@ -21,6 +21,8 @@ import {
 } from '@/lib/contact'
 import MagneticElement from '@/components/MagneticElement'
 import { EMAIL, LOCATION, SITE_DOMAIN, SITE_URL, SOCIAL_LINKS } from '@/content/site'
+import ContactFeedback, { type ContactStatus } from './ContactFeedback'
+import styles from './ContactEffects.module.css'
 
 // ── Data ────────────────────────────────────────────────────────────────────
 
@@ -144,7 +146,7 @@ const focusGlowSx = {
 // ── Component ───────────────────────────────────────────────────────────────
 
 export default function ContactPage() {
-  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
+  const [status, setStatus] = useState<ContactStatus>('idle')
   const [fieldErrors, setFieldErrors] = useState<ContactErrors>({})
   // Synchronous guard: state updates are async, so a fast double-click could submit twice
   const inFlight = useRef(false)
@@ -599,6 +601,9 @@ export default function ContactPage() {
 
                   {/* #32 — Form field: Message */}
                   <Box
+                    className={styles.messageGlow}
+                    data-testid='message-glow'
+                    data-sending={status === 'sending'}
                     ref={(el: HTMLDivElement | null) => {
                       formFieldsRef.current[2] = el
                     }}
@@ -660,22 +665,12 @@ export default function ContactPage() {
                         },
                       }}
                     >
-                      {status === 'sending' ? 'Sending...' : 'Send Message'}
+                      {status === 'sending' ? 'Sending…' : 'Send Message'}
                     </Button>
                   </Box>
-
-                  {status === 'success' && (
-                    <Alert severity='success' sx={{ borderRadius: '12px' }}>
-                      Message sent successfully! I&apos;ll get back to you soon.
-                    </Alert>
-                  )}
-                  {status === 'error' && (
-                    <Alert severity='error' sx={{ borderRadius: '12px' }}>
-                      Failed to send message. Please try again or email me directly.
-                    </Alert>
-                  )}
                 </Stack>
               </Box>
+              <ContactFeedback status={status} />
             </Box>
           </Box>
         </Container>

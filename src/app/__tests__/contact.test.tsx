@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { act, render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ThemeProvider } from '@mui/material/styles'
 import { createAppTheme } from '@/lib/theme'
 import ContactPage from '@/app/contact/page'
+import { CONTACT_SEND_ERROR } from '@/lib/contact'
 
 vi.mock('next/link', () => ({
   default: ({ children, href, ...props }: any) => (
@@ -51,6 +52,17 @@ function renderWithTheme(ui: React.ReactElement) {
 }
 
 describe('ContactPage', () => {
+  it('keeps one initially empty polite status outside the form and its busy subtree', () => {
+    renderWithTheme(<ContactPage />)
+    const status = screen.getByRole('status')
+    expect(screen.getAllByRole('status')).toHaveLength(1)
+    expect(status).toBeEmptyDOMElement()
+    expect(status).toHaveAttribute('aria-live', 'polite')
+    expect(status).toHaveAttribute('aria-atomic', 'true')
+    expect(status.closest('form')).toBeNull()
+    expect(status.closest('[aria-busy]')).toBeNull()
+  })
+
   it('renders "Get in Touch" heading', () => {
     renderWithTheme(<ContactPage />)
     expect(screen.getByText('Get in Touch')).toBeInTheDocument()
@@ -147,8 +159,14 @@ describe('ContactPage form', () => {
 
     await fillForm({ name: ' Ada ', email: ' ada@example.com ', message: ' Hello ' })
     const form = screen.getByTestId('contact-form')
+    const live = screen.getByRole('status')
+    const message = screen.getByLabelText(/^Message/)
+    expect(message).toHaveFocus()
     fireEvent.submit(form)
     fireEvent.submit(form)
+    expect(live).toHaveTextContent('Sending…')
+    expect(form).toHaveAttribute('aria-busy', 'true')
+    expect(message).toHaveFocus()
 
     expect(fetchMock).toHaveBeenCalledTimes(1)
     const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit]
@@ -158,13 +176,17 @@ describe('ContactPage form', () => {
       message: 'Hello',
       website: '',
     })
-    expect(screen.getByRole('button', { name: 'Sending...' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: 'Sending…' })).toHaveAttribute(
       'aria-disabled',
       'true',
     )
 
-    respond(jsonResponse(200, { success: true }))
-    expect(await screen.findByText(/Message sent successfully/)).toBeInTheDocument()
+    await act(async () => respond(jsonResponse(200, { success: true })))
+    await waitFor(() => expect(live).toHaveTextContent('Message sent'))
+    expect(live).toHaveTextContent('Horus will get back to you soon')
+    expect(screen.getByRole('status')).toBe(live)
+    expect(message).toHaveFocus()
+    expect(form).toHaveAttribute('aria-busy', 'false')
   })
 
   it('shows field errors returned by the server', async () => {
@@ -181,7 +203,46 @@ describe('ContactPage form', () => {
 
     expect(await screen.findByText('Please enter a valid email address.')).toBeInTheDocument()
     expect(screen.queryByText(/Failed to send message/)).not.toBeInTheDocument()
+    expect(screen.getByRole('status')).toBeEmptyDOMElement()
+    expect(screen.getByLabelText(/^Email/)).toHaveFocus()
   })
+
+  it.each([
+    [200, 'Message sent'],
+    [502, CONTACT_SEND_ERROR],
+  ] as const)(
+    'announces a repeated %s outcome after dismissal without replacing the live region',
+    async (statusCode, text) => {
+      let respond: (value: unknown) => void = () => {}
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(
+          () =>
+            new Promise((resolve) => {
+              respond = resolve
+            }),
+        ),
+      )
+      renderWithTheme(<ContactPage />)
+      const live = screen.getByRole('status')
+      for (let attempt = 0; attempt < 2; attempt++) {
+        fireEvent.change(screen.getByLabelText(/^Name/), { target: { value: 'Ada' } })
+        fireEvent.change(screen.getByLabelText(/^Email/), { target: { value: 'ada@example.com' } })
+        fireEvent.change(screen.getByLabelText(/^Message/), { target: { value: 'Hello' } })
+        fireEvent.submit(screen.getByTestId('contact-form'))
+        expect(live).toHaveTextContent('Sending…')
+        await act(async () =>
+          respond(
+            jsonResponse(statusCode, statusCode === 200 ? { success: true } : { error: 'Failed' }),
+          ),
+        )
+        await waitFor(() => expect(live).toHaveTextContent(text))
+        expect(screen.getByRole('status')).toBe(live)
+        fireEvent.click(screen.getByRole('button', { name: 'Close', exact: true }))
+        expect(live).toBeEmptyDOMElement()
+      }
+    },
+  )
 
   it('shows the generic error when sending fails', async () => {
     vi.stubGlobal(
@@ -193,6 +254,6 @@ describe('ContactPage form', () => {
     await fillForm({ name: 'Ada', email: 'ada@example.com', message: 'Hello' })
     fireEvent.submit(screen.getByTestId('contact-form'))
 
-    expect(await screen.findByText(/Failed to send message/)).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent(CONTACT_SEND_ERROR))
   })
 })
