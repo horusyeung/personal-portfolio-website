@@ -6,7 +6,8 @@ const CONTENT: Record<string, string[]> = {
   '/': [
     '[data-testid=hero-name]',
     '[data-testid=cta-experience]',
-    '[data-intro-offset]',
+    '.home-hero-subtitle',
+    '[data-skill-category]',
     '[data-testid=about-section] h2',
     '[data-testid=skills-section] h2',
     '[data-testid=cta-section] h2',

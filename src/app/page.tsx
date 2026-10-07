@@ -12,11 +12,12 @@ import SkillsShowcase from '@/components/SkillsShowcase'
 import { BIO, JOB_TITLE } from '@/content/site'
 import { useEntranceAnimation } from '@/lib/motion'
 
+const heroSentenceBreak = BIO.hero.indexOf('. ') + 1
+
 export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null)
   const nameRef = useRef<HTMLHeadingElement>(null)
   const overlineRef = useRef<HTMLDivElement>(null)
-  const subtitleRef = useRef<HTMLDivElement>(null)
   const ctaRef = useRef<HTMLDivElement>(null)
   const statsRef = useRef<HTMLDivElement>(null)
 
@@ -26,7 +27,7 @@ export default function HomePage() {
       tl.fromTo(nameRef.current, { opacity: 0 }, { opacity: 1, duration: 0.7 }, 0)
     }
 
-    // #2 — Overline from left, subtitle from right
+    // #2 — Overline entrance
     if (overlineRef.current) {
       tl.fromTo(
         overlineRef.current,
@@ -35,16 +36,6 @@ export default function HomePage() {
         '-=0.4',
       )
     }
-    // The subtitle stays visible (it is the LCP element) and only slides
-    if (subtitleRef.current) {
-      tl.fromTo(
-        subtitleRef.current,
-        { x: 30 },
-        { x: 0, duration: 0.8, ease: 'power3.out' },
-        '-=0.6',
-      )
-    }
-
     // #3 — CTA buttons scale-spring
     if (ctaRef.current) {
       tl.fromTo(
@@ -97,7 +88,7 @@ export default function HomePage() {
           justifyContent: 'center',
           bgcolor: 'background.default',
           willChange: 'transform, opacity',
-          // The subtitle's slide-in must not widen the page on phones
+          // Keep entrance motion within the viewport
           overflowX: 'clip',
         }}
       >
@@ -141,21 +132,43 @@ export default function HomePage() {
             Horus Yeung
           </Typography>
 
-          {/* Subtitle */}
+          {/* Keep both sentences visible from the first server render. */}
           <Typography
-            ref={subtitleRef}
-            data-intro-offset
+            className='home-hero-subtitle'
             sx={{
               mt: 3,
               mx: 'auto',
               maxWidth: 600,
-              fontSize: { xs: '19px', md: '21px' },
-              fontWeight: 400,
-              lineHeight: 1.47,
               color: 'text.primary',
             }}
           >
-            {BIO.hero}
+            <Box
+              component='span'
+              sx={{
+                display: 'block',
+                fontSize: { xs: '19px', md: '21px' },
+                fontWeight: 500,
+                lineHeight: 1.5,
+                textWrap: 'balance',
+              }}
+            >
+              {BIO.hero.slice(0, heroSentenceBreak)}
+            </Box>{' '}
+            <Box
+              component='span'
+              sx={{
+                display: 'block',
+                mt: 1.5,
+                mx: 'auto',
+                maxWidth: 500,
+                fontSize: { xs: '16px', md: '17px' },
+                fontWeight: 400,
+                lineHeight: 1.6,
+                textWrap: 'balance',
+              }}
+            >
+              {BIO.hero.slice(heroSentenceBreak + 1)}
+            </Box>
           </Typography>
 
           {/* CTAs */}

@@ -58,6 +58,98 @@ async function spotlightOpacity(card: Locator) {
 }
 
 test.describe('Skills showcase', () => {
+  test('category cards fade in on their own scroll entry and stay revealed after leaving', async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    await page.evaluate(() => document.fonts.ready)
+    const showcase = page.getByTestId('skills-showcase')
+    const first = cards(showcase).first()
+    const last = cards(showcase).last()
+    await expect(first).not.toBeInViewport()
+    await expect(first).toHaveCSS('opacity', '0')
+    await expect(last).toHaveCSS('opacity', '0')
+
+    // Sample rendered frames rather than sleeping through the fade: an instant
+    // appearance or one animation on the entire grid must fail this regression.
+    const fade = await first.evaluate(
+      (node) =>
+        new Promise<{ finished: boolean; intermediate: boolean }>((resolve) => {
+          let intermediate = false
+          let frame = 0
+          const timeout = window.setTimeout(() => {
+            cancelAnimationFrame(frame)
+            resolve({ finished: false, intermediate })
+          }, 3_000)
+          const sample = () => {
+            const opacity = Number(getComputedStyle(node).opacity)
+            if (opacity > 0 && opacity < 0.99) intermediate = true
+            if (opacity >= 0.99) {
+              window.clearTimeout(timeout)
+              resolve({ finished: true, intermediate })
+            } else frame = requestAnimationFrame(sample)
+          }
+          window.scrollTo({
+            top: node.getBoundingClientRect().top + scrollY - innerHeight * 0.65,
+            behavior: 'instant',
+          })
+          frame = requestAnimationFrame(sample)
+        }),
+    )
+    expect(fade).toEqual({ finished: true, intermediate: true })
+    await expect(first).toHaveCSS('opacity', '1')
+    await expect(last).not.toBeInViewport()
+    await expect(last).toHaveCSS('opacity', '0')
+
+    await last.scrollIntoViewIfNeeded()
+    await expect(last).toHaveCSS('opacity', '1')
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+    await afterPaint(page)
+    await expect(first).toHaveCSS('opacity', '1')
+    await expect(last).toHaveCSS('opacity', '1')
+    await first.scrollIntoViewIfNeeded()
+    await afterPaint(page)
+    await expect(first).toHaveCSS('opacity', '1')
+  })
+
+  test('requesting reduced motion during a card fade makes the full toolkit readable', async ({
+    page,
+  }) => {
+    await page.clock.install({ time: new Date('2026-10-07T12:00:00Z') })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    const showcase = page.getByTestId('skills-showcase')
+    const first = cards(showcase).first()
+    // CSS also hides the card before hydration. Wait for animation ownership
+    // before controlling time so the intro fallback cannot win this fixture.
+    await expect.poll(() => first.evaluate((node) => (node as HTMLElement).style.opacity)).toBe('0')
+    await page.clock.pauseAt(new Date('2026-10-07T12:01:00Z'))
+    await expect(first).toHaveCSS('opacity', '0')
+    await first.evaluate((node) => {
+      window.scrollTo({
+        top: node.getBoundingClientRect().top + scrollY - innerHeight * 0.65,
+        behavior: 'instant',
+      })
+    })
+    let intermediate = 0
+    // Native scroll events can reach ScrollTrigger after the first virtual
+    // frame. Advance one frame at a time until the fade actually starts.
+    await expect
+      .poll(async () => {
+        await page.clock.runFor(16)
+        intermediate = await first.evaluate((node) => Number(getComputedStyle(node).opacity))
+        return intermediate
+      })
+      .toBeGreaterThan(0)
+    expect(intermediate).toBeLessThan(0.99)
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    for (const card of await cards(showcase).all()) {
+      await expect(card).toHaveCSS('opacity', '1')
+    }
+    await expectInventory(showcase)
+  })
+
   test('renders one complete, labeled toolkit without fake controls', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.goto('/')
@@ -168,6 +260,9 @@ test.describe('Skills showcase', () => {
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/')
     const card = cards(page.getByTestId('skills-showcase')).first()
+    // A hover can otherwise land on server HTML before React handles pointers.
+    await card.scrollIntoViewIfNeeded()
+    await expect(card).toHaveCSS('opacity', '1')
     const bounds = (await card.boundingBox())!
     await card.hover({ position: { x: bounds.width * 0.25, y: bounds.height * 0.3 } })
     await expect.poll(() => spotlight(card)).not.toEqual({ x: '', y: '' })
@@ -284,7 +379,7 @@ test.describe('Skills showcase', () => {
     const context = await browser.newContext({
       baseURL,
       javaScriptEnabled: false,
-      reducedMotion: 'reduce',
+      reducedMotion: 'no-preference',
       viewport: page.viewportSize(),
     })
     try {
@@ -292,6 +387,9 @@ test.describe('Skills showcase', () => {
       await plainPage.goto('/')
       const showcase = plainPage.getByTestId('skills-showcase')
       await expectInventory(showcase)
+      for (const card of await cards(showcase).all()) {
+        await expect(card).toHaveCSS('opacity', '1')
+      }
       expect(
         await showcase.evaluate((node) => {
           for (let ancestor: Element | null = node; ancestor; ancestor = ancestor.parentElement) {
