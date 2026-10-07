@@ -3,6 +3,8 @@
 import { useEffect, useId, useRef, type CSSProperties, type PointerEvent } from 'react'
 import { skillCategories } from '@/content/skills'
 import { skillIcons } from '@/lib/skillIcons'
+import { gsap } from '@/lib/gsap'
+import { useEntranceAnimation } from '@/lib/motion'
 import styles from './SkillsShowcase.module.css'
 
 const SPOTLIGHT_MEDIA =
@@ -24,6 +26,26 @@ export default function SkillsShowcase() {
   const id = useId()
   const ref = useRef<HTMLDivElement>(null)
   const spotlightMedia = useRef<MediaQueryList | null>(null)
+
+  useEntranceAnimation(() => {
+    ref.current?.querySelectorAll<HTMLElement>('[data-skill-category]').forEach((card) => {
+      // Leave transform to the card's hover treatment.
+      gsap.fromTo(
+        card,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 0.6,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 85%',
+            once: true,
+          },
+        },
+      )
+    })
+  }, ref)
 
   useEffect(() => {
     const media = window.matchMedia(SPOTLIGHT_MEDIA)
@@ -65,6 +87,7 @@ export default function SkillsShowcase() {
             className={`${styles.category}${category.skills.length > 7 ? ` ${styles.wide}` : ''}`}
             aria-labelledby={headingId}
             data-skill-category={category.title}
+            data-intro
             style={{ '--category-accent': categoryAccents[index] } as CSSProperties}
             onPointerMove={trackSpotlight}
           >
