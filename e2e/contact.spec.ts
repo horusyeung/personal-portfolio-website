@@ -1,7 +1,9 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Route } from '@playwright/test'
+import { CONTACT_SEND_ERROR } from '../src/lib/contact'
 
 test.describe('Contact Page', () => {
   test.beforeEach(async ({ page }) => {
+    await page.route('**/api/contact', (route) => route.abort())
     await page.goto('/contact')
   })
 
@@ -74,11 +76,9 @@ test.describe('Contact Page', () => {
   })
 
   test('a double-click submits once and shows the confirmation', async ({ page }) => {
-    let requests = 0
-    await page.route('**/api/contact', async (route) => {
-      requests++
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      await route.fulfill({ json: { success: true } })
+    const requests: Route[] = []
+    await page.route('**/api/contact', (route) => {
+      requests.push(route)
     })
 
     await page.getByLabel(/^Name/).fill('Ada')
@@ -86,8 +86,12 @@ test.describe('Contact Page', () => {
     await page.getByLabel(/^Message/).fill('Hello')
     await page.getByRole('button', { name: 'Send Message' }).dblclick()
 
-    await expect(page.getByText(/Message sent successfully/)).toBeVisible()
-    expect(requests).toBe(1)
+    await expect(page.getByRole('status')).toHaveText('Sending…')
+    expect(requests).toHaveLength(1)
+    await requests[0].fulfill({ json: { success: true } })
+    await expect(page.getByRole('status')).toContainText('Message sent')
+    await expect(page.getByRole('status')).toContainText('Horus will get back to you soon')
+    expect(requests).toHaveLength(1)
   })
 
   test('shows the error message when sending fails', async ({ page }) => {
@@ -100,6 +104,6 @@ test.describe('Contact Page', () => {
     await page.getByLabel(/^Message/).fill('Hello')
     await page.getByRole('button', { name: 'Send Message' }).click()
 
-    await expect(page.getByText(/Failed to send message/)).toBeVisible()
+    await expect(page.getByRole('status')).toHaveText(CONTACT_SEND_ERROR)
   })
 })
