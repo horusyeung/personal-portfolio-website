@@ -1,0 +1,78 @@
+@property --cta-glow-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 45deg;
+}
+
+.glow {
+  position: relative;
+  display: inline-flex;
+  margin-top: 24px;
+  border-radius: 6px;
+  isolation: isolate;
+}
+
+.glow::before,
+.glow::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -8px;
+  border-radius: 12px;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--cta-glow-angle),
+    var(--mui-palette-primary-light),
+    #bf5af2,
+    #ff375f,
+    #ff9f0a,
+    var(--mui-palette-primary-light)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.glow::after {
+  filter: blur(9px);
+}
+
+.glow:hover::before,
+.glow:hover::after,
+.glow:focus-within::before,
+.glow:focus-within::after {
+  opacity: 1;
+  animation: turn 5s linear 1 forwards;
+}
+
+@keyframes turn {
+  from {
+    --cta-glow-angle: 45deg;
+  }
+  to {
+    --cta-glow-angle: 405deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow:hover::before,
+  .glow:hover::after,
+  .glow:focus-within::before,
+  .glow:focus-within::after {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .glow::before,
+  .glow::after {
+    display: none;
+  }
+}
