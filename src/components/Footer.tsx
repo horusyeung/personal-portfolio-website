@@ -2,21 +2,13 @@
 
 import Link from 'next/link'
 import { Box, Typography, Divider } from '@mui/material'
-import { BIO, EMAIL, LOCATION, SOCIAL_LINKS } from '@/content/site'
+import { BIO, LOCATION } from '@/content/site'
+import FooterDock from './FooterDock'
 
 const exploreLinks = [
   { href: '/experience', label: 'Experience' },
   { href: '/open-source', label: 'Open Source' },
   { href: '/contact', label: 'Contact' },
-]
-
-const connectLinks = [
-  { href: `mailto:${EMAIL}`, label: 'Email', external: false },
-  ...[SOCIAL_LINKS.linkedin, SOCIAL_LINKS.github, SOCIAL_LINKS.medium].map(({ label, url }) => ({
-    href: url,
-    label,
-    external: true,
-  })),
 ]
 
 const columnHeaderSx = {
@@ -25,7 +17,7 @@ const columnHeaderSx = {
   textTransform: 'uppercase' as const,
   letterSpacing: '0.08em',
   color: 'text.secondary',
-  mb: '12px',
+  mb: '8px',
 }
 
 const linkSx = {
@@ -54,7 +46,7 @@ export default function Footer({ year }: { year: number }) {
         backgroundColor: 'background.paper',
         borderTop: '1px solid',
         borderColor: 'divider',
-        pt: '34px',
+        pt: '20px',
         pb: '20px',
       }}
     >
@@ -86,17 +78,7 @@ export default function Footer({ year }: { year: number }) {
           {/* Column 2: Connect */}
           <Box data-testid='footer-connect'>
             <Typography sx={columnHeaderSx}>Connect</Typography>
-            {connectLinks.map((link) => (
-              <Typography
-                key={link.label}
-                component='a'
-                href={link.href}
-                {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                sx={linkSx}
-              >
-                {link.label}
-              </Typography>
-            ))}
+            <FooterDock />
           </Box>
 
           {/* Column 3: About */}

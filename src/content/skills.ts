@@ -4,6 +4,7 @@ export type SkillItem = {
   name: string
   icon: SkillIconName
   brandColor?: string
+  darkBrandColor?: string
 }
 
 export type SkillCategory = {
@@ -80,10 +81,15 @@ export const skillCategories: SkillCategory[] = [
       { name: 'Jest', icon: 'jest', brandColor: '#C21325' },
       { name: 'Vitest', icon: 'vitest', brandColor: '#6E9F18' },
       { name: 'Playwright', icon: 'playwright', brandColor: '#2EAD33' },
-      { name: 'Appium', icon: 'appium' },
+      { name: 'Appium', icon: 'appium', brandColor: '#EE376D' },
       { name: 'XCUITest', icon: 'xcode', brandColor: '#147EFB' },
       { name: 'Selenium', icon: 'selenium', brandColor: '#43B02A' },
-      { name: 'Tricentis Tosca', icon: 'tricentis' },
+      {
+        name: 'Tricentis Tosca',
+        icon: 'tricentis',
+        brandColor: '#12438C',
+        darkBrandColor: 'color-mix(in srgb, #12438C 65%, white)',
+      },
       { name: 'Postman', icon: 'postman', brandColor: '#FF6C37' },
     ],
   },
@@ -92,7 +98,7 @@ export const skillCategories: SkillCategory[] = [
     skills: [
       { name: 'Claude Code', icon: 'claude', brandColor: '#D97757' },
       { name: 'Codex', icon: 'codex' },
-      { name: 'Cursor', icon: 'cursor', brandColor: '#00B4D8' },
+      { name: 'Cursor', icon: 'cursor' },
       { name: 'CodeRabbit', icon: 'coderabbit', brandColor: '#FF570A' },
       { name: 'n8n', icon: 'n8n', brandColor: '#EA4B71' },
     ],
