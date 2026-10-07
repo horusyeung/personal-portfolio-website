@@ -9,7 +9,6 @@ import ScrollReveal from '@/components/ScrollReveal'
 import { skillCategories } from '@/content/skills'
 import { skillIcons } from '@/lib/skillIcons'
 import { BIO, JOB_TITLE } from '@/content/site'
-import { splitTextIntoChars } from '@/lib/animations'
 import { useEntranceAnimation } from '@/lib/motion'
 
 export default function HomePage() {
@@ -22,22 +21,8 @@ export default function HomePage() {
 
   useEntranceAnimation(() => {
     const tl = gsap.timeline({ delay: 0.2 })
-    let revertName: (() => void) | undefined
-
-    // #1 — Name char-by-char stagger
     if (nameRef.current) {
-      const { chars, revert } = splitTextIntoChars(nameRef.current)
-      revertName = revert
-      gsap.set(chars, { opacity: 0, y: 24, rotation: 3 })
-      gsap.set(nameRef.current, { opacity: 1 })
-      tl.to(chars, {
-        opacity: 1,
-        y: 0,
-        rotation: 0,
-        duration: 0.6,
-        stagger: 0.04,
-        ease: 'power3.out',
-      })
+      tl.fromTo(nameRef.current, { opacity: 0 }, { opacity: 1, duration: 0.7 }, 0)
     }
 
     // #2 — Overline from left, subtitle from right
@@ -94,8 +79,6 @@ export default function HomePage() {
         },
       })
     }
-
-    return () => revertName?.()
   }, heroRef)
 
   return (
@@ -103,6 +86,7 @@ export default function HomePage() {
       {/* ===== HERO SECTION ===== */}
       <Box
         data-testid='hero-section'
+        className='home-hero'
         component='section'
         ref={heroRef}
         sx={{
@@ -116,8 +100,10 @@ export default function HomePage() {
           overflowX: 'clip',
         }}
       >
+        <div data-testid='hero-background' className='home-hero-background' aria-hidden='true' />
         <Container
           maxWidth={false}
+          className='home-hero-content'
           sx={{ maxWidth: 780, textAlign: 'center', py: { xs: 8, md: 10 } }}
         >
           {/* Overline */}
@@ -129,20 +115,21 @@ export default function HomePage() {
               fontWeight: 600,
               textTransform: 'uppercase',
               letterSpacing: '0.08em',
-              color: 'text.secondary',
+              color: 'text.primary',
               mb: 2,
             }}
           >
             {JOB_TITLE}
           </Typography>
 
-          {/* Name */}
+          {/* The name stays unframed in the initial HTML. */}
           <Typography
             data-testid='hero-name'
             ref={nameRef}
             data-intro
             variant='h1'
             sx={{
+              display: 'inline-block',
               fontSize: { xs: '48px', sm: '56px', md: '80px' },
               fontWeight: 700,
               letterSpacing: '-0.015em',
@@ -164,7 +151,7 @@ export default function HomePage() {
               fontSize: { xs: '19px', md: '21px' },
               fontWeight: 400,
               lineHeight: 1.47,
-              color: 'text.secondary',
+              color: 'text.primary',
             }}
           >
             {BIO.hero}
@@ -212,6 +199,7 @@ export default function HomePage() {
               View Experience
             </Button>
             <Box
+              className='home-hero-readable'
               data-testid='cta-contact'
               component={Link}
               href='/contact'
@@ -221,7 +209,7 @@ export default function HomePage() {
                 gap: 0.5,
                 fontSize: '17px',
                 fontWeight: 400,
-                color: 'primary.link',
+                color: 'primary.text',
                 textDecoration: 'none',
                 borderRadius: '4px',
                 transition: 'gap 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
@@ -255,7 +243,7 @@ export default function HomePage() {
               sx={{
                 fontSize: '14px',
                 fontWeight: 500,
-                color: 'text.secondary',
+                color: 'text.primary',
                 letterSpacing: '0.02em',
               }}
             >
