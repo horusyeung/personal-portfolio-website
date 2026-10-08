@@ -33,6 +33,15 @@ export default function Navbar() {
           },
           backdropFilter: 'blur(20px) saturate(180%)',
           WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          '@media (prefers-reduced-transparency: reduce)': {
+            background: 'var(--mui-palette-background-default)',
+            backdropFilter: 'none',
+            WebkitBackdropFilter: 'none',
+            // Match the system-dark fallback's specificity before theme initialization.
+            'html:not(.light):not(.dark) &': {
+              background: 'var(--mui-palette-background-default)',
+            },
+          },
           borderBottom: '1px solid',
           borderColor: 'divider',
           color: 'text.primary',

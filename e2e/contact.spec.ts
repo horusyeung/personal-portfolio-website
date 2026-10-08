@@ -90,7 +90,7 @@ test.describe('Contact Page', () => {
     await page.getByRole('button', { name: 'Send Message' }).dblclick()
 
     await expect(page.getByRole('status')).toHaveText('Sending…')
-    expect(requests).toHaveLength(1)
+    await expect.poll(() => requests.length).toBe(1)
     await requests[0].fulfill({ json: { success: true } })
     await expect(page.getByRole('status')).toContainText('Message sent')
     await expect(page.getByRole('status')).toContainText('Horus will get back to you soon')

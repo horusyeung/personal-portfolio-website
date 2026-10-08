@@ -5,7 +5,7 @@ import { SITE_URL } from '@/content/site'
 // date would claim every page changes on every deploy, and search engines then ignore lastmod.
 const pages: MetadataRoute.Sitemap = [
   { url: '', lastModified: '2026-03-14', changeFrequency: 'monthly', priority: 1 },
-  { url: '/experience', lastModified: '2026-03-14', changeFrequency: 'monthly', priority: 0.8 },
+  { url: '/experience', lastModified: '2026-10-08', changeFrequency: 'monthly', priority: 0.8 },
   { url: '/open-source', lastModified: '2026-03-14', changeFrequency: 'weekly', priority: 0.8 },
   { url: '/contact', lastModified: '2026-03-14', changeFrequency: 'yearly', priority: 0.7 },
 ]

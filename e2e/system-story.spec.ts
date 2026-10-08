@@ -934,6 +934,7 @@ test('normal scenario selection cancels stale flows and live reduced motion sett
     .toBeGreaterThan(0)
   const active = await story.evaluateHandle((node) => node.getAnimations({ subtree: true }))
   expect(await active.evaluate((animations) => animations.length)).toBeGreaterThan(0)
+  const viewportBeforePreference = await page.evaluate(() => ({ x: scrollX, y: scrollY }))
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await expect(
     story.getByRole('button', { name: 'Replay system story', exact: true }),
@@ -951,6 +952,7 @@ test('normal scenario selection cancels stale flows and live reduced motion sett
   ).toBeEnabled()
   await paint(page)
   await settled(story, 2, 'mobile')
+  expect(await page.evaluate(() => ({ x: scrollX, y: scrollY }))).toEqual(viewportBeforePreference)
   await expect(heading).toHaveAttribute('data-play-count', '1')
 })
 

@@ -54,6 +54,122 @@ async function openFirst(page: Page) {
   return dialog
 }
 
+async function observeSheetInteractions(page: Page) {
+  const events: Record<string, unknown>[] = []
+  const documents: string[] = []
+  await page.exposeBinding('recordProjectSheetEvent', (_source, event) => {
+    events.push(event)
+  })
+  page.on('request', (request) => {
+    if (request.resourceType() === 'document') documents.push(request.url())
+  })
+  await page.addInitScript(() => {
+    const pendingUpdates = new Set<Promise<void>>()
+    const documentId = `${performance.timeOrigin}-${Math.random()}`
+    window.projectSheetCommitProbe = { pendingUpdates }
+    const record = (kind: string, detail: Record<string, unknown> = {}) => {
+      void window.recordProjectSheetEvent?.({
+        kind,
+        href: location.href,
+        documentId,
+        time: performance.now(),
+        historyLength: history.length,
+        historyKeys: Object.keys(history.state ?? {}),
+        historyToken: history.state?.['portfolio-project-sheet'] ?? null,
+        pendingUpdates: pendingUpdates.size,
+        ...detail,
+      })
+    }
+    for (const type of ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click']) {
+      for (const capture of type === 'click' ? [true, false] : [true]) {
+        // React delegates from document; window bubble observes its final prevention decision.
+        const listenerTarget = type === 'click' && !capture ? window : document
+        listenerTarget.addEventListener(
+          type,
+          (event) => {
+            const target = event.target instanceof Element ? event.target : null
+            const control = target?.closest('button, a')
+            const bounds = control?.getBoundingClientRect()
+            record(`${type}:${capture ? 'capture' : 'bubble'}`, {
+              trusted: event.isTrusted,
+              prevented: event.defaultPrevented,
+              listenerTarget: listenerTarget === window ? 'window' : 'document',
+              pointerType: 'pointerType' in event ? event.pointerType : null,
+              target: target?.tagName,
+              control: control?.tagName,
+              label: control?.getAttribute('aria-label') ?? control?.textContent?.trim(),
+              controlHref: control?.getAttribute('href'),
+              connected: control?.isConnected,
+              disabled: control instanceof HTMLButtonElement ? control.disabled : null,
+              bounds: bounds && {
+                x: bounds.x,
+                y: bounds.y,
+                width: bounds.width,
+                height: bounds.height,
+              },
+            })
+          },
+          { capture, passive: true },
+        )
+      }
+    }
+    for (const name of ['pushState', 'replaceState', 'back', 'forward'] as const) {
+      const native = history[name]
+      Object.defineProperty(history, name, {
+        configurable: true,
+        writable: true,
+        value(...args: unknown[]) {
+          record(`history.${name}:before`, { args })
+          const result = Reflect.apply(native, history, args)
+          record(`history.${name}:after`)
+          return result
+        },
+      })
+    }
+    window.addEventListener('popstate', () => record('popstate'))
+    window.addEventListener('pageshow', (event) =>
+      record('pageshow', { persisted: event.persisted }),
+    )
+    window.addEventListener('pagehide', (event) =>
+      record('pagehide', { persisted: event.persisted }),
+    )
+    const native = document.startViewTransition?.bind(document)
+    if (!native) return
+    document.startViewTransition = (options) => {
+      record('transition:start')
+      const transition = native(options)
+      const committed = transition.updateCallbackDone.catch(async (error: unknown) => {
+        record('transition:update-rejected', { error: String(error) })
+        // React's ready-rejection handler flushes a skipped/failed commit as a fallback.
+        // Wait for that settlement too, without waiting for the morph animation to finish.
+        await transition.ready.catch(() => {})
+      })
+      pendingUpdates.add(committed)
+      void committed.then(() => {
+        pendingUpdates.delete(committed)
+        record('transition:committed')
+      })
+      return transition
+    }
+  })
+  return { events, documents }
+}
+
+async function syntheticClickAfterCommit(page: Page, selector: string, twice = false) {
+  await page.evaluate(
+    async ({ selector, twice }) => {
+      const pending = window.projectSheetCommitProbe?.pendingUpdates
+      while (pending?.size) await Promise.allSettled([...pending])
+      // Resolve after the commit: a locator captured before awaiting can be detached by it.
+      const node = document.querySelector<HTMLElement>(selector)
+      if (!node?.isConnected) throw new Error(`Missing committed click target: ${selector}`)
+      node.click()
+      if (twice) node.click()
+    },
+    { selector, twice },
+  )
+}
+
 type TransitionSample = {
   pseudos: string[]
   fading: string[]
@@ -65,6 +181,8 @@ type TransitionSample = {
 
 declare global {
   interface Window {
+    projectSheetCommitProbe?: { pendingUpdates: Set<Promise<void>> }
+    recordProjectSheetEvent?: (event: Record<string, unknown>) => Promise<void>
     projectSheetFocusProbe?: {
       supported: boolean
       completed: number
@@ -230,52 +348,107 @@ test.describe('Project sheet', () => {
   }, testInfo) => {
     const pageErrors: string[] = []
     const consoleErrors: string[] = []
+    const interactions = await observeSheetInteractions(page)
     page.on('pageerror', (error) => pageErrors.push(error.message))
     page.on('console', (message) => {
       if (message.type() === 'error') consoleErrors.push(message.text())
     })
-    await page.emulateMedia({ reducedMotion: 'no-preference' })
-    await page.goto('/experience')
-    await page.getByTestId('nav-link-open-source').click()
-    await expect(details(page)).toBeEnabled()
-    await details(page).evaluate((node) => {
-      ;(node as HTMLButtonElement).click()
-      ;(node as HTMLButtonElement).click()
-    })
-    await expect(sheet(page)).toBeVisible()
-    await expect(page.getByRole('dialog')).toHaveCount(1)
-    expect(new URL(page.url()).searchParams.getAll('project')).toEqual([first.name])
-    await sheet(page)
-      .getByRole('button', { name: 'Close', exact: true })
-      .evaluate((node) => {
-        ;(node as HTMLButtonElement).click()
-        ;(node as HTMLButtonElement).click()
+    try {
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      await page.goto('/experience')
+      await page.getByTestId('nav-link-open-source').click()
+      await expect(details(page)).toBeEnabled()
+      const detailsSelector = `button[aria-label="Details for ${first.name}"]`
+      // React disables delegated events before the asynchronous native DOM update.
+      // Wait for that commit only; preserve the rapid pairs and the in-flight morphs.
+      await syntheticClickAfterCommit(page, detailsSelector, true)
+      await expect(sheet(page)).toBeVisible()
+      await expect(page.getByRole('dialog')).toHaveCount(1)
+      expect(new URL(page.url()).searchParams.getAll('project')).toEqual([first.name])
+      await syntheticClickAfterCommit(page, '[data-testid="project-sheet"] button', true)
+      await expectClosed(page)
+      // Reopen as soon as the closing route is committed, without waiting for the morph to finish.
+      await syntheticClickAfterCommit(page, detailsSelector)
+      await expect(sheet(page)).toBeVisible()
+      // A route change can also supersede an opening morph (for example, browser navigation).
+      await syntheticClickAfterCommit(page, '[data-testid="nav-link-experience"]')
+      await expect(page).toHaveURL(/\/experience$/)
+      await expect(page.getByRole('dialog')).toHaveCount(0)
+      await expect(page.locator('main')).not.toHaveAttribute('aria-hidden', 'true')
+      expect(
+        await page.locator('body').evaluate((node) => getComputedStyle(node).overflow),
+      ).not.toBe('hidden')
+      await page.goBack()
+      await expect(sheet(page)).toBeVisible()
+      await sheet(page).getByRole('button', { name: 'Close', exact: true }).click()
+      await expectClosed(page)
+      await page.goBack()
+      await expect(page).toHaveURL(/\/experience$/)
+      expect(pageErrors).toEqual([])
+    } finally {
+      await testInfo.attach('project-sheet-runtime-errors', {
+        body: JSON.stringify({ pageErrors, consoleErrors }, null, 2),
+        contentType: 'application/json',
       })
-    await expectClosed(page)
-    // Reopen as soon as the closing route is committed, without waiting for the morph to finish.
-    await details(page).evaluate((node) => (node as HTMLButtonElement).click())
-    await expect(sheet(page)).toBeVisible()
-    // A route change can also supersede an opening morph (for example, browser navigation).
-    await page
-      .getByTestId('nav-link-experience')
-      .evaluate((node) => (node as HTMLAnchorElement).click())
-    await expect(page).toHaveURL(/\/experience$/)
-    await expect(page.getByRole('dialog')).toHaveCount(0)
-    await expect(page.locator('main')).not.toHaveAttribute('aria-hidden', 'true')
-    expect(await page.locator('body').evaluate((node) => getComputedStyle(node).overflow)).not.toBe(
-      'hidden',
-    )
-    await page.goBack()
-    await expect(sheet(page)).toBeVisible()
-    await sheet(page).getByRole('button', { name: 'Close', exact: true }).click()
-    await expectClosed(page)
-    await page.goBack()
-    await expect(page).toHaveURL(/\/experience$/)
-    await testInfo.attach('project-sheet-runtime-errors', {
-      body: JSON.stringify({ pageErrors, consoleErrors }, null, 2),
-      contentType: 'application/json',
-    })
-    expect(pageErrors).toEqual([])
+      await testInfo.attach('project-sheet-input-and-history', {
+        body: JSON.stringify(interactions, null, 2),
+        contentType: 'application/json',
+      })
+    }
+  })
+
+  test('genuine pointer and touch immediately reopen the sheet and preserve Back and Forward', async ({
+    page,
+    isMobile,
+  }, testInfo) => {
+    const interactions = await observeSheetInteractions(page)
+    const pageErrors: string[] = []
+    page.on('pageerror', (error) => pageErrors.push(error.message))
+    const activate = async (locator: Locator, label: string) => {
+      const start = interactions.events.length
+      if (isMobile) await locator.tap()
+      else await locator.click()
+      await expect
+        .poll(() =>
+          interactions.events
+            .slice(start)
+            .some(
+              (event) => event.kind === 'click:bubble' && event.trusted && event.label === label,
+            ),
+        )
+        .toBe(true)
+    }
+    try {
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      await page.goto('/experience')
+      const initialDocument = page.url()
+      await activate(page.getByTestId('nav-link-open-source'), 'Open Source')
+      await activate(details(page), `Details for ${first.name}`)
+      await expect(sheet(page)).toBeVisible()
+      await activate(sheet(page).getByRole('button', { name: 'Close', exact: true }), 'Close')
+      await expectClosed(page)
+      await activate(details(page), `Details for ${first.name}`)
+      await expect(sheet(page)).toBeVisible()
+      await expect(page.getByRole('dialog')).toHaveCount(1)
+      expect(new URL(page.url()).searchParams.getAll('project')).toEqual([first.name])
+      await page.goBack()
+      await expectClosed(page)
+      await page.goForward()
+      await expect(sheet(page)).toBeVisible()
+      await activate(sheet(page).getByRole('button', { name: 'Close', exact: true }), 'Close')
+      await expectClosed(page)
+      await expect(details(page)).toBeFocused()
+      await page.goBack()
+      await expect(page).toHaveURL(/\/experience$/)
+      await expect(page.getByRole('dialog')).toHaveCount(0)
+      expect(interactions.documents).toEqual([initialDocument])
+      expect(pageErrors).toEqual([])
+    } finally {
+      await testInfo.attach('project-sheet-trusted-input-and-history', {
+        body: JSON.stringify({ ...interactions, pageErrors }, null, 2),
+        contentType: 'application/json',
+      })
+    }
   })
 
   test('reduced motion and coarse touch keep the card static and the sheet Close target usable', async ({

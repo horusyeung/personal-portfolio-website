@@ -66,7 +66,7 @@ test.describe('Foundations', () => {
       if (values[0].webkitBackdrop) expect(values[0].webkitBackdrop).toBe(values[0].backdrop)
     })
 
-    test(`reduced transparency makes every ${scheme} glass surface and edge solid`, async ({
+    test(`reduced transparency makes the ${scheme} header, glass surfaces and edges solid`, async ({
       page,
       browserName,
     }) => {
@@ -83,6 +83,16 @@ test.describe('Foundations', () => {
       expect(
         await page.evaluate(() => matchMedia('(prefers-reduced-transparency: reduce)').matches),
       ).toBe(true)
+      const header = page.getByTestId('navbar')
+      await expect(header).toHaveCSS(
+        'background-color',
+        scheme === 'light' ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)',
+      )
+      await expect(header).toHaveCSS('backdrop-filter', 'none')
+      const webkitBackdrop = await header.evaluate((node) =>
+        getComputedStyle(node).getPropertyValue('-webkit-backdrop-filter'),
+      )
+      if (webkitBackdrop) expect(webkitBackdrop).toBe('none')
       for (const value of await glassProbes(page)) {
         expect(value.fill).toBe(scheme === 'light' ? 'rgb(255, 255, 255)' : 'rgb(29, 29, 31)')
         expect(value.backdrop).toBe('none')

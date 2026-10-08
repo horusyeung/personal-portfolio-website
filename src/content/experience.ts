@@ -49,14 +49,14 @@ export const experiences: Experience[] = [
     ],
   },
   {
-    title: 'Full Stack Developer & QA Lead',
+    title: 'Full Stack Developer & QA Engineer',
     company: 'Beta Labs (Lane Crawford Joyce Group)',
     location: 'Hong Kong',
-    period: 'Jan 2022 – Jun 2023',
+    period: 'Jan 2022 – Sep 2024',
     bullets: [
       "Built e-commerce platforms for Lane Crawford (Hong Kong's largest luxury retailer) with React.js, Next.js, Nest.js, PostgreSQL, MongoDB and GraphQL, including multi-tenant microservices",
       'Rebuilt a native app in React Native while maintaining two native apps (SwiftUI, Kotlin)',
-      'Promoted from QA Lead to Full Stack Developer after taking on full-stack work',
+      'Promoted from QA Engineer to Full Stack Developer in April 2023 based on demonstrated full-stack capability',
       'Set up the QA workflow from scratch with Jira, Xray, Playwright (BDD) and Appium test suites, automating about 80% of the manual test cases and running them in CI/CD (GitHub Actions, Jenkins, Tekton) on Microsoft Azure',
       'Hired 2 QA engineers in Taiwan and led test strategy across 5+ concurrent projects',
     ],
@@ -67,6 +67,7 @@ export const experiences: Experience[] = [
     location: 'Hong Kong',
     period: 'Mar 2021 – Dec 2021',
     bullets: [
+      'Employed by Pactera (HK) Limited and assigned to The Hong Kong Jockey Club.',
       'Built automated test suites in Tricentis Tosca and Python (Selenium, pytest) for enterprise-scale trading and betting systems',
       'Added the automated tests to CI/CD pipelines to raise release quality across teams, and trained teammates on Python and Selenium',
     ],

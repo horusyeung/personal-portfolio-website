@@ -117,13 +117,28 @@ function useMotion(
   query?: string,
 ) {
   useGSAP(
-    (_context, contextSafe) => {
+    () => {
       if (entrance && !claimIntro()) return
-      // Reverted (content back to its visible state) when the user turns on reduced motion
-      const mm = gsap.matchMedia()
       const condition = query ? `${MOTION_ALLOWED} and ${query}` : MOTION_ALLOWED
-      mm.add(condition, () => callback(contextSafe as ContextSafe))
-      return () => mm.revert()
+      const media = window.matchMedia(condition)
+      let motion: gsap.Context | undefined
+      // Native listeners avoid ScrollTrigger's global matchMedia refresh, which can lose scroll.
+      const update = () => {
+        motion?.revert()
+        motion = undefined
+        if (media.matches) {
+          motion = gsap.context(
+            (context) => callback(((fn) => context.add('', fn)) as ContextSafe),
+            scope.current ?? undefined,
+          )
+        }
+      }
+      update()
+      media.addEventListener('change', update)
+      return () => {
+        media.removeEventListener('change', update)
+        motion?.revert()
+      }
     },
     { scope },
   )

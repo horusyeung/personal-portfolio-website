@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useState, useRef, useCallback, useEffect } from 'react'
+import { FormEvent, useState, useRef, useCallback, useEffect, useSyncExternalStore } from 'react'
 import { Box, Container, Typography, TextField, Button, Stack } from '@mui/material'
 import EmailIcon from '@mui/icons-material/Email'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
@@ -155,7 +155,15 @@ const focusGlowSx = {
 
 // ── Component ───────────────────────────────────────────────────────────────
 
+const subscribeHydration = () => () => {}
+
 export default function ContactPage() {
+  // Native submission must stay unavailable until React can prevent the default GET.
+  const hydrated = useSyncExternalStore(
+    subscribeHydration,
+    () => true,
+    () => false,
+  )
   const [status, setStatus] = useState<ContactStatus>('idle')
   const [fieldErrors, setFieldErrors] = useState<ContactErrors>({})
   // Synchronous guard: state updates are async, so a fast double-click could submit twice
@@ -689,7 +697,8 @@ export default function ContactPage() {
                       variant='contained'
                       fullWidth
                       disableElevation
-                      // Not `disabled`: keeps keyboard focus on the button while sending
+                      disabled={!hydrated}
+                      // After hydration, aria-disabled preserves keyboard focus while sending.
                       aria-disabled={status === 'sending' || undefined}
                       onClick={handleRipple}
                       sx={{
@@ -728,6 +737,12 @@ export default function ContactPage() {
                     </Button>
                   </Box>
                 </Stack>
+                <noscript>
+                  <Typography component='p' variant='body2' sx={{ mt: 2, color: 'text.secondary' }}>
+                    JavaScript is required to send this form. Use the email link alongside it
+                    instead.
+                  </Typography>
+                </noscript>
               </Box>
               <ContactFeedback status={status} />
             </Box>
