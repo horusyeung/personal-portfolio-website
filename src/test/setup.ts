@@ -1,5 +1,5 @@
 import { vi } from 'vitest'
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/vitest'
 
 // Mock window.matchMedia for GSAP ScrollTrigger (browser environment only; API route tests run in node)
 if (typeof window !== 'undefined') {

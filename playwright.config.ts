@@ -15,7 +15,9 @@ export default defineConfig({
     : [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: externalBaseURL ?? `http://localhost:${PORT}`,
-    trace: 'on-first-retry',
+    // Keep the original failure even when a configured CI retry passes.
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
   },
   expect: {
     // Visual snapshots are rendered in the Playwright Docker image (see e2e/visual.spec.ts)

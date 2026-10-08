@@ -1,3 +1,4 @@
+import type { ComponentProps } from 'react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { act, render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -7,7 +8,7 @@ import ContactPage from '@/app/contact/page'
 import { CONTACT_SEND_ERROR } from '@/lib/contact'
 
 vi.mock('next/link', () => ({
-  default: ({ children, href, ...props }: any) => (
+  default: ({ children, href, ...props }: ComponentProps<'a'>) => (
     <a href={href} {...props}>
       {children}
     </a>
@@ -238,7 +239,7 @@ describe('ContactPage form', () => {
         )
         await waitFor(() => expect(live).toHaveTextContent(text))
         expect(screen.getByRole('status')).toBe(live)
-        fireEvent.click(screen.getByRole('button', { name: 'Close', exact: true }))
+        fireEvent.click(screen.getByRole('button', { name: 'Close' }))
         expect(live).toBeEmptyDOMElement()
       }
     },
