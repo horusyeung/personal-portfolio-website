@@ -44,23 +44,27 @@ export default function Navbar() {
             width: '100%',
             mx: 'auto',
             px: { xs: 2, sm: 3 },
+            '@media (max-width: 359px)': { px: 1 },
             minHeight: '48px !important',
           }}
         >
           {/* Logo */}
-          <Typography
+          <Box
             data-testid='navbar-logo'
             component={Link}
             href='/'
+            aria-label='Horus Yeung home'
             sx={{
-              fontWeight: 600,
-              fontSize: 15,
-              letterSpacing: '-0.02em',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              width: 32,
+              height: 44,
               textDecoration: 'none',
               color: 'text.primary',
               transition: 'color 0.2s',
               borderRadius: '4px',
-              '&:hover': { color: 'primary.text' },
               '&:focus-visible': {
                 outline: '2px solid',
                 outlineColor: 'primary.main',
@@ -68,11 +72,34 @@ export default function Navbar() {
               },
             }}
           >
-            HY
-            <Box component='span' sx={{ color: 'primary.text' }}>
-              .
+            <Box
+              component='svg'
+              viewBox='0 0 64 64'
+              width='32'
+              height='32'
+              aria-hidden='true'
+              focusable='false'
+              sx={{ display: 'block' }}
+            >
+              <path
+                d='M12 15v32m0-13c0-14 16-14 16 0v13'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='7'
+                strokeLinecap='round'
+              />
+              <Box
+                component='path'
+                d='m37 26 9 16 9-16M46 42l-4 8c-2 4-6 5-10 3'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='7'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                sx={{ color: 'primary.link' }}
+              />
             </Box>
-          </Typography>
+          </Box>
 
           <Box sx={{ flexGrow: 1 }} />
 
@@ -84,6 +111,7 @@ export default function Navbar() {
               display: 'flex',
               alignItems: 'center',
               gap: { xs: 2, sm: 3 },
+              '@media (max-width: 359px)': { gap: 1 },
             }}
           >
             {navLinks.map((link) => (
@@ -105,8 +133,11 @@ export default function Navbar() {
                     color: isActive(link.href) ? 'primary.text' : 'text.primary',
                   },
                   // A hit area at least 44px tall (WCAG 2.5.5) without moving anything: the invisible
-                  // box reaches 14px above and below the 18px line, and 8px into the gaps between links
+                  // box reaches 14px above/below the line and halfway into the mobile link gaps
                   '&::after': { content: '""', position: 'absolute', inset: '-14px -8px' },
+                  '@media (max-width: 359px)': {
+                    '&::after': { inset: '-14px -4px' },
+                  },
                   '&:focus-visible': {
                     outline: '2px solid',
                     outlineColor: 'primary.main',

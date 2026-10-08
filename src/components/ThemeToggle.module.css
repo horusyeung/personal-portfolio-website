@@ -80,18 +80,11 @@
 
 @media (max-width: 599px) {
   .container {
-    width: calc(11em / 3);
+    width: 44px;
   }
 
-  .button {
-    flex-direction: column;
-    gap: 2px;
-    line-height: 1;
-  }
-
-  .icon {
-    width: 16px;
-    height: 16px;
+  .button span {
+    display: none;
   }
 }
 

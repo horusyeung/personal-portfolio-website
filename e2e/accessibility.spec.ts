@@ -63,7 +63,18 @@ test.describe('Accessibility', () => {
 
     test(`${path} hides decorative icons from screen readers`, async ({ page }) => {
       await page.goto(path)
-      await expect(page.locator('svg:not([aria-hidden="true"])')).toHaveCount(0)
+      // aria-hidden also excludes descendants; each decorative SVG must have a hidden owner.
+      await expect
+        .poll(() =>
+          page
+            .locator('svg')
+            .evaluateAll((icons) =>
+              icons
+                .filter((icon) => !icon.closest('[aria-hidden="true"]'))
+                .map((icon) => icon.outerHTML),
+            ),
+        )
+        .toEqual([])
     })
   }
 

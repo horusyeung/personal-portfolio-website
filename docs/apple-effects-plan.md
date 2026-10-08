@@ -4,7 +4,7 @@ This is the current portfolio effects and interaction plan. It replaces the v2 r
 
 **Current owner-approved direction:** keep the original full-width top navigation, the stable CSS hero background and the unwrapped name. Use Bento spotlight categories on desktop and category shelves on mobile. The floating capsule, WebGL hero/lens, liquid-glass name wrapper, Honeycomb and Apple Watch frame are retired experiments, not pending production work. Their former contracts are retained in the historical appendix solely as a record.
 
-The owner approved the cumulative F, G and Home preview for merge/deployment on 2026-10-07. All three are merged, deployed and verified on the canonical site. Required CI passed before each merge. The owner also approved H's compact Footer Dock and brand-colour refinements for PR, merge and deployment; its release checks are in progress on the latest merged master.
+The cumulative F, G, Home and H changes are merged, deployed and verified on the canonical site. Required CI passed before each merge. H shipped in [PR #39](https://github.com/horusyeung/personal-portfolio-website/pull/39) at `a41fe93`. On 2026-10-07 the owner approved publication of the cumulative H1/H2 preview, including the six Home architecture/delivery/agentic workflow views, mobile theme control, Contact outline and Soft HY identity, and requested PR, merge, deployment and continuation to H3. Release checks are in progress; approval does not mark deployment complete.
 
 ## 1. Status and sequence
 
@@ -18,19 +18,23 @@ The owner approved the cumulative F, G and Home preview for merge/deployment on 
 | F              | Open Source TV cards, project sheet, deep links and separate repository actions            | Shipped; [PR #36](https://github.com/horusyeung/personal-portfolio-website/pull/36) merged at `635d999`; canonical site verified |
 | G              | Contact status island and message-field interaction glow                                   | Shipped; [PR #37](https://github.com/horusyeung/personal-portfolio-website/pull/37) merged at `b1f3731`; canonical site verified |
 | Home follow-up | Per-category scroll fades and clearer hero paragraph hierarchy, with exact copy preserved  | Shipped; [PR #38](https://github.com/horusyeung/personal-portfolio-website/pull/38) merged at `86906e6`; canonical site verified |
-| H              | Footer Dock with keyboard labels and touch captions                                        | Owner approved; release checks and deployment verification in progress                                                           |
-| H1             | Audit all animation and page animation; fix missing or inconsistent fade-ins               | Read-only inventory draft prepared; browser audit and repairs pending                                                            |
-| H2             | R&D beautiful, expressive showpiece animation; browser prototypes and owner choice         | Initial primary-source shortlist prepared; prototypes and owner choice pending                                                   |
+| H              | Footer Dock with keyboard labels, touch captions and recognisable brand colours            | Shipped; [PR #39](https://github.com/horusyeung/personal-portfolio-website/pull/39) merged at `a41fe93`; canonical site verified |
+| H1             | Audit all animation and page animation; fix missing or inconsistent fade-ins               | Publication approved; release checks in progress; historical Mobile Safari Close intermittency retained                              |
+| H2             | R&D beautiful, expressive showpiece animation; browser prototypes and owner choice         | Selected Home integration and follow-ups approved for publication; release checks in progress                            |
 | H3             | R&D a mini-game or fancy interactive UI demonstration; browser prototypes and owner choice | Initial primary-source shortlist prepared; playable prototypes and owner choice pending                                          |
 | I              | Final cleanup, documentation, final performance and accessibility checks                   | Last step, after H1, H2 and H3 decisions                                                                                         |
 
-**Remaining order:** H → H1 → H2 → H3 → I. F, G and the approved Home follow-up are released. Keep one implementation PR in flight at a time. H2 and H3 authorize research and prototypes; a chosen production integration needs an explicit owner decision, a bounded scope and the same release gates as other visible work. If no candidate is selected, record that outcome and continue to I.
+**Remaining order:** release the approved H1/H2 changes → H3 → I. F, G, the approved Home follow-up and H are released. Keep one implementation PR in flight at a time. H2 and H3 authorize research and prototypes; a chosen production integration needs an explicit owner decision, a bounded scope and the same release gates as other visible work. If no candidate is selected, record that outcome and continue to I.
 
-Seven of the original nine steps are shipped at this checkpoint. H and I remain, with H1, H2 and H3 inserted before I: five steps remain in total. The Home follow-up is a separate approved correction, not an invented replacement for an original step.
+Eight of the original nine steps are shipped at this checkpoint. After the approved H1/H2 release, two stages remain: H3's prototype decision and I's final cleanup. H1/H2 still need passing required CI and deployment verification before being counted as shipped. The Home follow-up is a separate approved correction, not an invented replacement for an original step.
 
 F's final PR browser job completed with 574 passed, 127 skipped and one flaky Escape-dismissal case that passed on the CI retry. An earlier local Firefox reduced-motion Close failure also remains unresolved. Preserve both observations and investigate the sheet lifecycle during H1; green CI is not evidence that either intermittent failure was repaired.
 
 Home's PR browser job passed 617 cases with 130 skips and no flakes. Its final master browser job passed 616 cases with 130 skips and one Mobile Safari rapid close/reopen/navigation flake that passed on retry. The completed deployment and live four-route smoke passed; the sheet intermittency remains an H1 investigation item.
+
+H's final PR browser job passed 665 cases with 140 skips and two rapid-sheet retry flakes (Desktop Chrome and Mobile Safari). Its master job passed 666 cases with 140 skips and one Desktop Safari native-morph retry flake. Deployment and all 16 canonical route/theme/viewport checks passed, including mocked Contact success with zero real emails. Preserve the earlier failures and retry observations; H1's deterministic Close repair does not by itself establish that every historical sheet flake is fixed.
+
+H1's broader local follow-up retains 143 passes, 16 skips and one Mobile Safari rapid double-Close failure, with zero retries. Its selected URL and dialog stay open. A single unchanged passive diagnostic passes but does not establish that failure's cause. Keep the original trace, instrumentation and historical flakes for final cleanup; H1's local preview does not mark this issue resolved or replace the required publication checks. Detailed repair and verification evidence is in the [motion audit](motion-audit.md).
 
 ## 2. Ground rules and release workflow
 
@@ -62,11 +66,12 @@ For each implementation PR: browser preview → light/dark evidence → owner ap
 **Navigation and theme**
 
 - Keep the original full-width fixed AppBar and its matching spacer. Preserve the skip link, `<nav aria-label="Main">`, `aria-current` and at least 44px navigation hit areas.
+- Use the owner-selected **Soft HY** identity: rounded lowercase `hy`, with the blue `y` accent. The transparent header mark follows the resolved MUI light/dark palette, including manual theme selection and no-JavaScript system fallback. The favicon uses the contrast-safe dark tile from the approved study, with SVG, PNG/ICO and 180px Apple touch variants.
 - The header keeps `view-transition-name: site-header` so route crossfades do not animate it twice.
 - Keep focus and in-page targets clear of the fixed header through the existing scroll margin/padding; verify at narrow widths and 200% text zoom.
-- Keep the explicit theme action with the icon and visible `Light` or `Dark` label describing the destination. Its accessible name identifies that action, such as `Switch to dark theme`.
+- Keep the explicit theme action with an icon and a desktop `Light` or `Dark` label describing the destination. At the owner's request the mobile control shows the icon only. Its accessible name identifies the action, such as `Switch to dark theme`, at every size.
 - Theme behavior follows the resolved scheme. Selecting the system's own scheme returns to following the system. The pre-hydration/no-JavaScript representation is visibly correct and inert; do not require an invisible long-press reset.
-- Theme text uses the same intended palette as the navigation. Do not reintroduce the rejected ambiguous icon-only control or the superseded switch/radio-group design.
+- Theme text uses the same intended palette as the navigation. Preserve the labelled desktop action and accessible mobile action rather than restoring the superseded switch/radio-group design.
 
 ### 3.2 Technologies showcase
 
@@ -136,7 +141,7 @@ For each implementation PR: browser preview → light/dark evidence → owner ap
 - Each activation rotates for at most five seconds and then settles to a static ring. Reduced motion is static from the start; forced colors suppress the glow.
 - Entrance animation and hover/focus animation have separate property ownership. Verification waits for the actual entrance state before testing a stationary hover target.
 
-### 3.7 Footer Dock (H, next)
+### 3.7 Footer Dock (H, shipped)
 
 - Use the same four destinations: Email, LinkedIn, GitHub and Medium. Each retains its accessible name and at least a 44px hit area.
 - Owner refinement: keep the Dock compact with 20px glyphs in 34px tinted tiles, a quiet frame, 20px footer top padding and 8px heading spacing. Preserve actual company/stack brand hues; monochrome marks reverse with the theme. Use the same LinkedIn blue in Footer and Contact, with portfolio blue reserved for the generic Email icon. Fine-pointer captions sit below the icons so they cannot cover the Connect heading.
@@ -160,6 +165,8 @@ For each implementation PR: browser preview → light/dark evidence → owner ap
 
 **Deliverables:** a checked route/component motion inventory; a short finding/repair ledger; the verified fixes; and an owner-reviewed preview. Do not count unperformed native Safari 17, physical iPhone or VoiceOver checks as automated-browser results.
 
+**Approved implementation:** [motion inventory](motion-audit.md). Repairs cover independent Experience/Contact/project reveals, reduced-motion interactions, live particle cleanup, focused-content visibility and native-history Close synchronization. Actionable CTAs fade in place so completing a reveal on focus cannot move the pointer target before release. The owner approved the cumulative release; publication checks remain mandatory and historical intermittent failures remain recorded for final cleanup.
+
 ### H2. R&D beautiful showpiece animation
 
 **Purpose:** identify a restrained, memorable motion moment that demonstrates craft and fits the current portfolio, then let the owner choose it in a browser.
@@ -171,6 +178,8 @@ For each implementation PR: browser preview → light/dark evidence → owner ap
 5. Present playable previews, screenshots or short recordings and a concise comparison of visual fit, complexity, accessibility and performance. The owner selects a candidate, asks for another trial, or defers the idea.
 
 **Deliverables:** sourced research, working prototypes and an explicit recorded owner decision. Production integration is a separately scoped follow-up only if selected. R&D must not reintroduce the rejected header, hero wrapper or Watch UI by default.
+
+**Local studies and selected integration:** [comparison and research notes](motion-studies.md), with [five playable studies](http://localhost:3122/). Final isolated-study coverage includes 297 distinct passing cases across the five browser profiles, with zero retries; earlier failures and one unexplained local WebKit load stall remain recorded. The owner selected studies 1, 2 and 5 and authorized a Home trial: type choreography on the exact About heading, with one combined assembly/request-flow illustration below the unchanged paragraph. Following owner feedback, the illustration now offers Web app, Mobile app, richer Microservices, CI/CD, AI development and AI bug triage views. Microservices defaults to an API gateway, independent services, owned data and a producer/queue/consumer branch. Delivery includes automated tests and approval gates; AI workflows retain engineer verification. Actual brand colours, finite playback, Replay and complete static reduced-motion/no-JS choices remain required. This local integration needs fresh verification and owner visual acceptance before release; no push, PR, merge or deployment is authorized by this trial.
 
 ### H3. R&D mini-game or interactive UI demonstration
 

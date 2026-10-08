@@ -151,13 +151,20 @@
 
 .messageGlow {
   position: relative;
-  border-radius: 4px;
+  border-radius: var(--mui-shape-borderRadius);
   isolation: isolate;
 }
 
 .messageGlow :global(.MuiFormControl-root),
 .messageGlow :global(.MuiInputLabel-root) {
   background: var(--mui-palette-background-paper);
+}
+
+.messageGlow :global(.MuiFormControl-root) {
+  border-radius: inherit;
+}
+
+.messageGlow :global(.MuiInputLabel-root) {
   border-radius: 4px;
 }
 
@@ -166,8 +173,7 @@
   position: absolute;
   z-index: -1;
   inset: -3px;
-  padding: 2px;
-  border-radius: 7px;
+  border-radius: calc(var(--mui-shape-borderRadius) + 3px);
   content: '';
   background: conic-gradient(
     from var(--contact-message-angle),
@@ -177,15 +183,8 @@
     #ff9f0a,
     var(--mui-palette-primary-light)
   );
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask-composite: exclude;
   opacity: 0;
+  filter: blur(4px);
   pointer-events: none;
 }
 

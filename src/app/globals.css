@@ -57,6 +57,11 @@ html.dark .skip-link {
     opacity: 0;
   }
 
+  /* A live preference change updates CSS before its animation owner receives the event. */
+  html.js:not(.intro-skip) [data-intro]:focus-within {
+    opacity: 1;
+  }
+
   html.js:not(.intro-skip) [data-intro-offset] {
     transform: translateX(30px);
   }

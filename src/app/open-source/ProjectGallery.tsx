@@ -14,11 +14,12 @@ import {
 } from 'react'
 import GitHubIcon from '@mui/icons-material/GitHub'
 import type { GithubProject } from '@/content/projects'
+import ScrollReveal from '@/components/ScrollReveal'
 import { gsap } from '@/lib/gsap'
 import { FINE_POINTER, useMotionEffect } from '@/lib/motion'
 import ProjectSheet, { ProjectStatus, ProjectTags } from './ProjectSheet'
 import ProjectSheetController from './ProjectSheetController'
-import { projectQueryUrl } from './projectQuery'
+import { parseProjectQuery, projectQueryUrl } from './projectQuery'
 import styles from './ProjectGallery.module.css'
 
 const HISTORY_KEY = 'portfolio-project-sheet'
@@ -232,6 +233,19 @@ export default function ProjectGallery({ projects }: { projects: GithubProject[]
     }
   }, [applyProject])
 
+  useLayoutEffect(() => {
+    const pathname = window.location.pathname
+    const syncProjectFromHistory = () => {
+      if (window.location.pathname !== pathname) return
+      const query = parseProjectQuery(window.location.search, validIds)
+      if (query.invalid) window.history.replaceState(null, '', projectQueryUrl(null))
+      applyProject(query.id)
+    }
+    // Native traversal can leave Next's search context unchanged after an early open.
+    window.addEventListener('popstate', syncProjectFromHistory)
+    return () => window.removeEventListener('popstate', syncProjectFromHistory)
+  }, [applyProject, validIds])
+
   useEffect(() => {
     mounted.current = true
     return () => {
@@ -274,31 +288,28 @@ export default function ProjectGallery({ projects }: { projects: GithubProject[]
   return (
     <ViewTransition default='none' update='none'>
       <div className={styles.gallery} data-testid='project-gallery'>
-        {projects.map((project) =>
-          activeId === project.name ? (
-            <div key={project.name} className={styles.placeholder}>
-              <ProjectCard
-                project={project}
-                hidden
-                onOpen={openProject}
-                registerDetails={registerDetails}
-              />
-            </div>
-          ) : (
-            <ViewTransition
-              key={project.name}
-              name={`today-${project.name}`}
-              share='today-morph'
-              default='none'
-            >
-              <ProjectCard
-                project={project}
-                onOpen={openProject}
-                registerDetails={registerDetails}
-              />
-            </ViewTransition>
-          ),
-        )}
+        {projects.map((project) => (
+          <ScrollReveal key={project.name} distance={0}>
+            {activeId === project.name ? (
+              <div className={styles.placeholder}>
+                <ProjectCard
+                  project={project}
+                  hidden
+                  onOpen={openProject}
+                  registerDetails={registerDetails}
+                />
+              </div>
+            ) : (
+              <ViewTransition name={`today-${project.name}`} share='today-morph' default='none'>
+                <ProjectCard
+                  project={project}
+                  onOpen={openProject}
+                  registerDetails={registerDetails}
+                />
+              </ViewTransition>
+            )}
+          </ScrollReveal>
+        ))}
         <Suspense fallback={null}>
           <ProjectSheetController validIds={validIds} onChange={applyProject} />
         </Suspense>

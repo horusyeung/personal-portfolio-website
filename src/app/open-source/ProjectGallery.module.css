@@ -347,7 +347,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cardShell {
+  .cardShell,
+  .cardShell:hover,
+  .cardShell:focus-within,
+  .cardShell:active {
+    transform: none;
     transition: none;
   }
 }

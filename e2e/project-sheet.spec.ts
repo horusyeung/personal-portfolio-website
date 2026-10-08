@@ -112,11 +112,11 @@ test.describe('Project sheet', () => {
     }
   })
 
-  test('each of the five exact project queries opens its labeled sheet and direct Close preserves the URL context', async ({
-    page,
-  }) => {
-    await page.emulateMedia({ reducedMotion: 'reduce' })
-    for (const project of githubProjects) {
+  for (const project of githubProjects) {
+    test(`${project.name} exact query opens its labeled sheet and direct Close preserves the URL context`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.goto(`/open-source?view=all&project=${project.name}#projects`)
       const dialog = sheet(page, project.name)
       await expect(dialog).toBeVisible()
@@ -145,8 +145,8 @@ test.describe('Project sheet', () => {
         (url) => url.searchParams.get('view') === 'all' && url.hash === '#projects',
       )
       await expect(details(page, project.name)).toBeFocused()
-    }
-  })
+    })
+  }
 
   test('keyboard focus stays in the portal and Escape and Close restore the current Details control', async ({
     page,
