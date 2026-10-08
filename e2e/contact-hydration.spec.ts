@@ -4,7 +4,8 @@ test('Contact hydrates safely with its server-rendered footer already in view', 
   page,
   baseURL,
 }) => {
-  await page.setViewportSize({ width: page.viewportSize()!.width, height: 480 })
+  // A compact viewport puts all six rows above the footer in both column layouts.
+  await page.setViewportSize({ width: page.viewportSize()!.width, height: 320 })
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   const errors: string[] = []
   page.on('pageerror', (error) => errors.push(error.stack ?? error.message))
@@ -33,13 +34,21 @@ test('Contact hydrates safely with its server-rendered footer already in view', 
   // Keep the queued timeline initialization pending through the restored-position mount.
   const epoch = new Date('2026-10-08T12:00:00Z')
   await page.clock.install({ time: epoch })
-  await page.clock.pauseAt(epoch.getTime() + 1)
+  await page.clock.pauseAt(epoch.getTime() + 60_000)
   const observations: unknown[] = []
   try {
     await page.goto('/contact', { waitUntil: 'commit' })
     await expect.poll(() => heldScripts).toBeGreaterThan(0)
     const footer = page.getByTestId('footer')
     await expect(footer).toBeAttached()
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const styles = [...document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')]
+          return styles.length > 0 && styles.every((link) => link.sheet !== null)
+        }),
+      )
+      .toBe(true)
     // Enter before hydration; waiting for app readiness would erase the regression.
     await footer.evaluate((element) =>
       element.scrollIntoView({ block: 'end', behavior: 'instant' }),
