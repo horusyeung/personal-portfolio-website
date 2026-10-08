@@ -18,7 +18,7 @@ test.describe('Experience Page', () => {
     for (const title of [
       'Frontend Developer Team Lead',
       'Senior Full Stack Developer',
-      'Full Stack Developer & QA Lead',
+      'Full Stack Developer & QA Engineer',
       'Software Development Engineer in Test',
     ]) {
       await expect(work).toContainText(title)

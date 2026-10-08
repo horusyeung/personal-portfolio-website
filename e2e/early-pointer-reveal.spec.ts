@@ -58,9 +58,27 @@ test('Home closing CTA activates with one pointer press during its pending revea
 })
 
 async function fillContact(page: Page) {
-  await page.getByLabel(/^Name/).fill(' Ada ')
-  await page.getByRole('textbox', { name: /^Email/ }).fill(' ada@example.com ')
-  await page.getByLabel(/^Message/).fill(' Hello from an early pointer click. ')
+  // Native focus scrolling must finish during setup, before the pending-reveal pointer check.
+  const scrollBehavior = await page.evaluate(() => {
+    const style = document.documentElement.style
+    const previous = {
+      value: style.getPropertyValue('scroll-behavior'),
+      priority: style.getPropertyPriority('scroll-behavior'),
+    }
+    style.setProperty('scroll-behavior', 'auto')
+    return previous
+  })
+  try {
+    await page.getByLabel(/^Name/).fill(' Ada ')
+    await page.getByRole('textbox', { name: /^Email/ }).fill(' ada@example.com ')
+    await page.getByLabel(/^Message/).fill(' Hello from an early pointer click. ')
+  } finally {
+    await page.evaluate(({ value, priority }) => {
+      const style = document.documentElement.style
+      if (value) style.setProperty('scroll-behavior', value, priority)
+      else style.removeProperty('scroll-behavior')
+    }, scrollBehavior)
+  }
 }
 
 function expectNoFocusSnap(geometry: Awaited<ReturnType<typeof earlyPointer>>) {
