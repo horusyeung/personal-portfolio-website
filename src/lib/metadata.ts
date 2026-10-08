@@ -9,5 +9,15 @@ export const baseOpenGraph = {
   siteName: 'Horus Yeung',
   locale: 'en_US',
   type: 'website',
-  images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: SITE_TITLE }],
+  // Give manually inherited images a fresh URL as well as Next's file-based metadata hash.
+  // Social platforms can otherwise retain the previous thumbnail after a deployment.
+  images: [
+    {
+      url: '/opengraph-image?v=soft-hy',
+      width: 1200,
+      height: 630,
+      type: 'image/png',
+      alt: SITE_TITLE,
+    },
+  ],
 } satisfies Metadata['openGraph']
