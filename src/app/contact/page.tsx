@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useState, useRef, useCallback } from 'react'
+import { FormEvent, useState, useRef, useCallback, useEffect } from 'react'
 import { Box, Container, Typography, TextField, Button, Stack } from '@mui/material'
 import EmailIcon from '@mui/icons-material/Email'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
@@ -8,7 +8,6 @@ import LanguageIcon from '@mui/icons-material/Language'
 import { SiGithub } from 'react-icons/si'
 import LinkedInIcon from '@mui/icons-material/LinkedIn'
 import { gsap } from '@/lib/gsap'
-import { prefersReducedMotion } from '@/lib/animations'
 import { useEntranceAnimation } from '@/lib/motion'
 import {
   CONTACT_FIELDS,
@@ -85,9 +84,14 @@ const contactItems = [
 
 const CONFETTI_COLORS = ['#0071e3', '#34C759', '#FF9500', '#AF52DE', '#FF3B30']
 
+type ParticleEffect = {
+  animation: gsap.core.Animation
+  nodes: HTMLElement[]
+}
+
 // ── Confetti helper (#34) ───────────────────────────────────────────────────
 
-function spawnConfetti(container: HTMLElement) {
+function spawnConfetti(container: HTMLElement): ParticleEffect {
   const pieces: HTMLDivElement[] = []
 
   for (let i = 0; i < 10; i++) {
@@ -108,11 +112,7 @@ function spawnConfetti(container: HTMLElement) {
     pieces.push(div)
   }
 
-  const tl = gsap.timeline({
-    onComplete: () => {
-      pieces.forEach((p) => p.remove())
-    },
-  })
+  const tl = gsap.timeline()
 
   pieces.forEach((piece) => {
     const randX = (Math.random() - 0.5) * 160 // -80 to 80
@@ -132,6 +132,8 @@ function spawnConfetti(container: HTMLElement) {
       0,
     )
   })
+
+  return { animation: tl, nodes: pieces }
 }
 
 // ── Focus glow sx shared across form fields (#33) ───────────────────────────
@@ -168,9 +170,43 @@ export default function ContactPage() {
   const subtitleRef = useRef<HTMLParagraphElement>(null)
   const contactItemsRef = useRef<(HTMLDivElement | null)[]>([])
   const iconRefs = useRef<(HTMLDivElement | null)[]>([])
-  const formFieldsRef = useRef<(HTMLDivElement | null)[]>([])
+  const formRevealsRef = useRef<(HTMLElement | null)[]>([])
 
   const btnContainerRef = useRef<HTMLDivElement>(null)
+  const particleMedia = useRef<MediaQueryList | null>(null)
+  const particleEffects = useRef(new Map<gsap.core.Animation, HTMLElement[]>())
+
+  // One-off interactions share a live motion owner, including their dynamically added nodes.
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: no-preference)')
+    const effects = particleEffects.current
+    particleMedia.current = media
+    const clear = () => {
+      effects.forEach((nodes, animation) => {
+        animation.kill()
+        nodes.forEach((node) => node.remove())
+      })
+      effects.clear()
+    }
+    const update = () => {
+      if (!media.matches) clear()
+    }
+    media.addEventListener('change', update)
+    return () => {
+      particleMedia.current = null
+      media.removeEventListener('change', update)
+      clear()
+    }
+  }, [])
+
+  const trackParticles = useCallback(({ animation, nodes }: ParticleEffect) => {
+    const effects = particleEffects.current
+    effects.set(animation, nodes)
+    animation.eventCallback('onComplete', () => {
+      nodes.forEach((node) => node.remove())
+      effects.delete(animation)
+    })
+  }, [])
 
   // ── GSAP animations ────────────────────────────────────────────────────
 
@@ -189,105 +225,103 @@ export default function ContactPage() {
       { opacity: 1, letterSpacing: '0px', duration: 0.8, ease: 'power2.out', delay: 1 },
     )
 
-    // #30 — Contact items: slide-right with icon 360° spin (ScrollTrigger)
-    const validItems = contactItemsRef.current.filter(Boolean) as HTMLDivElement[]
-    const validIcons = iconRefs.current.filter(Boolean) as HTMLDivElement[]
+    const reveals = new Map<HTMLElement, gsap.core.Animation>()
 
-    if (validItems.length > 0) {
-      gsap.fromTo(
-        validItems,
-        { x: -30, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 0.6,
-          ease: 'power2.out',
-          stagger: 0.1,
-          scrollTrigger: {
-            trigger: validItems[0],
-            start: 'top 85%',
-            toggleActions: 'play none none none',
-          },
-        },
-      )
-
-      gsap.fromTo(
-        validIcons,
-        { rotation: 0 },
-        {
-          rotation: 360,
-          duration: 0.6,
-          ease: 'power2.out',
-          stagger: 0.1,
-          scrollTrigger: {
-            trigger: validItems[0],
-            start: 'top 85%',
-            toggleActions: 'play none none none',
-          },
-        },
-      )
-    }
-
-    // #32 — Form fields: sequential reveal (ScrollTrigger)
-    const validFields = formFieldsRef.current.filter(Boolean) as HTMLDivElement[]
-
-    if (validFields.length > 0) {
-      const fieldTl = gsap.timeline({
+    // #30 — Each row waits for its own scroll entry. Icon spin has a separate transform owner.
+    contactItemsRef.current.forEach((item, index) => {
+      if (!item) return
+      // Keep linked rows under the pointer when focus completes an unfinished entrance.
+      const distance = contactItems[index].href ? 0 : -30
+      const row = gsap.timeline({
         scrollTrigger: {
-          trigger: validFields[0],
+          trigger: item,
           start: 'top 85%',
-          toggleActions: 'play none none none',
+          once: true,
         },
       })
+      row.fromTo(
+        item,
+        { x: distance, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.6, ease: 'power2.out' },
+        0,
+      )
+      const icon = iconRefs.current[index]
+      if (icon) {
+        row.fromTo(icon, { rotation: 0 }, { rotation: 360, duration: 0.6, ease: 'power2.out' }, 0)
+      }
+      reveals.set(item, row)
+    })
 
-      validFields.forEach((field, i) => {
-        fieldTl.fromTo(
-          field,
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' },
-          i * 0.15,
-        )
+    // #32 — Heading, fields and submit wrapper share the section fade contract independently.
+    formRevealsRef.current.forEach((element) => {
+      if (!element) return
+      // Pointer focus finishes the reveal before pointer-up; keep the submit target in place.
+      const distance = element === btnContainerRef.current ? 0 : 30
+      const reveal = gsap.fromTo(
+        element,
+        { opacity: 0, y: distance },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: element, start: 'top 85%', once: true },
+        },
+      )
+      reveals.set(element, reveal)
+    })
+
+    // Keyboard navigation may reach a target before its scroll entrance has finished.
+    const showFocused = () => {
+      const target = document.activeElement
+      if (!target) return
+      reveals.forEach((animation, element) => {
+        if (!element.contains(target)) return
+        animation.scrollTrigger?.kill(false, true)
+        animation.progress(1).pause()
       })
     }
+    const page = pageRef.current
+    page?.addEventListener('focusin', showFocused)
+    showFocused()
+    return () => page?.removeEventListener('focusin', showFocused)
   }, pageRef)
 
   // ── #34 — Ripple effect on button click ───────────────────────────────
 
-  const handleRipple = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    if (prefersReducedMotion()) return
-    const btn = e.currentTarget
-    const rect = btn.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
+  const handleRipple = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (!particleMedia.current?.matches) return
+      const btn = e.currentTarget
+      const rect = btn.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
 
-    const ripple = document.createElement('div')
-    Object.assign(ripple.style, {
-      position: 'absolute',
-      width: '20px',
-      height: '20px',
-      borderRadius: '50%',
-      backgroundColor: 'rgba(255, 255, 255, 0.4)',
-      top: `${y - 10}px`,
-      left: `${x - 10}px`,
-      pointerEvents: 'none',
-      zIndex: '5',
-    })
-    btn.style.position = 'relative'
-    btn.style.overflow = 'hidden'
-    btn.appendChild(ripple)
+      const ripple = document.createElement('div')
+      Object.assign(ripple.style, {
+        position: 'absolute',
+        width: '20px',
+        height: '20px',
+        borderRadius: '50%',
+        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+        top: `${y - 10}px`,
+        left: `${x - 10}px`,
+        pointerEvents: 'none',
+        zIndex: '5',
+      })
+      btn.style.position = 'relative'
+      btn.style.overflow = 'hidden'
+      btn.appendChild(ripple)
 
-    gsap.fromTo(
-      ripple,
-      { scale: 0, opacity: 1 },
-      {
-        scale: 2,
-        opacity: 0,
-        duration: 0.6,
-        ease: 'power2.out',
-        onComplete: () => ripple.remove(),
-      },
-    )
-  }, [])
+      const animation = gsap.fromTo(
+        ripple,
+        { scale: 0, opacity: 1 },
+        { scale: 2, opacity: 0, duration: 0.6, ease: 'power2.out' },
+      )
+      trackParticles({ animation, nodes: [ripple] })
+    },
+    [trackParticles],
+  )
 
   // ── Form submit handler ───────────────────────────────────────────────
 
@@ -340,8 +374,8 @@ export default function ContactPage() {
       form.reset()
 
       // #34 — Success confetti
-      if (btnContainerRef.current && !prefersReducedMotion()) {
-        spawnConfetti(btnContainerRef.current)
+      if (btnContainerRef.current && particleMedia.current?.matches) {
+        trackParticles(spawnConfetti(btnContainerRef.current))
       }
     } catch {
       setStatus('error')
@@ -524,6 +558,10 @@ export default function ContactPage() {
               }}
             >
               <Typography
+                ref={(el: HTMLElement | null) => {
+                  formRevealsRef.current[0] = el
+                }}
+                data-intro
                 variant='h4'
                 component='h2'
                 sx={{
@@ -565,7 +603,7 @@ export default function ContactPage() {
                   {/* #32 — Form field: Name */}
                   <Box
                     ref={(el: HTMLDivElement | null) => {
-                      formFieldsRef.current[0] = el
+                      formRevealsRef.current[1] = el
                     }}
                     data-intro
                   >
@@ -587,7 +625,7 @@ export default function ContactPage() {
                   {/* #32 — Form field: Email */}
                   <Box
                     ref={(el: HTMLDivElement | null) => {
-                      formFieldsRef.current[1] = el
+                      formRevealsRef.current[2] = el
                     }}
                     data-intro
                   >
@@ -613,7 +651,7 @@ export default function ContactPage() {
                     data-testid='message-glow'
                     data-sending={status === 'sending'}
                     ref={(el: HTMLDivElement | null) => {
-                      formFieldsRef.current[2] = el
+                      formRevealsRef.current[3] = el
                     }}
                     data-intro
                   >
@@ -630,12 +668,21 @@ export default function ContactPage() {
                       helperText={fieldErrors.message}
                       onChange={() => clearFieldError('message')}
                       slotProps={{ htmlInput: { maxLength: CONTACT_LIMITS.message } }}
-                      sx={focusGlowSx}
+                      sx={{
+                        '& .MuiInputLabel-root.Mui-focused': { color: 'primary.text' },
+                      }}
                     />
                   </Box>
 
                   {/* #34 — Submit button with ripple + confetti */}
-                  <Box ref={btnContainerRef} sx={{ position: 'relative' }}>
+                  <Box
+                    ref={(el: HTMLDivElement | null) => {
+                      btnContainerRef.current = el
+                      formRevealsRef.current[4] = el
+                    }}
+                    data-intro
+                    sx={{ position: 'relative' }}
+                  >
                     <Button
                       data-testid='submit-button'
                       type='submit'
@@ -655,11 +702,15 @@ export default function ContactPage() {
                         textTransform: 'none',
                         bgcolor: 'primary.main',
                         color: 'primary.contrastText',
-                        transition: 'background-color 0.2s ease, transform 0.2s ease',
+                        transition: 'background-color 0.2s ease',
                         '&:hover': {
                           bgcolor: 'primary.dark',
-                          transform: 'scale(1.02)',
                         },
+                        '@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine)':
+                          {
+                            transition: 'background-color 0.2s ease, transform 0.2s ease',
+                            '&:hover': { transform: 'scale(1.02)' },
+                          },
                         '&:focus-visible': {
                           outline: '2px solid',
                           outlineColor: 'primary.main',

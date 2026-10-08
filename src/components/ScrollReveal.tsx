@@ -19,11 +19,17 @@ export default function ScrollReveal({
   duration = 0.6,
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null)
+  const animation = useRef<gsap.core.Tween | null>(null)
+  const finishReveal = () => {
+    const reveal = animation.current
+    reveal?.scrollTrigger?.kill(false, true)
+    reveal?.progress(1).pause()
+  }
 
   useEntranceAnimation(() => {
     if (!ref.current) return
 
-    gsap.fromTo(
+    animation.current = gsap.fromTo(
       ref.current,
       { opacity: 0, y: distance },
       {
@@ -39,10 +45,14 @@ export default function ScrollReveal({
         },
       },
     )
+    if (ref.current.contains(document.activeElement)) finishReveal()
+    return () => {
+      animation.current = null
+    }
   }, ref)
 
   return (
-    <Box ref={ref} data-intro>
+    <Box ref={ref} data-intro onFocusCapture={finishReveal}>
       {children}
     </Box>
   )

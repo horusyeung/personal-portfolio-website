@@ -265,18 +265,20 @@ export default function ExperiencePage() {
         }}
       >
         <Container maxWidth={false} sx={{ maxWidth: 680 }}>
-          <Typography
-            variant='h2'
-            sx={{
-              fontSize: { xs: '40px', md: '56px' },
-              fontWeight: 700,
-              letterSpacing: '-0.015em',
-              lineHeight: 1.07,
-              color: 'text.primary',
-            }}
-          >
-            Education
-          </Typography>
+          <ScrollReveal>
+            <Typography
+              variant='h2'
+              sx={{
+                fontSize: { xs: '40px', md: '56px' },
+                fontWeight: 700,
+                letterSpacing: '-0.015em',
+                lineHeight: 1.07,
+                color: 'text.primary',
+              }}
+            >
+              Education
+            </Typography>
+          </ScrollReveal>
 
           <ScrollReveal>
             {education.map((item, index) => (
@@ -333,18 +335,20 @@ export default function ExperiencePage() {
         }}
       >
         <Container maxWidth={false} sx={{ maxWidth: 680 }}>
-          <Typography
-            variant='h2'
-            sx={{
-              fontSize: { xs: '40px', md: '56px' },
-              fontWeight: 700,
-              letterSpacing: '-0.015em',
-              lineHeight: 1.07,
-              color: 'text.primary',
-            }}
-          >
-            Certifications
-          </Typography>
+          <ScrollReveal>
+            <Typography
+              variant='h2'
+              sx={{
+                fontSize: { xs: '40px', md: '56px' },
+                fontWeight: 700,
+                letterSpacing: '-0.015em',
+                lineHeight: 1.07,
+                color: 'text.primary',
+              }}
+            >
+              Certifications
+            </Typography>
+          </ScrollReveal>
           <ScrollReveal>
             <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {certifications.map((cert) => (

@@ -41,6 +41,21 @@ async function afterPaint(page: Page) {
   )
 }
 
+async function revealReady(page: Page, pendingCard: Locator) {
+  // Keep cold startup from choosing the separately tested readable fallback.
+  // Hydration stays real; resume time before sampling the scroll fade.
+  await page.clock.install({ time: new Date('2026-10-07T12:00:00Z') })
+  await page.clock.pauseAt(new Date('2026-10-07T12:01:00Z'))
+  await page.goto('/')
+  await expect(page.getByRole('button', { name: /^Switch to (light|dark) theme$/ })).toBeEnabled()
+  await page.evaluate(() => document.fonts.ready)
+  await expect(page.locator('html')).not.toHaveClass(/intro-skip/)
+  await expect
+    .poll(() => pendingCard.evaluate((node) => (node as HTMLElement).style.opacity))
+    .toBe('0')
+  await page.clock.resume()
+}
+
 async function spotlight(card: Locator) {
   return card.evaluate((node) => {
     const style = (node as HTMLElement).style
@@ -62,11 +77,10 @@ test.describe('Skills showcase', () => {
     page,
   }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' })
-    await page.goto('/')
-    await page.evaluate(() => document.fonts.ready)
     const showcase = page.getByTestId('skills-showcase')
     const first = cards(showcase).first()
     const last = cards(showcase).last()
+    await revealReady(page, first)
     await expect(first).not.toBeInViewport()
     await expect(first).toHaveCSS('opacity', '0')
     await expect(last).toHaveCSS('opacity', '0')

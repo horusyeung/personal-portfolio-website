@@ -7,6 +7,8 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { gsap } from '@/lib/gsap'
 import ScrollReveal from '@/components/ScrollReveal'
 import AboutScrollText from '@/components/AboutScrollText'
+import AboutHeading from '@/components/AboutHeading'
+import SystemStory from '@/components/SystemStory'
 import CtaGlow from '@/components/CtaGlow'
 import SkillsShowcase from '@/components/SkillsShowcase'
 import { BIO, JOB_TITLE } from '@/content/site'
@@ -200,9 +202,12 @@ export default function HomePage() {
                 borderRadius: '980px',
                 px: 4,
                 py: 1.5,
-                transition: 'transform 0.2s cubic-bezier(0.25, 1, 0.5, 1)',
-                '&:hover': { bgcolor: 'primary.dark', transform: 'scale(1.03)' },
-                '&:active': { transform: 'scale(0.97)' },
+                '&:hover': { bgcolor: 'primary.dark' },
+                '@media (prefers-reduced-motion: no-preference)': {
+                  transition: 'transform 0.2s cubic-bezier(0.25, 1, 0.5, 1)',
+                  '&:hover': { transform: 'scale(1.03)' },
+                  '&:active': { transform: 'scale(0.97)' },
+                },
                 '&:focus-visible': {
                   outline: '2px solid',
                   outlineColor: 'primary.main',
@@ -226,9 +231,11 @@ export default function HomePage() {
                 color: 'primary.text',
                 textDecoration: 'none',
                 borderRadius: '4px',
-                transition: 'gap 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
-                '&:hover': { gap: 1 },
-                '&:hover .arrow': { transform: 'translateX(4px)' },
+                '@media (prefers-reduced-motion: no-preference)': {
+                  transition: 'gap 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
+                  '&:hover': { gap: 1 },
+                  '&:hover .arrow': { transform: 'translateX(4px)' },
+                },
                 '&:focus-visible': {
                   outline: '2px solid',
                   outlineColor: 'primary.main',
@@ -242,8 +249,10 @@ export default function HomePage() {
                 className='arrow'
                 aria-hidden
                 sx={{
-                  transition: 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
                   display: 'inline-block',
+                  '@media (prefers-reduced-motion: no-preference)': {
+                    transition: 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
+                  },
                 }}
               >
                 &rarr;
@@ -274,26 +283,14 @@ export default function HomePage() {
         sx={{ bgcolor: 'background.paper', py: { xs: '80px', md: '120px' } }}
       >
         <Container maxWidth={false} sx={{ maxWidth: 780 }}>
-          <ScrollReveal>
-            <Typography
-              variant='h2'
-              sx={{
-                fontSize: { xs: '40px', md: '56px' },
-                fontWeight: 700,
-                letterSpacing: '-0.015em',
-                lineHeight: 1.07,
-                color: 'text.primary',
-              }}
-            >
-              Building products that scale.
-            </Typography>
-          </ScrollReveal>
+          <AboutHeading />
           <AboutScrollText>
             Designed a microservice architecture from scratch. Lead a distributed team of 5
             engineers while coding daily, managing cross-timezone sprints, coding standards and
             CI/CD pipelines. Use AI-augmented development workflows to speed up delivery and raise
             code quality.
           </AboutScrollText>
+          <SystemStory />
         </Container>
       </Box>
 
@@ -332,7 +329,7 @@ export default function HomePage() {
         sx={{ bgcolor: 'background.paper', py: { xs: '80px', md: '120px' } }}
       >
         <Container maxWidth={false} sx={{ maxWidth: 600, textAlign: 'center' }}>
-          <ScrollReveal>
+          <ScrollReveal distance={0}>
             <Typography
               variant='h2'
               sx={{
@@ -370,9 +367,11 @@ export default function HomePage() {
                   color: 'primary.text',
                   textDecoration: 'none',
                   borderRadius: '4px',
-                  transition: 'gap 0.3s ease',
-                  '&:hover': { gap: 1 },
-                  '&:hover .arrow': { transform: 'translateX(4px)' },
+                  '@media (prefers-reduced-motion: no-preference)': {
+                    transition: 'gap 0.3s ease',
+                    '&:hover': { gap: 1 },
+                    '&:hover .arrow': { transform: 'translateX(4px)' },
+                  },
                   '&:focus-visible': {
                     outline: '2px solid',
                     outlineColor: 'primary.main',
@@ -385,7 +384,12 @@ export default function HomePage() {
                   component='span'
                   className='arrow'
                   aria-hidden
-                  sx={{ transition: 'transform 0.3s ease', display: 'inline-block' }}
+                  sx={{
+                    display: 'inline-block',
+                    '@media (prefers-reduced-motion: no-preference)': {
+                      transition: 'transform 0.3s ease',
+                    },
+                  }}
                 >
                   &rarr;
                 </Box>
