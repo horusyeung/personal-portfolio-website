@@ -257,6 +257,8 @@ export default function ContactPage() {
       if (icon) {
         row.fromTo(icon, { rotation: 0 }, { rotation: 360, duration: 0.6, ease: 'power2.out' }, 0)
       }
+      // Initialize before later triggers can recursively refresh and remove pending rows.
+      row.scrollTrigger?.refresh()
       reveals.set(item, row)
     })
 
