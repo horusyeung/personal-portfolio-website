@@ -4,7 +4,7 @@ import { baseOpenGraph } from '@/lib/metadata'
 export const metadata: Metadata = {
   title: 'Experience',
   description:
-    'Work experience, education and certifications of Horus Yeung, a senior full stack developer and frontend team lead at Juno Markets.',
+    'Explore Horus Yeung’s experience leading fintech teams, building full-stack and mobile products, and delivering test automation, plus education and certifications.',
   alternates: {
     canonical: '/experience',
   },
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     ...baseOpenGraph,
     title: 'Experience | Horus Yeung',
     description:
-      'Work experience, education and certifications of Horus Yeung, a senior full stack developer and team lead.',
+      'Explore Horus Yeung’s experience leading fintech teams, building full-stack and mobile products, and delivering test automation, plus education and certifications.',
     url: '/experience',
   },
 }

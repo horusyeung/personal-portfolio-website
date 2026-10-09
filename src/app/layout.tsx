@@ -30,6 +30,8 @@ const jsonLd = {
       name: 'Horus Yeung',
       givenName: 'Horus',
       familyName: 'Yeung',
+      alternateName: 'horusyeung',
+      description: BIO.summary,
       url: SITE_URL,
       jobTitle: JOB_TITLE,
       worksFor: {

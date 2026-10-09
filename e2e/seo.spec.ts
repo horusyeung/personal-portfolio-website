@@ -5,6 +5,10 @@ import { expect, test } from '@playwright/test'
 const SITE = 'https://www.horusyeung.com'
 const PAGES = ['/', '/experience', '/open-source', '/contact']
 const canonicalFor = (path: string) => (path === '/' ? SITE : `${SITE}${path}`)
+const structuredDataFrom = (html: string) =>
+  [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g)].map((match) =>
+    JSON.parse(match[1]),
+  )
 
 test.describe('SEO URLs', () => {
   // Server output, so one engine is enough
@@ -46,21 +50,84 @@ test.describe('SEO URLs', () => {
 
   test('structured data is in the server HTML', async ({ request }) => {
     const html = await (await request.get('/')).text()
-    const match = html.match(/<script type="application\/ld\+json">(.*?)<\/script>/)
-    expect(match).not.toBeNull()
-    const data = JSON.parse(match![1])
+    const data = structuredDataFrom(html).find((block) => block['@graph'])
+    expect(data).toBeDefined()
     const person = data['@graph'].find((node: { '@type': string }) => node['@type'] === 'Person')
     expect(person.sameAs).toContain('https://medium.com/@horusyeung')
+    expect(person.description).toContain('Senior Full Stack Developer')
+    expect(person.alternateName).toBe('horusyeung')
   })
 
   test('structured data uses the www origin', async ({ page }) => {
     await page.goto('/')
     const jsonLd = page.locator('script[type="application/ld+json"]')
-    await expect(jsonLd).toHaveCount(1)
-    const data = JSON.parse((await jsonLd.textContent()) ?? '{}')
+    await expect(jsonLd).toHaveCount(2)
+    const data = (await jsonLd.allTextContents()).map((content) => JSON.parse(content))
     const urls = JSON.stringify(data).match(/https?:\/\/[^"]*horusyeung\.com[^"]*/g) ?? []
     expect(urls.length).toBeGreaterThan(0)
     for (const url of urls) expect(url.startsWith(SITE)).toBe(true)
+  })
+
+  test('only Home declares a profile, linked to the same person and website', async ({
+    request,
+  }) => {
+    for (const path of PAGES) {
+      const response = await request.get(path)
+      expect(response.status()).toBe(200)
+      const blocks = structuredDataFrom(await response.text())
+      const profiles = blocks.filter((block) => block['@type'] === 'ProfilePage')
+      expect(profiles).toHaveLength(path === '/' ? 1 : 0)
+      if (path === '/') {
+        const profile = profiles[0]
+        expect(profile.url).toBe(SITE)
+        expect(profile.mainEntity).toMatchObject({
+          '@type': 'Person',
+          '@id': `${SITE}/#person`,
+          name: 'Horus Yeung',
+        })
+        expect(profile.isPartOf).toEqual({ '@id': `${SITE}/#website` })
+      }
+    }
+  })
+
+  test('each page serves unique search snippets and its heading without JavaScript', async ({
+    request,
+  }) => {
+    const titles = new Set<string>()
+    const descriptions = new Set<string>()
+    for (const path of PAGES) {
+      const response = await request.get(path)
+      expect(response.status()).toBe(200)
+      const html = await response.text()
+      const title = html.match(/<title>(.*?)<\/title>/)?.[1]
+      const description = html.match(/<meta name="description" content="([^"]+)"/g) ?? []
+      expect(title).toContain('Horus Yeung')
+      expect(description).toHaveLength(1)
+      expect(description[0]).toContain('Horus Yeung')
+      expect(html).toMatch(/<h1[^>]*>[^]*?<\/h1>/)
+      expect(html).not.toMatch(/<meta name="robots" content="[^"]*noindex/)
+      titles.add(title!)
+      descriptions.add(description[0]!)
+    }
+    expect(titles.size).toBe(PAGES.length)
+    expect(descriptions.size).toBe(PAGES.length)
+  })
+
+  test('project and campaign query variants retain the clean canonical', async ({ request }) => {
+    for (const path of ['/?utm_source=linkedin', '/open-source?project=project-structures']) {
+      const response = await request.get(path)
+      expect(response.status()).toBe(200)
+      const html = await response.text()
+      const canonicals = [...html.matchAll(/<link rel="canonical" href="([^"]+)"/g)]
+      expect(canonicals).toHaveLength(1)
+      expect(canonicals[0][1]).toBe(canonicalFor(path.split('?')[0]))
+    }
+  })
+
+  test('an unknown page returns a non-indexable 404', async ({ request }) => {
+    const response = await request.get('/does-not-exist-seo-check')
+    expect(response.status()).toBe(404)
+    expect(await response.text()).toMatch(/<meta name="robots" content="[^"]*noindex/)
   })
 
   test('sitemap lists only www URLs', async ({ request }) => {

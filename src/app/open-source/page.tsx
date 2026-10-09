@@ -8,13 +8,13 @@ import ProjectGallery from './ProjectGallery'
 export const metadata: Metadata = {
   title: 'Open Source',
   description:
-    'Open source projects by Horus Yeung on GitHub: project structures, starter templates and development workflows.',
+    'Explore Horus Yeung’s open-source Next.js, Nest.js and React Native starters, project structures and portfolio source, with code and project details on GitHub.',
   alternates: { canonical: '/open-source' },
   openGraph: {
     ...baseOpenGraph,
     title: 'Open Source | Horus Yeung',
     description:
-      'Open source projects by Horus Yeung: project structures, starter templates and development workflows.',
+      'Explore Horus Yeung’s open-source Next.js, Nest.js and React Native starters, project structures and portfolio source, with code and project details on GitHub.',
     url: '/open-source',
   },
 }
