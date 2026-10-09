@@ -31,5 +31,5 @@ export const BIO = {
   /** Footer, structured data and Open Graph */
   summary: SUMMARY,
   /** Default meta description */
-  meta: `${SUMMARY} Based in ${LOCATION}.`,
+  meta: `Horus Yeung is a senior full stack developer and team lead in ${LOCATION}, building React, Next.js and React Native products with TypeScript and AWS.`,
 }

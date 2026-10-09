@@ -4,14 +4,15 @@ import { baseOpenGraph } from '@/lib/metadata'
 export const metadata: Metadata = {
   title: 'Contact',
   description:
-    'Get in touch with Horus Yeung, a senior full stack developer and team lead based in Vancouver, BC.',
+    'Contact Horus Yeung, a senior full stack developer and team lead in Vancouver, BC, about web and mobile products, technical leadership and collaboration.',
   alternates: {
     canonical: '/contact',
   },
   openGraph: {
     ...baseOpenGraph,
     title: 'Contact | Horus Yeung',
-    description: 'Get in touch with Horus Yeung, a full stack developer based in Vancouver, BC.',
+    description:
+      'Contact Horus Yeung, a senior full stack developer and team lead in Vancouver, BC, about web and mobile products, technical leadership and collaboration.',
     url: '/contact',
   },
 }
