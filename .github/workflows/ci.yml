@@ -38,7 +38,8 @@ jobs:
   e2e-tests:
     name: Playwright E2E
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # The full browser matrix takes about 19 minutes; leave room for setup and report upload.
+    timeout-minutes: 30
     # Same image as `yarn test:visual`, so visual snapshots render identically.
     # Keep the tag in sync with @playwright/test (package.json scripts use it too).
     container:
