@@ -52,7 +52,7 @@ export const experiences: Experience[] = [
     title: 'Full Stack Developer & QA Engineer',
     company: 'Beta Labs (Lane Crawford Joyce Group)',
     location: 'Hong Kong',
-    period: 'Jan 2022 – Jul 2023',
+    period: 'Jan 2022 – Sep 2024',
     bullets: [
       "Built e-commerce platforms for Lane Crawford (Hong Kong's largest luxury retailer) with React.js, Next.js, Nest.js, PostgreSQL, MongoDB and GraphQL, including multi-tenant microservices",
       'Rebuilt a native app in React Native while maintaining two native apps (SwiftUI, Kotlin)',
