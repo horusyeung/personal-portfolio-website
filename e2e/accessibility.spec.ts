@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { openMainNavigation } from './helpers/navigation'
 
 const PAGES = ['/', '/experience', '/open-source', '/contact']
 
@@ -24,6 +25,7 @@ test.describe('Accessibility', () => {
 
   test('the navigation is a labelled landmark that marks the current page', async ({ page }) => {
     await page.goto('/experience')
+    await openMainNavigation(page)
     const nav = page.getByRole('navigation', { name: 'Main' })
     await expect(nav.getByRole('link')).toHaveCount(4)
     await expect(nav.getByRole('link', { name: 'Experience' })).toHaveAttribute(
@@ -35,6 +37,7 @@ test.describe('Accessibility', () => {
 
   test('nav links have a hit area at least 44px tall', async ({ page }) => {
     await page.goto('/')
+    await openMainNavigation(page)
     const links = page.getByRole('navigation', { name: 'Main' }).getByRole('link')
     for (const link of await links.all()) {
       // The ::after hit area belongs to the link, so points 21px above and below its centre

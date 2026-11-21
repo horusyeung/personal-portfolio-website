@@ -1,4 +1,5 @@
 import { expect, test, type Locator } from '@playwright/test'
+import { clickNavLink } from './helpers/navigation'
 
 const ABOUT_COPY =
   'Designed a microservice architecture from scratch. Lead a distributed team of 5 engineers while coding daily, managing cross-timezone sprints, coding standards and CI/CD pipelines. Use AI-augmented development workflows to speed up delivery and raise code quality.'
@@ -201,9 +202,9 @@ test('navigation away and back never duplicates the About words', async ({ page 
   await paragraph.scrollIntoViewIfNeeded()
   await expect(paragraph.locator('span')).not.toHaveCount(0)
   const count = await paragraph.locator('span').count()
-  await page.getByTestId('nav-link-experience').click()
+  await clickNavLink(page, 'experience')
   await expect(page).toHaveURL(/\/experience$/)
-  await page.getByTestId('nav-link-home').click()
+  await clickNavLink(page, 'home')
   await expect(page).toHaveURL((url) => url.pathname === '/')
   await paragraph.scrollIntoViewIfNeeded()
   await expect(paragraph.locator('span')).toHaveCount(count)

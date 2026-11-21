@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { decorativeGlassSx, glassEdgeSx, glassSx } from '../src/lib/glass'
+import { openMainNavigation } from './helpers/navigation'
 
 // Mount temporary probes using the shipped CSS classes and sx values; no demo route ships.
 async function glassProbes(page: Page) {
@@ -120,6 +121,7 @@ test.describe('Foundations', () => {
           page.getByRole('heading', { level: 1, name: heading, exact: true }),
         ).toBeVisible()
         await expect(page.locator('[data-intro]').first()).toHaveCSS('opacity', '1')
+        await openMainNavigation(page)
         await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible()
         await expect(page.getByRole('contentinfo')).toBeVisible()
       } finally {

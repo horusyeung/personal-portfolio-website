@@ -1,0 +1,158 @@
+.navigation {
+  /* The same links stay inline on desktop and become a native popover on mobile. */
+  display: flex;
+  position: static;
+  align-items: center;
+  gap: 24px;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: visible;
+  background: transparent;
+  color: inherit;
+}
+
+.link {
+  position: relative;
+  flex: none;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Desktop hit areas extend to 44px without changing the original typography. */
+.link::after {
+  content: '';
+  position: absolute;
+  inset: -14px -8px;
+}
+
+.menuButton {
+  display: none;
+}
+
+@media (max-width: 599px) {
+  .navigation {
+    display: none;
+    position: fixed;
+    inset: 49px 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    width: 100%;
+    max-height: calc(100dvh - 49px);
+    padding: 12px 24px 20px;
+    overflow-y: auto;
+    border-bottom: 1px solid var(--mui-palette-divider);
+    background: var(--mui-palette-background-default);
+    color: var(--mui-palette-text-primary);
+  }
+
+  .navigation:popover-open {
+    display: flex;
+  }
+
+  .navigation::backdrop {
+    background: transparent;
+  }
+
+  .link {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    font-size: 17px;
+    white-space: normal;
+  }
+
+  .link::after {
+    content: none;
+  }
+
+  .menuButton {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 76px;
+    height: 44px;
+    margin-left: 4px;
+    padding: 0 8px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--mui-palette-text-primary);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .menuButton:focus-visible {
+    outline: 2px solid var(--mui-palette-primary-main);
+    outline-offset: 2px;
+  }
+
+  .menuButton svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+  }
+
+  .menuButton path {
+    transform-origin: 10px 10px;
+  }
+
+  .menuButton path:first-child {
+    transform: translateY(-3px);
+  }
+
+  .menuButton path:last-child {
+    transform: translateY(3px);
+  }
+
+  .header:has(.navigation:popover-open) .menuButton {
+    color: var(--mui-palette-primary-text);
+  }
+
+  .header:has(.navigation:popover-open) .menuButton path:first-child {
+    transform: rotate(45deg);
+  }
+
+  .header:has(.navigation:popover-open) .menuButton path:last-child {
+    transform: rotate(-45deg);
+  }
+
+  /* Browsers without native popovers retain an always-visible second row of links. */
+  @supports not selector(:popover-open) {
+    .toolbar {
+      flex-wrap: wrap;
+    }
+
+    .navigation {
+      display: flex;
+      position: static;
+      order: 1;
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 0;
+      border: 0;
+    }
+
+    .link {
+      min-height: 44px;
+      font-size: 12px;
+    }
+
+    .menuButton {
+      display: none;
+    }
+
+    .spacer {
+      height: 88px;
+    }
+  }
+}

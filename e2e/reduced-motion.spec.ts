@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { clickNavLink } from './helpers/navigation'
 
 // Content that entrance animations reveal, per page. Playwright's toBeVisible() ignores opacity,
 // so these tests measure the effective opacity (including ancestors) instead.
@@ -102,9 +103,9 @@ test('slow hydration never hides content that is already showing', async ({ page
 
 test('revisiting pages does not duplicate animated text', async ({ page }) => {
   await page.goto('/')
-  await page.getByTestId('nav-link-experience').click()
+  await clickNavLink(page, 'experience')
   await expect(page).toHaveURL(/\/experience$/)
-  await page.getByTestId('nav-link-home').click()
+  await clickNavLink(page, 'home')
   await expect(page).toHaveURL((url) => url.pathname === '/')
 
   const name = page.getByTestId('hero-name')

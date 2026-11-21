@@ -1,5 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
 import { githubProjects } from '../src/content/projects'
+import { clickNavLink, openMainNavigation } from './helpers/navigation'
 
 const first = githubProjects[0]
 const details = (page: Page, name = first.name) =>
@@ -321,7 +322,7 @@ test.describe('Project sheet', () => {
   }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.goto('/experience')
-    await page.getByTestId('nav-link-open-source').click()
+    await clickNavLink(page, 'open-source')
     await openFirst(page)
     await page.goBack()
     await expectClosed(page)
@@ -356,7 +357,7 @@ test.describe('Project sheet', () => {
     try {
       await page.emulateMedia({ reducedMotion: 'no-preference' })
       await page.goto('/experience')
-      await page.getByTestId('nav-link-open-source').click()
+      await clickNavLink(page, 'open-source')
       await expect(details(page)).toBeEnabled()
       const detailsSelector = `button[aria-label="Details for ${first.name}"]`
       // React disables delegated events before the asynchronous native DOM update.
@@ -422,6 +423,7 @@ test.describe('Project sheet', () => {
       await page.emulateMedia({ reducedMotion: 'no-preference' })
       await page.goto('/experience')
       const initialDocument = page.url()
+      await openMainNavigation(page)
       await activate(page.getByTestId('nav-link-open-source'), 'Open Source')
       await activate(details(page), `Details for ${first.name}`)
       await expect(sheet(page)).toBeVisible()

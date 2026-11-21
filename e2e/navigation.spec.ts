@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { clickNavLink, openMainNavigation } from './helpers/navigation'
 
 const PAGES = ['/', '/experience', '/open-source', '/contact']
 const isHome = (url: URL) => url.pathname === '/'
@@ -6,6 +7,7 @@ const isHome = (url: URL) => url.pathname === '/'
 test.describe('Navigation', () => {
   test('navbar is visible on all pages', async ({ page }) => {
     await page.goto('/')
+    await openMainNavigation(page)
     for (const link of ['home', 'experience', 'open-source', 'contact']) {
       await expect(page.getByTestId(`nav-link-${link}`)).toBeVisible()
     }
@@ -24,20 +26,20 @@ test.describe('Navigation', () => {
 
   test('Home link navigates to home page', async ({ page }) => {
     await page.goto('/experience')
-    await page.getByTestId('nav-link-home').click()
+    await clickNavLink(page, 'home')
     await expect(page).toHaveURL(isHome)
   })
 
   test('navbar links navigate correctly', async ({ page }) => {
     await page.goto('/')
 
-    await page.getByTestId('nav-link-experience').click()
+    await clickNavLink(page, 'experience')
     await expect(page).toHaveURL(/\/experience$/)
 
-    await page.getByTestId('nav-link-open-source').click()
+    await clickNavLink(page, 'open-source')
     await expect(page).toHaveURL(/\/open-source$/)
 
-    await page.getByTestId('nav-link-contact').click()
+    await clickNavLink(page, 'contact')
     await expect(page).toHaveURL(/\/contact$/)
   })
 
@@ -67,7 +69,7 @@ test.describe('Navigation', () => {
     await page.goto('/')
     await expect(page.getByTestId('navbar')).toHaveCSS('view-transition-name', 'site-header')
 
-    await page.getByTestId('nav-link-experience').click()
+    await clickNavLink(page, 'experience')
     await expect(page).toHaveURL(/\/experience$/)
     const supported = await page.evaluate(() => 'startViewTransition' in document)
     test.skip(!supported, `no View Transitions API in this ${browserName} build`)
