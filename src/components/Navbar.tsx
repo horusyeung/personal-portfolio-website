@@ -2,8 +2,10 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 import { AppBar, Toolbar, Typography, Box } from '@mui/material'
 import ThemeToggle from '@/components/ThemeToggle'
+import styles from './Navbar.module.css'
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -14,12 +16,37 @@ const navLinks = [
 
 export default function Navbar() {
   const pathname = usePathname()
+  const navigationRef = useRef<HTMLElement>(null)
+  const [menuOpen, setMenuOpen] = useState<boolean>()
+
+  const closeMenu = () => navigationRef.current?.hidePopover?.()
+
+  useEffect(() => {
+    // A persistent layout must also close the menu after Back/Forward or other route changes.
+    navigationRef.current?.hidePopover?.()
+  }, [pathname])
+
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 600px)')
+    const closeOnHistory = () => navigationRef.current?.hidePopover?.()
+    const closeOnDesktop = () => {
+      if (desktop.matches) closeOnHistory()
+    }
+    desktop.addEventListener('change', closeOnDesktop)
+    // Query-only traversal can restore a project modal without changing usePathname().
+    window.addEventListener('popstate', closeOnHistory)
+    return () => {
+      desktop.removeEventListener('change', closeOnDesktop)
+      window.removeEventListener('popstate', closeOnHistory)
+    }
+  }, [])
 
   const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname === href)
 
   return (
     <>
       <AppBar
+        className={styles.header}
         data-testid='navbar'
         position='fixed'
         elevation={0}
@@ -48,12 +75,12 @@ export default function Navbar() {
         })}
       >
         <Toolbar
+          className={styles.toolbar}
           sx={{
             maxWidth: 980,
             width: '100%',
             mx: 'auto',
             px: { xs: 2, sm: 3 },
-            '@media (max-width: 359px)': { px: 1 },
             minHeight: '48px !important',
           }}
         >
@@ -63,6 +90,7 @@ export default function Navbar() {
             component={Link}
             href='/'
             aria-label='Horus Yeung home'
+            onClick={closeMenu}
             sx={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -115,13 +143,12 @@ export default function Navbar() {
           {/* Nav links */}
           <Box
             component='nav'
+            id='main-navigation'
+            popover='auto'
+            ref={navigationRef}
+            onToggle={(event) => setMenuOpen(event.currentTarget.matches(':popover-open'))}
             aria-label='Main'
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: { xs: 2, sm: 3 },
-              '@media (max-width: 359px)': { gap: 1 },
-            }}
+            className={styles.navigation}
           >
             {navLinks.map((link) => (
               <Typography
@@ -129,10 +156,10 @@ export default function Navbar() {
                 key={link.href}
                 component={Link}
                 href={link.href}
+                onClick={closeMenu}
                 aria-current={isActive(link.href) ? 'page' : undefined}
+                className={styles.link}
                 sx={{
-                  position: 'relative',
-                  fontSize: 12,
                   fontWeight: 400,
                   textDecoration: 'none',
                   color: isActive(link.href) ? 'primary.text' : 'text.secondary',
@@ -140,12 +167,6 @@ export default function Navbar() {
                   borderRadius: '4px',
                   '&:hover': {
                     color: isActive(link.href) ? 'primary.text' : 'text.primary',
-                  },
-                  // A hit area at least 44px tall (WCAG 2.5.5) without moving anything: the invisible
-                  // box reaches 14px above/below the line and halfway into the mobile link gaps
-                  '&::after': { content: '""', position: 'absolute', inset: '-14px -8px' },
-                  '@media (max-width: 359px)': {
-                    '&::after': { inset: '-14px -4px' },
                   },
                   '&:focus-visible': {
                     outline: '2px solid',
@@ -161,11 +182,25 @@ export default function Navbar() {
           <Box sx={{ ml: { xs: 1.5, sm: 2 }, display: 'flex' }}>
             <ThemeToggle />
           </Box>
+          <button
+            type='button'
+            popoverTarget='main-navigation'
+            aria-label='Main menu'
+            aria-controls='main-navigation'
+            aria-expanded={menuOpen}
+            className={styles.menuButton}
+          >
+            <span>Menu</span>
+            <svg viewBox='0 0 20 20' aria-hidden='true' focusable='false'>
+              <path d='M3 10h14' />
+              <path d='M3 10h14' />
+            </svg>
+          </button>
         </Toolbar>
       </AppBar>
 
       {/* Spacer for fixed nav */}
-      <Toolbar sx={{ minHeight: '48px !important' }} />
+      <Toolbar className={styles.spacer} sx={{ minHeight: '48px !important' }} />
     </>
   )
 }

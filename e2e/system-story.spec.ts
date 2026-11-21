@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
+import { clickNavLink } from './helpers/navigation'
 
 const title = 'Building products that scale.'
 const copy =
@@ -986,7 +987,7 @@ test('offscreen and client route unmount remove active request work', async ({ p
     node.getAnimations({ subtree: true }),
   )
   expect(await routeAnimations.evaluate((animations) => animations.length)).toBeGreaterThan(0)
-  await page.getByTestId('nav-link-experience').click()
+  await clickNavLink(page, 'experience')
   await expect(page).toHaveURL(/\/experience$/)
   await expect(page.getByTestId('system-story')).toHaveCount(0)
   expect(await retained!.evaluate((node) => node.isConnected)).toBe(false)
@@ -1000,7 +1001,7 @@ test('offscreen and client route unmount remove active request work', async ({ p
   ).toBe(true)
   await routeAnimations.dispose()
   await retained!.dispose()
-  await page.getByTestId('nav-link-home').click()
+  await clickNavLink(page, 'home')
   await expect(page).toHaveURL(/\/$/)
   await expect(page.getByTestId('system-story')).toHaveAttribute('data-play-count', '0')
   await autoStory(page)
